@@ -955,6 +955,24 @@
 					var de=document.documentElement;
 					return Math.max(db.scrollHeight,de.scrollHeight,db.offsetHeight,de.offsetHeight,db.clientHeight,de.clientHeight);
 				}
+      },
+      
+      /***************************************************************************************
+			 *
+			 * window.lodge.validate (object)
+			 * check a string for format — mostly for form validation, etc.
+			 *
+			 * PUBLIC-ISH FUNCTIONS
+			 * window.lodge.validate.email()
+			 *
+			 ***************************************************************************************/
+			validate: {
+				email: function(address) {
+          // hell no i didn't write this long, bonkers regex
+          // thanks to: https://stackoverflow.com/a/46181
+					var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          			return re.test(String(address).toLowerCase());
+				}
 			},
 
 			/***************************************************************************************
