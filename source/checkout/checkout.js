@@ -154,7 +154,6 @@
 
                 submit.addEventListener('click', function (event) {
                   event.preventDefault();
-                  vv.overlay.showLoading();
 
                   hostedFieldsInstance.tokenize(function (err, payload) {
                     if (err) {
@@ -162,6 +161,7 @@
                       return;
                     } else {
                       var poststring = 'email='+document.querySelector('#email').value+'&firstName='+document.querySelector('#first-name').value+'&lastName='+document.querySelector('#last-name').value+'&amount='+options.amount+'&nonce='+payload.nonce;
+                      vv.overlay.showLoading();
                       vv.ajax.send(options.endpoint, poststring, function(r) {
                         if (r == 'OK') {
                           vv.overlay.reveal('<h2 class="vv-checkout-success">'+options.successMsg+'</h2>');
