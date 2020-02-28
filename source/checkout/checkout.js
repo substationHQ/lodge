@@ -173,6 +173,7 @@
 
                 submit.addEventListener('click', function (event) {
                   event.preventDefault();
+                  vv.overlay.showLoading();
 
                   hostedFieldsInstance.tokenize(function (err, payload) {
                     if (err) {
@@ -286,7 +287,7 @@
               e.preventDefault();
               e.stopPropagation();
               vv.events.fire(vv,'checkoutdata',options,source);
-              vv.overlay.reveal('<div class="vv-loading"></div>');
+              vv.overlay.showLoading();
             });
 
             // Create a special event to detect Stripe chosen

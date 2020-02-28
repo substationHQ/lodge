@@ -241,6 +241,9 @@
             case 'addoverlaytrigger':
               vv.overlay.addOverlayTrigger(md.content,md.classname,md.ref);
               break;
+            case 'overlaysetloading':
+              vv.overlay.setLoading(md);
+              break;
             case 'injectcss':
               vv.styles.injectCSS(md.css,md.important);
               break;
@@ -989,8 +992,24 @@
 			overlay: {
 				content: false,
 				close: false,
+        loadingContent: false,
 				callbacks: [],
 
+        setLoading: function(loading) {
+          var vv = window.lodge;
+          vv.overlay.loadingContent = loading.toString();
+          if (vv.embedded) {
+						vv.events.fire(vv,'overlaysetloading',vv.overlay.loadingContent);
+					}
+        },
+        
+        showLoading: function() {
+          var vv = window.lodge;
+          if (vv.overlay.loadingContent) {
+            vv.overlay.reveal(vv.overlay.loadingContent); 
+          }
+        },
+        
 				create: function(callback) {
 					var vv = window.lodge;
 					var self = vv.overlay;
