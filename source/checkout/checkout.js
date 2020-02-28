@@ -107,11 +107,22 @@
                   return;
                 }
 
-                hostedFieldsInstance.on('validityChange', function (event) {
-                  // Check if all fields are valid, then show submit button
-                  var formValid = Object.keys(event.fields).every(function (key) {
-                    return event.fields[key].isValid;
+                function doValidation() {
+                  var state = hostedFieldsInstance.getState();
+                  var formValid = Object.keys(state.fields).every(function (key) {
+                    return state.fields[key].isValid;
                   });
+
+                  // Now we're checking the email field, outside of the Braintree validation.
+                  // If the email isn't valid, the form is always not valid so we mark it false.
+                  // If the email is valid we do nothing and the original Braintree validation
+                  // stands as-is.
+                  if (document.querySelector('#email').value && !vv.validate.email(document.querySelector('#email').value)) {
+                    vv.styles.addClass(document.querySelector('#email-wrapper'),'invalid'); 
+                    formValid = false;
+                  } else {
+                    vv.styles.removeClass(document.querySelector('#email-wrapper'),'invalid'); 
+                  }
 
                   if (formValid) {
                     vv.styles.addClass(submit,'show-button'); 
@@ -119,6 +130,14 @@
                   } else {
                     vv.styles.removeClass(submit,'show-button'); 
                     submit.disabled = true;
+                  }
+                }
+
+                hostedFieldsInstance.on('validityChange', doValidation);
+
+                vv.events.add(document.querySelector('#email'),'keyup',function(e) {
+                  if(document.querySelector('#email').value.length > 4) {
+                    doValidation();
                   }
                 });
 
@@ -154,6 +173,7 @@
 
                 submit.addEventListener('click', function (event) {
                   event.preventDefault();
+                  vv.overlay.showLoading();
 
                   hostedFieldsInstance.tokenize(function (err, payload) {
                     if (err) {
@@ -267,7 +287,7 @@
               e.preventDefault();
               e.stopPropagation();
               vv.events.fire(vv,'checkoutdata',options,source);
-              vv.overlay.reveal('<div class="vv-loading"></div>');
+              vv.overlay.showLoading();
             });
 
             // Create a special event to detect Stripe chosen
