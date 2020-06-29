@@ -297,49 +297,6 @@ if (!window.lodge) {
       },
 
       /*
-       * contentloaded.js by Diego Perini (diego.perini at gmail.com)
-       * http://javascript.nwbox.com/ContentLoaded/
-       * http://javascript.nwbox.com/ContentLoaded/MIT-LICENSE
-       *
-       * modified a little because you know
-       */
-      contentLoaded(fn) {
-        const done = false;
-        let top = true;
-        const doc = window.document;
-        const root = doc.documentElement;
-        const init = function init(e) {
-          if (e.type === "readystatechange" && doc.readyState !== "complete")
-            return;
-          lodge.events.remove(e.type === "load" ? window : doc, e.type, init);
-          if (!done && done === true) fn.call(window, e.type || e);
-        };
-        const poll = function poll() {
-          try {
-            root.doScroll("left");
-          } catch (e) {
-            setTimeout(poll, 50);
-            return;
-          }
-          init("poll");
-        };
-
-        if (doc.readyState === "complete") fn.call(window, "lazy");
-        else {
-          if (doc.createEventObject && root.doScroll) {
-            try {
-              top = !window.frameElement;
-              // eslint-disable-next-line no-empty
-            } catch (e) {}
-            if (top) poll();
-          }
-          this.events.add(doc, "DOMContentLoaded", init);
-          this.events.add(doc, "readystatechange", init);
-          this.events.add(doc, "load", init);
-        }
-      },
-
-      /*
        * window.lodge.embed(string src, string options, string alt, object targetNode, string css)
        * Generates the embed iFrame code for embedding a given element.
        * Optional third and fourth parameters allow the element to be
@@ -350,7 +307,7 @@ if (!window.lodge) {
        * to this parent window with its proper height.
        *
        * This is called in a script inline as a piece of blocking script — calling it before
-       * contentLoaded because the partial load tells us where to embed each chunk — we find the
+       * DomContentLoaded because the partial load tells us where to embed each chunk — we find the
        * last script node and inject the content by it. For dynamic calls you need to specify
        * a targetNode to serve as the anchor — with the embed chucked immediately after that
        * element in the DOM.
@@ -749,41 +706,13 @@ if (!window.lodge) {
        ************************************************************************************** */
       ajax: {
         /*
-         * window.lodge.ajax.getXHR()
-         * Tests for the proper XHR object type and returns the appropriate
-         * object type for the current browser using a try/catch block. If
-         * no viable objects are found it returns false. But we should make
-         * fun of that browser, because it sucks.
-         */
-        getXHR() {
-          try {
-            // modern standard
-            return new XMLHttpRequest();
-          } catch (e) {
-            try {
-              // old dumb IE bullshit
-              // eslint-disable-next-line no-undef
-              return new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (er) {
-              try {
-                // older dumber IE bullshit
-                // eslint-disable-next-line no-undef
-                return new ActiveXObject("Microsoft.XMLHTTP");
-              } catch (err) {
-                return false;
-              }
-            }
-          }
-        },
-
-        /*
          * window.lodge.ajax.send(string url, string postString, function successCallback)
          * Do a POST or GET request via XHR/AJAX. Passing a postString will
          * force a POST request, whereas passing false will send a GET.
          */
         send(url, postString, successCallback, failureCallback) {
           const method = "POST";
-          const xhr = this.getXHR();
+          const xhr = new XMLHttpRequest();
           if (xhr) {
             xhr.open(method, url, true);
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -894,7 +823,7 @@ if (!window.lodge) {
         },
 
         getHeaderForURL(url, header, callback) {
-          const xhr = this.getXHR();
+          const xhr = new XMLHttpRequest();
           xhr.open("HEAD", url);
           xhr.onreadystatechange = function doCallback() {
             if (this.readyState === this.DONE) {
@@ -917,29 +846,12 @@ if (!window.lodge) {
        *
        ************************************************************************************** */
       events: {
-        // Thanks, John Resig!
-        // http://ejohn.org/blog/flexible-javascript-events/
         add(obj, type, fn) {
-          if (obj.attachEvent) {
-            obj[`e${type}${fn}`] = fn;
-            obj[type + fn] = function addEvent() {
-              obj[`e${type}${fn}`](window.event);
-            };
-            obj.attachEvent(`on${type}`, obj[type + fn]);
-          } else {
-            obj.addEventListener(type, fn, false);
-          }
+          obj.addEventListener(type, fn, false);
         },
 
-        // Thanks, John Resig!
-        // http://ejohn.org/blog/flexible-javascript-events/
         remove(obj, type, fn) {
-          if (obj.detachEvent) {
-            obj.detachEvent(`on${type}`, obj[type + fn]);
-            obj[type + fn] = null;
-          } else {
-            obj.removeEventListener(type, fn, false);
-          }
+          obj.removeEventListener(type, fn, false);
         },
 
         // added the fourth "target" parameter
@@ -1459,7 +1371,13 @@ if (!window.lodge) {
         checkEmbeds();
       }
     };
-    lodge.contentLoaded(init); // loads only after the page is complete
+    if (document.readyState === "loading") {
+      // Loading hasn't finished yet
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      // `DOMContentLoaded` has already fired
+      init();
+    }
 
     /*
      *	return the main object in case it's called into a different scope

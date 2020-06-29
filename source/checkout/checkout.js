@@ -1,3 +1,5 @@
+/* eslint-disable no-plusplus */
+
 (function () {
   "use strict";
 
@@ -328,6 +330,6 @@
     showerror (type) {
         vv.overlay.reveal('<div class="vv-checkout-error">There are no valid payment types. Please add a payment connection. Check to make sure your site supports SSL (https) if you are using Braintree.</div>');
       },
-    },
-  };
+    }
+  }
 })(); // END
