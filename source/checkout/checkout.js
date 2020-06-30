@@ -43,14 +43,14 @@
             );
             let len = inputs.length;
             for (let i = 0; i < len; i++) {
-              vv.events.add(inputs[i], "focus", function (e) {
+              inputs[i].addEventListener("focus", function (e) {
                 vv.styles.addClass(
                   e.target.parentNode,
                   "braintree-hosted-fields-focused"
                 );
               });
 
-              vv.events.add(inputs[i], "blur", function (e) {
+              inputs[i].addEventListener("blur", function (e) {
                 vv.styles.removeClass(
                   e.target.parentNode,
                   "braintree-hosted-fields-focused"
@@ -302,7 +302,7 @@
         stspan.className = "pay-cc";
 
         // Create a special event to detect Paypal chosen
-        vv.events.add(ppspan, "click", function (e) {
+        ppspan.addEventListener("click", function (e) {
           e.preventDefault();
           e.stopPropagation();
           vv.events.fire(vv, "checkoutdata", options, source);
@@ -310,7 +310,7 @@
         });
 
         // Create a special event to detect Stripe chosen
-        vv.events.add(stspan, "click", function (e) {
+        stspan.addEventListener("click", function (e) {
           e.preventDefault();
           e.stopPropagation();
           vv.braintree.generateToken(options.braintree, source);

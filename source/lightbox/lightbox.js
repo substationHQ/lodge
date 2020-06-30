@@ -82,13 +82,13 @@
         const next = document.createElement("div");
         next.className = "vv-gallery-next";
 
-        vv.events.add(prev, "click", function (e) {
+        prev.addEventListener("click", function (e) {
           const prev = vv.lightbox.objLoop(gallery, img, "prev");
           const newimg = prev.i;
           const newcap = prev.c;
           vv.lightbox.showGallery(newimg, newcap, gallery);
         });
-        vv.events.add(next, "click", function (e) {
+        next.addEventListener("click", function (e) {
           const next = vv.lightbox.objLoop(gallery, img, "next");
           const newimg = next.i;
           const newcap = next.c;
@@ -129,7 +129,7 @@
   if (as.length > 0) {
     vv.overlay.create(function () {
       for (let i = 0; i < as.length; ++i) {
-        vv.events.add(as[i], "click", function (e) {
+        as[i].addEventListener("click", function (e) {
           if (vv.measure.viewport().x > 400 && !e.metaKey) {
             e.preventDefault();
             // do the overlay thing
@@ -147,7 +147,7 @@
     vv.overlay.create(function () {
       for (var i = 0; i < ags.length; ++i) {
         if (ags[i].tagName.toLowerCase() == "a") {
-          vv.events.add(ags[i], "click", function (e) {
+          ags[i].addEventListener("click", function (e) {
             e.preventDefault();
             let caption = false;
             const img = this.href;
@@ -171,7 +171,7 @@
             gallery[imgs[i].src] = { i: img, c: caption };
           }
           for (let n = 0; n < imgs.length; n++) {
-            vv.events.add(imgs[n], "click", function (e) {
+            imgs[n].addEventListener("click", function (e) {
               e.preventDefault();
               vv.lightbox.showGallery(
                 gallery[this.src].i,

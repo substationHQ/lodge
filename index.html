@@ -165,8 +165,8 @@
   
   <script type="text/javascript">
     var vv = window.lodge;
-    vv.events.add(vv,'ready', function(e) {
-      vv.events.add(vv,'startshuffle', function(e) {
+    vv.addEventListener('ready', function(e) {
+      vv.addEventListener('startshuffle', function(e) {
         window.lodge.events.fire(window.lodge,'doshuffle','','embed1');
         window.lodge.events.fire(window.lodge,'doshuffle','','embed2');
         window.lodge.events.fire(window.lodge,'doshuffle','','embed3');

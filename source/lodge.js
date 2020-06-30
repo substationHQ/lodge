@@ -112,7 +112,7 @@ if (!window.lodge) {
         }
 
         // using messages passed between the request and this script to resize the iframe
-        vv.events.add(window, "message", function addMessage(e) {
+        window.addEventListener("message", function addMessage(e) {
           // make sure the message comes from our embeds OR the main embedding lodge.js instance (via origin whitelist)
           if (vv.embeds.whitelist.indexOf(e.origin) !== -1) {
             vv._handleMessage(e);
@@ -392,7 +392,7 @@ if (!window.lodge) {
                 embedNode.appendChild(a);
                 currentNode.parentNode.insertBefore(embedNode, currentNode);
                 (function addEvents() {
-                  vv.events.add(a, "click", function showIframe(e) {
+                  a.addEventListener("click", function showIframe(e) {
                     vv.overlay.reveal(iframe);
                     e.preventDefault();
                     return false;
@@ -840,20 +840,10 @@ if (!window.lodge) {
        * Add, remove, and fire events
        *
        * PUBLIC-ISH FUNCTIONS
-       * window.lodge.events.add(object obj, string type, function fn)
-       * window.lodge.events.remove(object obj, string type, function fn)
        * window.lodge.events.fire(object obj, string type, object/any data)
        *
        ************************************************************************************** */
       events: {
-        add(obj, type, fn) {
-          obj.addEventListener(type, fn, false);
-        },
-
-        remove(obj, type, fn) {
-          obj.removeEventListener(type, fn, false);
-        },
-
         // added the fourth "target" parameter
         fire(obj, type, data, target, localonly) {
           const vv = window.lodge;
@@ -1048,20 +1038,20 @@ if (!window.lodge) {
           self.close = document.createElement("div");
           self.close.className = "vv-close";
 
-          vv.events.add(window, "keyup", function addKeyup(e) {
+          window.addEventListener("keyup", function addKeyup(e) {
             if (e.keyCode === 27) {
               if (self.content.parentNode === document.body) {
                 self.hide();
               }
             }
           });
-          vv.events.add(self.close, "click", function addClick() {
+          self.close.addEventListener("click", function addClick() {
             if (self.content.parentNode === document.body) {
               self.hide();
             }
           });
           /*
-					vv.events.add(self.bg,'click', function(e) {
+					self.bg.addEventListener('click', function(e) {
 						if(e.target === this) {
 							self.hide();
 						}
@@ -1174,7 +1164,7 @@ if (!window.lodge) {
           } else {
             const el = document.createElement("div");
             el.className = `${classname.toString()} vv-overlaytrigger`;
-            vv.events.add(el, "click", function addTrigger(e) {
+            el.addEventListener("click", function addTrigger(e) {
               vv.overlay.reveal(content);
               this.style.visibility = "hidden";
               e.preventDefault();

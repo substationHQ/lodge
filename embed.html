@@ -127,7 +127,7 @@
       shuffle('m');
     }
     
-    vv.events.add(vv,'ready', function(e) {
+    vv.addEventListener('ready', function(e) {
       // first we shuffle the little slogans and show them when they're ready
       var contentspc = document.getElementById('contentspc');
       shuffleMessage();
@@ -166,7 +166,7 @@
       }, false);
     });
     
-    vv.events.add(vv,'doshuffle', function(e) {
+    vv.addEventListener('doshuffle', function(e) {
       bigShuffle();
     });
   </script>
