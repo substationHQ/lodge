@@ -1379,9 +1379,7 @@ if (!window.lodge) {
       init();
     }
 
-    /*
-     *	return the main object in case it's called into a different scope
-     */
+    // return the main object in case it's called into a different scope
     return lodge;
   })();
 }
