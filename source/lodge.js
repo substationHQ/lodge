@@ -175,9 +175,9 @@ if (!window.lodge) {
         if (typeof vv.storage.elementQueue === "object") {
           // this means we've got elements waiting for us...do a
           // foreach loop and start embedding them
-          vv.storage.elementQueue.forEach(function drawComponent(args) {
+          vv.storage.elementQueue.forEach(function drawComponent(embed) {
             // we stored the args in our queue...spit them back out
-            vv.embed(args[0], args[1], args[2], args[3], args[4], args[5]);
+            vv.embed(embed);
           });
         }
       },
@@ -246,16 +246,11 @@ if (!window.lodge) {
               source.el.height = md;
               source.el.style.height = `${md}px`; // resize to correct height
               break;
-            case "checkoutdata":
-              vv.events.fire(vv, "checkoutdata", md);
-              break;
             case "overlayreveal":
               vv.overlay.reveal(md.innerContent, md.wrapClass);
-              vv.events.fire(vv, "overlayopened", "");
               break;
             case "overlayhide":
               vv.overlay.hide();
-              vv.events.fire(vv, "overlayhidden", "");
               break;
             case "addoverlaytrigger":
               vv.overlay.addOverlayTrigger(md.content, md.classname, md.ref);
@@ -312,66 +307,42 @@ if (!window.lodge) {
        * a targetNode to serve as the anchor — with the embed chucked immediately after that
        * element in the DOM.
        */
-      embed(src, options, alt, targetNode, css, id, name) {
+      embed({
+        src = null,
+        alt = null,
+        target = null,
+        css = null,
+        id = null,
+        name = null,
+        modal = false,
+      }) {
         const vv = window.lodge;
-
-        // if used non-AJAX we just grab the current place in the doc
-        // because we're running as the document is loading in a blocking fashion, the
-        // last script element will be the current script asset.
-        const allScripts = document.querySelectorAll("script");
-        let currentNode = allScripts[allScripts.length - 1];
-        if (!targetNode) {
-          targetNode = currentNode;
-        }
+        let currentNode;
 
         if (!vv.loaded) {
           // cheap/fast queue waiting on load.
           if (typeof vv.storage.elementQueue !== "object") {
             vv.storage.elementQueue = [];
           }
-          if (typeof src === "object") {
-            if (!src.targetnode) {
-              src.targetnode = currentNode;
-              // eslint-disable-next-line prefer-rest-params
-              arguments[0] = src;
-            }
-          } else {
-            // eslint-disable-next-line prefer-rest-params
-            arguments[3] = currentNode;
-          }
           // eslint-disable-next-line prefer-rest-params
-          vv.storage.elementQueue.push(arguments);
+          vv.storage.elementQueue.push({
+            src,
+            alt,
+            target,
+            css,
+            id,
+            name,
+            modal,
+          });
         } else {
-          // Allow for a single object to be passed instead of all arguments
-          // object properties should be lowercase versions of the standard arguments, any order
-          if (typeof src === "object") {
-            css = src.css ? src.css : false;
-            options = src.options ? src.options : "";
-            targetNode = src.targetnode ? src.targetnode : targetNode;
-            alt = src.alt ? src.alt : false;
-            id = src.id ? src.id : false;
-            name = src.name ? src.name : false;
-            src = src.src ? src.src : false;
-          }
           if (typeof targetNode === "string") {
             // for AJAX, specify target node: '#id', '#id .class', etc. NEEDS to be specific
-            currentNode = document.querySelector(targetNode);
+            currentNode = document.querySelector(target);
           } else {
-            currentNode = targetNode;
+            currentNode = target;
           }
 
-          // make the iframe
-          let modal = false;
-          if (options.indexOf("modal") !== -1) {
-            modal = true;
-          }
-          const iframe = vv.buildEmbedIframe(
-            src,
-            css,
-            modal ? "modal=1" : false,
-            id,
-            name
-          );
+          const iframe = vv.buildEmbedIframe({ src, css, modal, id, name });
 
           // be nice neighbors. if we can't find currentNode, don't do the rest or pitch errors. silently fail.
           if (currentNode) {
@@ -411,8 +382,9 @@ if (!window.lodge) {
         }
       },
 
-      buildEmbedIframe(src, cssoverride, querystring, id, name) {
+      buildEmbedIframe({ src, cssoverride, querystring, id, name }) {
         const vv = window.lodge;
+        const iframe = document.createElement("iframe");
         let embedURL = src;
 
         const originlocation = encodeURIComponent(
@@ -434,16 +406,6 @@ if (!window.lodge) {
         if (name) {
           embedURL += `&name=${encodeURIComponent(name)}`;
         }
-        /*
-              // this passes the querystring from the parent to the embed. should think about 
-              // security a bit more outside a platformed garden
-
-              if (vv.get['params'] && (''+querystring).indexOf('modal=1') === -1) {
-                if (vv.get['params']['element_id'] == id || vv.get['params']['handlequery']) {
-                  embedURL += '&' + vv.get['qs'];
-                }
-              }
-              */
         if (vv.debug.show) {
           embedURL += "&debug=1";
         }
@@ -452,7 +414,6 @@ if (!window.lodge) {
           id = `vv-${new Date().getTime()}`;
         }
 
-        const iframe = document.createElement("iframe");
         iframe.src = embedURL;
         iframe.id = id;
         iframe.className = "vv-embed";
@@ -462,7 +423,7 @@ if (!window.lodge) {
         iframe.style.overflow = "hidden"; // important for overlays, which flicker scrollbars on open
         iframe.scrolling = "no"; // programming
 
-        let { origin } = window.location;
+        let origin = window.location;
         if (embedURL.includes("://")) {
           origin = embedURL.split("/").slice(0, 3).join("/");
           if (vv.embeds.whitelist.indexOf(origin) === -1) {
@@ -1067,10 +1028,10 @@ if (!window.lodge) {
           const self = vv.overlay;
           const db = document.body;
           if (vv.embedded) {
-            vv.events.fire(vv, "overlayhide");
+            vv.events.fire(vv, "overlayhide"); // request that the parent hides overlay
           } else {
             self.content.style.opacity = 0;
-            vv.events.fire(vv, "overlayclosed", ""); // tell em
+            vv.events.fire(vv, "overlayhidden", ""); // announce it's been hidden
 
             // self.content.innerHTML = '';
             while (self.content.firstChild) {
@@ -1098,6 +1059,7 @@ if (!window.lodge) {
           const self = vv.overlay;
           const db = document.body;
           if (vv.embedded) {
+            // ask the parent to reveal overlay with contents
             vv.events.fire(vv, "overlayreveal", {
               innerContent,
               wrapClass,
@@ -1147,6 +1109,7 @@ if (!window.lodge) {
               window.getComputedStyle(self.content).opacity;
               // initiate fade-in
               self.content.style.opacity = 1;
+              vv.events.fire(vv, "overlayrevealed", ""); // broadcast that it's revealed
             }
           }
         },
@@ -1328,7 +1291,6 @@ if (!window.lodge) {
           e.style.height = "1px";
           e.style.visibility = "hidden";
           const css = e.getAttribute("data-css");
-          const opt = e.getAttribute("data-options");
           const src = e.getAttribute("src");
           const alt = e.getAttribute("title");
           const id = e.getAttribute("id");
@@ -1336,9 +1298,8 @@ if (!window.lodge) {
           if (src) {
             lodge.embed({
               css,
-              options: opt,
               src,
-              targetnode: e,
+              target: e,
               alt,
               id,
               name,
