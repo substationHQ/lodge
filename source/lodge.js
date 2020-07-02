@@ -201,14 +201,14 @@ if (!window.lodge) {
         // resize to fit
         if (!vv.get.params.fixedsize) {
           vv.storage.embedheight = vv.measure.scrollheight(); // store current height
-          vv.events.fire(vv, "resize", vv.storage.embedheight); // fire resize event immediately
+          vv.events.fire(vv, "resize", { height: vv.storage.embedheight }); // fire resize event immediately
 
           // poll for height and fire resize event if it changes
           window.setInterval(function resizeIframe() {
             const h = vv.measure.scrollheight();
             if (h !== vv.storage.embedheight) {
               vv.storage.embedheight = h;
-              vv.events.fire(vv, "resize", h);
+              vv.events.fire(vv, "resize", { height: h });
             }
           }, 250);
         }
@@ -216,10 +216,10 @@ if (!window.lodge) {
 
       _handleMessage(e) {
         const vv = window.lodge;
-        let { source } = e; // source embed (if from an embed)
-        const msg = JSON.parse(e.data);
-        const md = msg.data;
         let lodgeMessage = true;
+        const message = JSON.parse(e.data);
+        let messageData;
+
         try {
           // find the source of the message in our embeds object
           for (let i = 0; i < vv.embeds.all.length; i++) {
@@ -227,7 +227,8 @@ if (!window.lodge) {
               if (!vv.embeds.all[i].el.source) {
                 vv.embeds.all[i].source = e.source;
               }
-              source = vv.embeds.all[i];
+              message.data._source = vv.embeds.all[i];
+              messageData = message.data;
               break;
             }
           }
@@ -237,50 +238,60 @@ if (!window.lodge) {
 
         if (lodgeMessage) {
           // now figure out what to do with it
-          switch (msg.type) {
+          switch (message.type) {
             case "resize":
-              source.el.height = md;
-              source.el.style.height = `${md}px`; // resize to correct height
+              vv.embeds.resize(messageData); // corrected
               break;
             case "overlayreveal":
-              vv.overlay.reveal(md.innerContent, md.wrapClass);
+              vv.overlay.reveal(
+                messageData.innerContent,
+                messageData.wrapClass
+              );
               break;
             case "overlayhide":
               vv.overlay.hide();
               break;
             case "addoverlaytrigger":
-              vv.overlay.addOverlayTrigger(md.content, md.classname, md.ref);
+              vv.overlay.addOverlayTrigger(
+                messageData.content,
+                messageData.classname,
+                messageData.ref
+              );
               break;
             case "overlaysetloading":
-              vv.overlay.setLoading(md);
+              vv.overlay.setLoading(messageData); // corrected
               break;
             case "injectcss":
-              vv.styles.injectCSS(md.css, md.important);
+              vv.styles.injectCSS(messageData.css, messageData.important);
               break;
             case "addclass":
-              vv.styles.addClass(md.el, md.classname);
+              vv.styles.addClass(messageData.el, messageData.classname);
               break;
             case "removeclass":
-              vv.styles.removeClass(md.el, md.classname);
+              vv.styles.removeClass(messageData.el, messageData.classname);
               break;
             case "swapclasses":
-              vv.styles.swapClasses(md.el, md.oldclass, md.newclass);
+              vv.styles.swapClasses(
+                messageData.el,
+                messageData.oldclass,
+                messageData.newclass
+              );
               break;
             case "begincheckout":
               if (!vv.checkout) {
                 vv.loadScript(
                   `${vv.path}/checkout/checkout.js`,
                   function beginCheckout() {
-                    vv.checkout.begin(md);
+                    vv.checkout.begin(messageData);
                   }
                 );
               } else {
-                vv.checkout.begin(md);
+                vv.checkout.begin(messageData);
               }
               break;
             default:
-              if (msg.type !== "ready") {
-                vv.events.fire(vv, msg.type, md, false, true);
+              if (message.type !== "ready") {
+                vv.events.fire(vv, message.type, messageData, false, true);
               }
               break;
           }
@@ -449,7 +460,11 @@ if (!window.lodge) {
           return iframe;
         },
 
-        resize({ embed, height }) {},
+        resize({ _source, height }) {
+          const embed = _source.el;
+          embed.height = height;
+          embed.style.height = `${height}px`; // resize to correct height
+        },
 
         getById(id) {
           const vv = window.lodge;
@@ -987,11 +1002,13 @@ if (!window.lodge) {
         loadingContent: false,
         callbacks: [],
 
-        setLoading(loading) {
+        setLoading({ loadString }) {
           const vv = window.lodge;
-          vv.overlay.loadingContent = loading.toString();
+          vv.overlay.loadingContent = loadString.toString();
           if (vv.embedded) {
-            vv.events.fire(vv, "overlaysetloading", vv.overlay.loadingContent);
+            vv.events.fire(vv, "overlaysetloading", {
+              loadString: vv.overlay.loadingContent,
+            });
           }
         },
 
