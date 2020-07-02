@@ -46,10 +46,6 @@ if (!window.lodge) {
   window.lodge = (function lodge() {
     // eslint-disable-next-line no-shadow
     const lodge = {
-      embeds: {
-        whitelist: "",
-        all: [],
-      },
       embedded: false,
       eventlist: {},
       get: {},
@@ -291,7 +287,14 @@ if (!window.lodge) {
         }
       },
 
-      /*
+      /** *************************************************************************************
+       *
+       * window.lodge.embeds (object)
+       * Everything we need to create embed iframes
+       *
+       * PUBLIC-ISH FUNCTIONS
+       *
+       *
        * window.lodge.embed(string src, string options, string alt, object targetNode, string css)
        * Generates the embed iFrame code for embedding a given element.
        * Optional third and fourth parameters allow the element to be
@@ -306,152 +309,157 @@ if (!window.lodge) {
        * last script node and inject the content by it. For dynamic calls you need to specify
        * a targetNode to serve as the anchor — with the embed chucked immediately after that
        * element in the DOM.
-       */
-      embed({
-        src = null,
-        alt = null,
-        target = null,
-        css = null,
-        id = null,
-        name = null,
-        modal = false,
-      }) {
-        const vv = window.lodge;
-        let currentNode;
+       ************************************************************************************** */
+      embeds: {
+        whitelist: "",
+        all: [],
 
-        if (!vv.loaded) {
-          // cheap/fast queue waiting on load.
-          if (typeof vv.storage.elementQueue !== "object") {
-            vv.storage.elementQueue = [];
-          }
-          // eslint-disable-next-line prefer-rest-params
-          vv.storage.elementQueue.push({
-            src,
-            alt,
-            target,
-            css,
-            id,
-            name,
-            modal,
-          });
-        } else {
-          if (typeof targetNode === "string") {
-            // for AJAX, specify target node: '#id', '#id .class', etc. NEEDS to be specific
-            currentNode = document.querySelector(target);
+        create({
+          src = null,
+          alt = null,
+          target = null,
+          css = null,
+          id = null,
+          name = null,
+          modal = false,
+        }) {
+          const vv = window.lodge;
+          let currentNode;
+
+          if (!vv.loaded) {
+            // cheap/fast queue waiting on load.
+            if (typeof vv.storage.elementQueue !== "object") {
+              vv.storage.elementQueue = [];
+            }
+            // eslint-disable-next-line prefer-rest-params
+            vv.storage.elementQueue.push({
+              src,
+              alt,
+              target,
+              css,
+              id,
+              name,
+              modal,
+            });
           } else {
-            currentNode = target;
-          }
-
-          const iframe = vv.buildEmbedIframe({ src, css, modal, id, name });
-
-          // be nice neighbors. if we can't find currentNode, don't do the rest or pitch errors. silently fail.
-          if (currentNode) {
-            if (modal) {
-              // create a span to contain the overlay link
-              const embedNode = document.createElement("span");
-              embedNode.className = "vv-modalopen";
-
-              // open in a lightbox with a link in the target div
-              if (!alt) {
-                alt = "open";
-              }
-              vv.overlay.create(function addMarkup() {
-                const a = document.createElement("a");
-                a.href = "";
-                a.target = "_blank";
-                a.innerHTML = alt;
-                embedNode.appendChild(a);
-                currentNode.parentNode.insertBefore(embedNode, currentNode);
-                (function addEvents() {
-                  a.addEventListener("click", function showIframe(e) {
-                    vv.overlay.reveal(iframe);
-                    e.preventDefault();
-                    return false;
-                  });
-                })();
-              });
+            if (typeof targetNode === "string") {
+              // for AJAX, specify target node: '#id', '#id .class', etc. NEEDS to be specific
+              currentNode = document.querySelector(target);
             } else {
-              // put the iframe in place
-              currentNode.parentNode.insertBefore(iframe, currentNode);
+              currentNode = target;
             }
 
-            if (currentNode.tagName === "EMBED") {
-              currentNode.parentNode.removeChild(currentNode);
+            const iframe = vv.embeds.buildIframe({ src, css, modal, id, name });
+
+            // be nice neighbors. if we can't find currentNode, don't do the rest or pitch errors. silently fail.
+            if (currentNode) {
+              if (modal) {
+                // create a span to contain the overlay link
+                const embedNode = document.createElement("span");
+                embedNode.className = "vv-modalopen";
+
+                // open in a lightbox with a link in the target div
+                if (!alt) {
+                  alt = "open";
+                }
+                vv.overlay.create(function addMarkup() {
+                  const a = document.createElement("a");
+                  a.href = "";
+                  a.target = "_blank";
+                  a.innerHTML = alt;
+                  embedNode.appendChild(a);
+                  currentNode.parentNode.insertBefore(embedNode, currentNode);
+                  (function addEvents() {
+                    a.addEventListener("click", function showIframe(e) {
+                      vv.overlay.reveal(iframe);
+                      e.preventDefault();
+                      return false;
+                    });
+                  })();
+                });
+              } else {
+                // put the iframe in place
+                currentNode.parentNode.insertBefore(iframe, currentNode);
+              }
+
+              if (currentNode.tagName === "EMBED") {
+                currentNode.parentNode.removeChild(currentNode);
+              }
             }
           }
-        }
-      },
+        },
 
-      buildEmbedIframe({ src, cssoverride, querystring, id, name }) {
-        const vv = window.lodge;
-        const iframe = document.createElement("iframe");
-        let embedURL = src;
+        buildIframe({ src, cssoverride, querystring, id, name }) {
+          const vv = window.lodge;
+          const iframe = document.createElement("iframe");
+          let embedURL = src;
 
-        const originlocation = encodeURIComponent(
-          `${location.protocol}//${location.hostname}${
-            location.port ? `:${location.port}` : ""
-          }`
-        );
-        embedURL += `?lodgelocation=${originlocation}`;
+          const originlocation = encodeURIComponent(
+            `${location.protocol}//${location.hostname}${
+              location.port ? `:${location.port}` : ""
+            }`
+          );
+          embedURL += `?lodgelocation=${originlocation}`;
 
-        if (cssoverride) {
-          embedURL += `&cssoverride=${encodeURIComponent(cssoverride)}`;
-        }
-        if (querystring) {
-          embedURL += `&${querystring}`;
-        }
-        if (!name && id) {
-          name = id;
-        }
-        if (name) {
-          embedURL += `&name=${encodeURIComponent(name)}`;
-        }
-        if (vv.debug.show) {
-          embedURL += "&debug=1";
-        }
-
-        if (!id) {
-          id = `vv-${new Date().getTime()}`;
-        }
-
-        iframe.src = embedURL;
-        iframe.id = id;
-        iframe.className = "vv-embed";
-        iframe.style.width = "100%";
-        iframe.style.height = "0"; // if not explicitly set the scrollheight of the document will be wrong
-        iframe.style.border = "0";
-        iframe.style.overflow = "hidden"; // important for overlays, which flicker scrollbars on open
-        iframe.scrolling = "no"; // programming
-
-        let origin = window.location;
-        if (embedURL.includes("://")) {
-          origin = embedURL.split("/").slice(0, 3).join("/");
-          if (vv.embeds.whitelist.indexOf(origin) === -1) {
-            vv.embeds.whitelist += `,${origin}`;
+          if (cssoverride) {
+            embedURL += `&cssoverride=${encodeURIComponent(cssoverride)}`;
           }
-        }
-        vv.embeds.all.push({
-          id,
-          el: iframe,
-          src,
-          source: null,
-          origin,
-        });
-        vv.debug.store(`building iframe for ${src}`);
-
-        return iframe;
-      },
-
-      getEmbedById(id) {
-        const vv = window.lodge;
-        let embed = false;
-        for (let i = 0; i < vv.embeds.all.length; i++) {
-          if (vv.embeds.all[i].id === id) {
-            embed = vv.embeds.all[i];
-            break;
+          if (querystring) {
+            embedURL += `&${querystring}`;
           }
-        }
-        return embed;
+          if (!name && id) {
+            name = id;
+          }
+          if (name) {
+            embedURL += `&name=${encodeURIComponent(name)}`;
+          }
+          if (vv.debug.show) {
+            embedURL += "&debug=1";
+          }
+
+          if (!id) {
+            id = `vv-${new Date().getTime()}`;
+          }
+
+          iframe.src = embedURL;
+          iframe.id = id;
+          iframe.className = "vv-embed";
+          iframe.style.width = "100%";
+          iframe.style.height = "0"; // if not explicitly set the scrollheight of the document will be wrong
+          iframe.style.border = "0";
+          iframe.style.overflow = "hidden"; // important for overlays, which flicker scrollbars on open
+          iframe.scrolling = "no"; // programming
+
+          let origin = window.location;
+          if (embedURL.includes("://")) {
+            origin = embedURL.split("/").slice(0, 3).join("/");
+            if (vv.embeds.whitelist.indexOf(origin) === -1) {
+              vv.embeds.whitelist += `,${origin}`;
+            }
+          }
+          vv.embeds.all.push({
+            id,
+            el: iframe,
+            src,
+            source: null,
+            origin,
+          });
+          vv.debug.store(`building iframe for ${src}`);
+
+          return iframe;
+        },
+
+        getById(id) {
+          const vv = window.lodge;
+          let embed = false;
+          for (let i = 0; i < vv.embeds.all.length; i++) {
+            if (vv.embeds.all[i].id === id) {
+              embed = vv.embeds.all[i];
+              break;
+            }
+          }
+          return embed;
+        },
       },
 
       getTemplate(templateName, successCallback, loadCSS) {
@@ -815,7 +823,7 @@ if (!window.lodge) {
             // target.origin and target.source should both be real
             // let's test and ensure we have the right thing
             if (typeof target === "string") {
-              target = vv.getEmbedById(target);
+              target = vv.embeds.getById(target);
             } else if (!target.source || !target.origin) {
               target = false;
             }
@@ -1079,15 +1087,6 @@ if (!window.lodge) {
             }
             if (typeof innerContent === "string") {
               alert.innerHTML = innerContent;
-            } else if (innerContent.endpoint && innerContent.element) {
-              // make the iframe
-              // const s = "";
-              const iframe = vv.buildEmbedIframe(
-                innerContent.src,
-                false,
-                "modal=1"
-              );
-              alert.appendChild(iframe);
             } else {
               alert.appendChild(innerContent);
             }
@@ -1296,7 +1295,7 @@ if (!window.lodge) {
           const id = e.getAttribute("id");
           const name = e.getAttribute("name");
           if (src) {
-            lodge.embed({
+            lodge.embeds.create({
               css,
               src,
               target: e,
