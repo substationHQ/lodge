@@ -173,7 +173,7 @@ if (!window.lodge) {
           // foreach loop and start embedding them
           vv.storage.elementQueue.forEach(function drawComponent(embed) {
             // we stored the args in our queue...spit them back out
-            vv.embed(embed);
+            vv.embeds.create(embed);
           });
         }
       },
@@ -449,6 +449,8 @@ if (!window.lodge) {
           return iframe;
         },
 
+        resize({ embed, height }) {},
+
         getById(id) {
           const vv = window.lodge;
           let embed = false;
@@ -491,48 +493,6 @@ if (!window.lodge) {
             if (!test.length) {
               // if nothing found
               vv.styles.injectCSS(`${vv.path}/templates/${templateName}.css`);
-            }
-          }
-        }
-      },
-
-      /*
-       *	Use standard event footprint
-       */
-      addEventListener(eventName, callback) {
-        const vv = window.lodge;
-        // eslint-disable-next-line no-prototype-builtins
-        if (!vv.eventlist.hasOwnProperty(eventName)) {
-          vv.eventlist[eventName] = [];
-        }
-        vv.eventlist[eventName].push(callback);
-      },
-
-      /*
-       *	Use standard event footprint
-       */
-      removeEventListener(eventName, callback) {
-        const vv = window.lodge;
-        // eslint-disable-next-line no-prototype-builtins
-        if (vv.eventlist.hasOwnProperty(eventName)) {
-          const idx = vv.eventlist[eventName].indexOf(callback);
-          if (idx !== -1) {
-            vv.eventlist[eventName].splice(idx, 1);
-          }
-        }
-      },
-
-      /*
-       *	Use standard event footprint
-       */
-      dispatchEvent(e) {
-        const vv = window.lodge;
-        // eslint-disable-next-line no-prototype-builtins
-        if (vv.eventlist.hasOwnProperty(e.type)) {
-          let i;
-          for (i = 0; i < vv.eventlist[e.type].length; i++) {
-            if (vv.eventlist[e.type][i]) {
-              vv.eventlist[e.type][i](e);
             }
           }
         }
@@ -812,6 +772,21 @@ if (!window.lodge) {
        * window.lodge.events.fire(object obj, string type, object/any data)
        *
        ************************************************************************************** */
+
+      // before the object let's map to standard HTML element event footprints
+      addEventListener(eventName, callback) {
+        const vv = window.lodge;
+        vv.events.addListener(eventName, callback);
+      },
+      removeEventListener(eventName, callback) {
+        const vv = window.lodge;
+        vv.events.removeListener(eventName, callback);
+      },
+      dispatchEvent(e) {
+        const vv = window.lodge;
+        vv.events.dispatch(e);
+      },
+
       events: {
         // added the fourth "target" parameter
         fire(obj, type, data, target, localonly) {
@@ -903,6 +878,39 @@ if (!window.lodge) {
             }),
             targetOrigin
           );
+        },
+
+        addListener(eventName, callback) {
+          const vv = window.lodge;
+          // eslint-disable-next-line no-prototype-builtins
+          if (!vv.eventlist.hasOwnProperty(eventName)) {
+            vv.eventlist[eventName] = [];
+          }
+          vv.eventlist[eventName].push(callback);
+        },
+
+        removeListener(eventName, callback) {
+          const vv = window.lodge;
+          // eslint-disable-next-line no-prototype-builtins
+          if (vv.eventlist.hasOwnProperty(eventName)) {
+            const idx = vv.eventlist[eventName].indexOf(callback);
+            if (idx !== -1) {
+              vv.eventlist[eventName].splice(idx, 1);
+            }
+          }
+        },
+
+        dispatch(e) {
+          const vv = window.lodge;
+          // eslint-disable-next-line no-prototype-builtins
+          if (vv.eventlist.hasOwnProperty(e.type)) {
+            let i;
+            for (i = 0; i < vv.eventlist[e.type].length; i++) {
+              if (vv.eventlist[e.type][i]) {
+                vv.eventlist[e.type][i](e);
+              }
+            }
+          }
         },
       },
 

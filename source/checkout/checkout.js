@@ -309,7 +309,7 @@
           vv.overlay.showLoading();
         });
 
-        // Create a special event to detect Stripe chosen
+        // Create a special event to detect Braintree chosen
         stspan.addEventListener("click", function (e) {
           e.preventDefault();
           e.stopPropagation();
