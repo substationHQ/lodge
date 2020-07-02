@@ -31,7 +31,7 @@
             container.className = "ccform-wrapper";
 
             // show the container while braintree API injects hosted fields
-            vv.overlay.reveal(container);
+            vv.overlay.reveal({innerContent: container});
 
             // grab the bits we care about
             let form = document.querySelector("#braintree-token-form");
@@ -44,17 +44,17 @@
             let len = inputs.length;
             for (let i = 0; i < len; i++) {
               inputs[i].addEventListener("focus", function (e) {
-                vv.styles.addClass(
-                  e.target.parentNode,
-                  "braintree-hosted-fields-focused"
-                );
+                vv.styles.addClass({
+                  el: e.target.parentNode,
+                  className: "braintree-hosted-fields-focused"
+                });
               });
 
               inputs[i].addEventListener("blur", function (e) {
-                vv.styles.removeClass(
-                  e.target.parentNode,
-                  "braintree-hosted-fields-focused"
-                );
+                vv.styles.removeClass({
+                  el: e.target.parentNode,
+                  className: "braintree-hosted-fields-focused"
+                });
               });
             }
 
@@ -133,10 +133,16 @@
                       });
 
                       if (formValid) {
-                        vv.styles.addClass(submit, "show-button");
+                        vv.styles.addClass({
+                          el: submit, 
+                          className: "show-button"
+                        });
                         submit.disabled = false;
                       } else {
-                        vv.styles.removeClass(submit, "show-button");
+                        vv.styles.removeClass({ 
+                          el: submit, 
+                          className: "show-button"
+                        });
                         submit.disabled = true;
                       }
                     });
@@ -150,12 +156,15 @@
                       // Change card bg depending on card type
                       if (event.cards.length === 1) {
                         form.className = "";
-                        vv.styles.addClass(form, event.cards[0].type);
+                        vv.styles.addClass({
+                          el: form, 
+                          className: event.cards[0].type
+                        });
                         document.querySelector("#card-image").className = "";
-                        vv.styles.addClass(
-                          document.querySelector("#card-image"),
-                          event.cards[0].type
-                        );
+                        vv.styles.addClass({
+                          el: document.querySelector("#card-image"),
+                          className: event.cards[0].type
+                        });
 
                         // Change the CVV length for AmericanExpress cards
                         if (event.cards[0].code.size === 4) {
@@ -188,9 +197,9 @@
                       vv.overlay.showLoading();
                       vv.ajax.send(options.endpoint, poststring, function(r) {
                         if (r == 'OK') {
-                          vv.overlay.reveal('<h2 class="vv-checkout-success">'+options.successMsg+'</h2>');
+                          vv.overlay.reveal({innerContent: '<h2 class="vv-checkout-success">'+options.successMsg+'</h2>'});
                         } else {
-                          vv.overlay.reveal('<h2 class="vv-checkout-error">'+options.errorMsg+'</h2>');
+                          vv.overlay.reveal({innerContent: '<h2 class="vv-checkout-error">'+options.errorMsg+'</h2>'});
                         }
                       });
                     }
@@ -237,11 +246,10 @@
             vv.loadScript(
               "https://js.braintreegateway.com/web/3.46.0/js/hosted-fields.min.js",
               function () {
-                vv.styles.injectCSS(
-                  vv.path + "/templates/checkout.css",
-                  false,
-                  true
-                );
+                vv.styles.injectCSS({
+                  css: vv.path + "/templates/checkout.css",
+                  top: true
+                });
                 vv.checkout.prepped = true;
               }
             );
@@ -285,7 +293,7 @@
       // Paypal only
       else if (!options.braintree && options.paypal) {
         vv.events.fire(vv, "checkoutdata", options, source);
-        vv.overlay.reveal('<div class="vv-loading"></div>');
+        vv.overlay.reveal({innerContent: '<div class="vv-loading"></div>'});
       }
       // Stripe and Paypal
       else if (options.braintree && options.paypal) {
@@ -319,7 +327,7 @@
         container.appendChild(ppspan);
         container.appendChild(stspan);
 
-        vv.overlay.reveal(container);
+        vv.overlay.reveal({innerContent: container});
       }
       // No available payment types, by options or SSL limits on Stripe
       else {
@@ -328,7 +336,7 @@
     },
 
     showerror (type) {
-        vv.overlay.reveal('<div class="vv-checkout-error">There are no valid payment types. Please add a payment connection. Check to make sure your site supports SSL (https) if you are using Braintree.</div>');
+        vv.overlay.reveal({innerContent: '<div class="vv-checkout-error">There are no valid payment types. Please add a payment connection. Check to make sure your site supports SSL (https) if you are using Braintree.</div>'});
       },
     }
   }

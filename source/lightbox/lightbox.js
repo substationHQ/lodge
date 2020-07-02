@@ -42,10 +42,10 @@
     injectIframe(url) {
       const self = vv.lightbox;
       const parsedUrl = self.parseVideoURL(url);
-      vv.overlay.reveal(
-        `<div class="vv-aspect"><iframe src="${parsedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></div>`,
+      vv.overlay.reveal({
+        innerContent: `<div class="vv-aspect"><iframe src="${parsedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></div>`,
         "vv-media"
-      );
+      });
     },
 
     parseVideoURL(url) {
@@ -75,7 +75,7 @@
       if (caption) {
         markup += `<div class="vv-gallery-caption">${caption}</div>`;
       }
-      vv.overlay.reveal(markup, "vv-gallery");
+      vv.overlay.reveal({innerContent: markup, wrapClass: "vv-gallery"});
       if (gallery) {
         const prev = document.createElement("div");
         prev.className = "vv-gallery-prev";

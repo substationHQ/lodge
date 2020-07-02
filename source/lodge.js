@@ -87,7 +87,10 @@ if (!window.lodge) {
           if (vv.options.indexOf("noembed") !== -1) {
             return false;
           }
-          vv.styles.addClass(document.documentElement, "vv-embed");
+          vv.styles.addClass({
+            el: document.documentElement,
+            className: "vv-embed",
+          });
           vv._initEmbed();
         } else {
           vv.name = "main window";
@@ -95,7 +98,10 @@ if (!window.lodge) {
 
         // modal?
         if (vv.get.params.modal) {
-          vv.styles.addClass(document.documentElement, "vv-modal");
+          vv.styles.addClass({
+            el: document.documentElement,
+            className: "vv-modal",
+          });
         }
 
         // check lightbox options
@@ -195,7 +201,10 @@ if (!window.lodge) {
 
         // rewrite CSS stuff?
         if (vv.get.params.cssoverride) {
-          vv.styles.injectCSS(vv.get.params.cssoverride, true);
+          vv.styles.injectCSS({
+            css: vv.get.params.cssoverride,
+            important: true,
+          });
         }
 
         // resize to fit
@@ -216,8 +225,8 @@ if (!window.lodge) {
 
       _handleMessage(e) {
         const vv = window.lodge;
-        let lodgeMessage = true;
         const message = JSON.parse(e.data);
+        let lodgeMessage = true;
         let messageData;
 
         try {
@@ -236,6 +245,10 @@ if (!window.lodge) {
           lodgeMessage = false;
         }
 
+        if (lodgeMessage && message.type !== "ready") {
+          vv.events.fire(vv, message.type, messageData, false, true);
+        }
+
         if (lodgeMessage) {
           // now figure out what to do with it
           switch (message.type) {
@@ -243,39 +256,28 @@ if (!window.lodge) {
               vv.embeds.resize(messageData); // corrected
               break;
             case "overlayreveal":
-              vv.overlay.reveal(
-                messageData.innerContent,
-                messageData.wrapClass
-              );
+              vv.overlay.reveal(messageData);
               break;
             case "overlayhide":
               vv.overlay.hide();
               break;
             case "addoverlaytrigger":
-              vv.overlay.addOverlayTrigger(
-                messageData.content,
-                messageData.classname,
-                messageData.ref
-              );
+              vv.overlay.addOverlayTrigger(messageData); // corrected
               break;
             case "overlaysetloading":
               vv.overlay.setLoading(messageData); // corrected
               break;
             case "injectcss":
-              vv.styles.injectCSS(messageData.css, messageData.important);
+              vv.styles.injectCSS(messageData); // corrected
               break;
             case "addclass":
-              vv.styles.addClass(messageData.el, messageData.classname);
+              vv.styles.addClass(messageData); // corrected
               break;
             case "removeclass":
-              vv.styles.removeClass(messageData.el, messageData.classname);
+              vv.styles.removeClass(messageData); // corrected
               break;
             case "swapclasses":
-              vv.styles.swapClasses(
-                messageData.el,
-                messageData.oldclass,
-                messageData.newclass
-              );
+              vv.styles.swapClasses(messageData); // corrected
               break;
             case "begincheckout":
               if (!vv.checkout) {
@@ -290,9 +292,6 @@ if (!window.lodge) {
               }
               break;
             default:
-              if (message.type !== "ready") {
-                vv.events.fire(vv, message.type, messageData, false, true);
-              }
               break;
           }
         }
@@ -382,7 +381,7 @@ if (!window.lodge) {
                   currentNode.parentNode.insertBefore(embedNode, currentNode);
                   (function addEvents() {
                     a.addEventListener("click", function showIframe(e) {
-                      vv.overlay.reveal(iframe);
+                      vv.overlay.reveal({ innerContent: iframe });
                       e.preventDefault();
                       return false;
                     });
@@ -507,7 +506,9 @@ if (!window.lodge) {
             );
             if (!test.length) {
               // if nothing found
-              vv.styles.injectCSS(`${vv.path}/templates/${templateName}.css`);
+              vv.styles.injectCSS({
+                css: `${vv.path}/templates/${templateName}.css`,
+              });
             }
           }
         }
@@ -1015,7 +1016,7 @@ if (!window.lodge) {
         showLoading() {
           const vv = window.lodge;
           if (vv.overlay.loadingContent) {
-            vv.overlay.reveal(vv.overlay.loadingContent);
+            vv.overlay.reveal({ innerContent: vv.overlay.loadingContent });
           }
         },
 
@@ -1024,7 +1025,7 @@ if (!window.lodge) {
           const self = vv.overlay;
           // const move = false;
 
-          vv.styles.injectCSS(`${vv.path}/templates/overlay.css`);
+          vv.styles.injectCSS({ css: `${vv.path}/templates/overlay.css` });
 
           self.content = document.createElement("div");
           self.content.className = "vv-overlay";
@@ -1082,15 +1083,20 @@ if (!window.lodge) {
             }
 
             // reenable body scrolling
-            vv.styles.removeClass(document.documentElement, "vv-noscroll");
+            vv.styles.removeClass({
+              el: document.documentElement,
+              className: "vv-noscroll",
+            });
           }
         },
 
-        reveal(innerContent, wrapClass) {
+        reveal({ innerContent, wrapClass = "vv-component" }) {
           // add the correct content to the content div
           const vv = window.lodge;
           const self = vv.overlay;
           const db = document.body;
+          const positioning = document.createElement("div");
+          const wrapper = document.createElement("div");
           if (vv.embedded) {
             // ask the parent to reveal overlay with contents
             vv.events.fire(vv, "overlayreveal", {
@@ -1102,25 +1108,23 @@ if (!window.lodge) {
             if (self.content.style.opacity === 1) {
               self.content.innerHTML = "";
             }
-            const positioning = document.createElement("div");
             positioning.className = "vv-position";
-            const alert = document.createElement("div");
-            if (wrapClass) {
-              alert.className = wrapClass;
-            } else {
-              alert.className = "vv-element";
-            }
+            wrapper.className = wrapClass;
+
             if (typeof innerContent === "string") {
-              alert.innerHTML = innerContent;
+              wrapper.innerHTML = innerContent;
             } else {
-              alert.appendChild(innerContent);
+              wrapper.appendChild(innerContent);
             }
-            positioning.appendChild(alert);
+            positioning.appendChild(wrapper);
             self.content.appendChild(positioning);
 
             // disable body scrolling
             if (!vv.styles.hasClass(document.documentElement, "vv-noscroll")) {
-              vv.styles.addClass(document.documentElement, "vv-noscroll");
+              vv.styles.addClass({
+                el: document.documentElement,
+                className: "vv-noscroll",
+              });
             }
 
             // if not already showing, go!
@@ -1138,21 +1142,21 @@ if (!window.lodge) {
           }
         },
 
-        addOverlayTrigger(content, classname, ref) {
+        addOverlayTrigger({ content, className, ref }) {
           const vv = window.lodge;
           // const self = vv.overlay;
           const db = document.body;
           if (vv.embedded) {
             vv.events.fire(vv, "addoverlaytrigger", {
               content,
-              classname,
+              className,
               ref,
             });
           } else {
             const el = document.createElement("div");
-            el.className = `${classname.toString()} vv-overlaytrigger`;
+            el.className = `${className.toString()} vv-overlaytrigger`;
             el.addEventListener("click", function addTrigger(e) {
-              vv.overlay.reveal(content);
+              vv.overlay.reveal({ innerContent: content });
               this.style.visibility = "hidden";
               e.preventDefault();
               return false;
@@ -1188,33 +1192,29 @@ if (!window.lodge) {
           return el;
         },
 
-        addClass(el, classname, top) {
+        addClass({ el, className, top }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
             vv.events.fire(vv, "addclass", {
               el,
-              classname,
+              className,
             });
           } else {
             el = vv.styles.resolveElement(el);
-            if (el && !vv.styles.hasClass(el, classname)) {
-              el.className = `${el.className} ${classname}`;
+            if (el && !vv.styles.hasClass(el, className)) {
+              el.className = `${el.className} ${className}`;
             }
           }
         },
 
-        hasClass(el, classname) {
-          // borrowed the idea from http://stackoverflow.com/a/5898748/1964808
-          return ` ${el.className} `.indexOf(` ${classname} `) > -1;
+        hasClass(el, className) {
+          return ` ${el.className} `.indexOf(` ${className} `) > -1;
         },
 
-        injectCSS(css, important, mainwindow) {
-          if (mainwindow === undefined) {
-            mainwindow = false;
-          }
+        injectCSS({ css, important = false, top = false }) {
           const vv = window.lodge;
           let el;
-          if (mainwindow && vv.embedded) {
+          if (top && vv.embedded) {
             vv.events.fire(vv, "injectcss", {
               css,
               important,
@@ -1248,12 +1248,12 @@ if (!window.lodge) {
           }
         },
 
-        removeClass(el, classname, top) {
+        removeClass({ el, className, top }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
             vv.events.fire(vv, "removeclass", {
               el,
-              classname,
+              className,
             });
           } else {
             // extra spaces allow for consistent matching.
@@ -1261,20 +1261,20 @@ if (!window.lodge) {
             el = vv.styles.resolveElement(el);
             if (el) {
               el.className = ` ${el.className} `
-                .replace(` ${classname} `, " ")
+                .replace(` ${className} `, " ")
                 .replace(/^\s+/, "")
                 .replace(/\s+$/, "");
             }
           }
         },
 
-        swapClasses(el, oldclass, newclass, top) {
+        swapClasses({ el, oldClass, newClass, top }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
             vv.events.fire(vv, "swapclasses", {
               el,
-              oldclass,
-              newclass,
+              oldClass,
+              newClass,
             });
           } else {
             // add spaces to ensure we're not doing a partial find/replace,
@@ -1282,7 +1282,7 @@ if (!window.lodge) {
             el = vv.styles.resolveElement(el);
             if (el) {
               el.className = ` ${el.className} `
-                .replace(` ${oldclass} `, ` ${newclass} `)
+                .replace(` ${oldClass} `, ` ${newClass} `)
                 .replace(/^\s+/, "")
                 .replace(/\s+$/, "");
             }

@@ -136,7 +136,7 @@
       // show the buttons on click, anywhere in the main area
       var section = document.getElementsByClassName('section')[0];
       section.addEventListener("click", function(){
-        vv.styles.addClass(document.documentElement,'tall');
+        vv.styles.addClass({el: document.documentElement, className: 'tall'});
       }, false);
       
       // changebutton does the color+slogan shuffle. randomish!
@@ -154,7 +154,7 @@
       hellobutton.addEventListener("click", function(e){
         e.stopPropagation();
         e.preventDefault();
-        vv.overlay.reveal('<h1>Hello.</h1>');
+        vv.overlay.reveal({innerContent: '<h1>Hello.</h1>'});
       }, false);
       
       // hidebutton hides the buttons and puts the boxes back to default
@@ -162,7 +162,7 @@
       hidebutton.addEventListener("click", function(e){
         e.stopPropagation();
         e.preventDefault();
-        vv.styles.removeClass(document.documentElement,'tall');
+        vv.styles.removeClass({el: document.documentElement, className: 'tall'});
       }, false);
     });
     
