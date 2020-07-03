@@ -301,7 +301,8 @@ if (!window.lodge) {
 
       /** *************************************************************************************
        *
-       * // lodge.embeds (object)
+       * /// lodge.embeds (object)
+       * @memberof lodge
        * Everything we need to create embed iframes
        *
        ************************************************************************************** */
@@ -347,6 +348,7 @@ if (!window.lodge) {
               css,
               id,
               modal,
+              forwardquery,
             });
           } else {
             if (typeof targetNode === "string") {
@@ -409,6 +411,9 @@ if (!window.lodge) {
               location.port ? `:${location.port}` : ""
             }`
           );
+          if (!id) {
+            id = `vv-${new Date().getTime()}`;
+          }
           embedURL += `?lodgelocation=${originlocation}`;
 
           if (cssoverride) {
@@ -421,12 +426,10 @@ if (!window.lodge) {
             embedURL += "&modal=1";
           }
           if (vv.debug.show) {
-            embedURL += "&debug=1";
+            embedURL += `&name=${id}`;
           }
-
-          if (!id) {
-            id = `vv-${new Date().getTime()}`;
-          }
+          // for debug purposes
+          embedURL += `&${vv.get.qs}`;
 
           iframe.src = embedURL;
           iframe.id = id;
@@ -587,44 +590,55 @@ if (!window.lodge) {
 
         out(msg, o) {
           const vv = window.lodge;
-
-          let msgcolor = "000";
+          const styles = {
+            main: {
+              logo: "color:#093;font-weight:bold;",
+              name: "color:#093;font-weight:bold;",
+              message: "font-weight:normal;",
+            },
+            embed: {
+              logo: "color:#69f;font-weight:bold;",
+              name: "color:#69f;font-weight:bold;",
+              message: "font-weight:normal;",
+            },
+          };
+          let type = "main";
           if (vv.embedded) {
-            msgcolor = "666";
+            type = "embed";
           }
 
           if (!vv.storage.debug) {
             // no queue: just spit out the message and (optionally) object
             if (o) {
               console.log(
-                `%c△△%c ${vv.name}:%c\n   ${msg} %o`,
-                "color:#900;font-weight:bold;",
-                `color:#${msgcolor};font-weight:bold;`,
-                `color:#${msgcolor};font-weight:normal;`,
+                `%c△△%c ${vv.name}:%c\n   ${msg} %O`,
+                styles[type].logo,
+                styles[type].name,
+                styles[type].message,
                 o
               );
             } else {
               console.log(
                 `%c△△%c ${vv.name}:%c\n   ${msg}`,
-                "color:#900;font-weight:bold;",
-                `color:#${msgcolor};font-weight:bold;`,
-                `color:#${msgcolor};font-weight:normal;`
+                styles[type].logo,
+                styles[type].name,
+                styles[type].message
               );
             }
           } else {
             // queue: run through all of it as part of a collapsed group
             console.groupCollapsed(
               `%c△△%c ${vv.name}:%c\n   ${msg}`,
-              "color:#900;font-weight:bold;",
-              `color:#${msgcolor};font-weight:bold;`,
-              `color:#${msgcolor};font-weight:normal;`
+              styles[type].logo,
+              styles[type].name,
+              styles[type].message
             );
             if (o) {
-              console.log("   attachment: %o", o);
+              console.log("   attachment: %O", o);
             }
             vv.storage.debug.forEach(function logMessages(d) {
               if (d.o) {
-                console.log(`   ${d.msg} %o`, d.o);
+                console.log(`   ${d.msg} %O`, d.o);
               } else {
                 console.log(`   ${d.msg}`);
               }
@@ -1117,7 +1131,12 @@ if (!window.lodge) {
             self.content.appendChild(positioning);
 
             // disable body scrolling
-            if (!vv.styles.hasClass(document.documentElement, "vv-noscroll")) {
+            if (
+              !vv.styles.hasClass({
+                el: document.documentElement,
+                className: "vv-noscroll",
+              })
+            ) {
               vv.styles.addClass({
                 el: document.documentElement,
                 className: "vv-noscroll",
@@ -1198,13 +1217,13 @@ if (!window.lodge) {
             });
           } else {
             el = vv.styles.resolveElement(el);
-            if (el && !vv.styles.hasClass(el, className)) {
+            if (el && !vv.styles.hasClass({ el, className })) {
               el.className = `${el.className} ${className}`;
             }
           }
         },
 
-        hasClass(el, className) {
+        hasClass({ el, className }) {
           return ` ${el.className} `.indexOf(` ${className} `) > -1;
         },
 
@@ -1318,11 +1337,11 @@ if (!window.lodge) {
             const id = el.getAttribute("id");
             const modal = lodge.styles.hasClass({
               el,
-              classname: "modal",
+              className: "modal",
             });
             const forwardquery = lodge.styles.hasClass({
               el,
-              classname: "forwardquery",
+              className: "forwardquery",
             });
             if (src) {
               lodge.embeds.create({
