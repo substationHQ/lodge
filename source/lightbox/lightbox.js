@@ -44,7 +44,7 @@
       const parsedUrl = self.parseVideoURL(url);
       vv.overlay.reveal({
         innerContent: `<div class="vv-aspect"><iframe src="${parsedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></div>`,
-        "vv-media"
+        wrapClass: "vv-media",
       });
     },
 

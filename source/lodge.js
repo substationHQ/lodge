@@ -226,8 +226,30 @@ if (!window.lodge) {
       _handleMessage(e) {
         const vv = window.lodge;
         const message = JSON.parse(e.data);
+        const routing = {
+          /*
+          we'll pass message.data to the handler for each route.
+          requre a script to load/verify it before firing the handler.
+          (in an ideal world these would nest indefinitely, but it's
+          not worth the extra array/reduce load. just a function name
+          at the root of lodge or one object deep. 
+          [function] OR [object.function])
+          */
+          addclass: { handler: "styles.addClass" },
+          begincheckout: {
+            handler: "checkout.begin",
+            require: "checkout/checkout.js",
+          },
+          addoverlaytrigger: { handler: "overlay.addOverlayTrigger" },
+          injectcss: { handler: "styles.injectCSS" },
+          overlayhide: { handler: "overlay.hide" },
+          overlayreveal: { handler: "overlay.reveal" },
+          overlaysetloading: { handler: "overlay.setLoading" },
+          removeclass: { handler: "styles.removeClass" },
+          resize: { handler: "embeds.resize" },
+          swapclasses: { handler: "styles.swapClasses" },
+        };
         let lodgeMessage = true;
-        let messageData;
 
         try {
           // find the source of the message in our embeds object
@@ -237,7 +259,6 @@ if (!window.lodge) {
                 vv.embeds.all[i].source = e.source;
               }
               message.data._source = vv.embeds.all[i];
-              messageData = message.data;
               break;
             }
           }
@@ -245,54 +266,36 @@ if (!window.lodge) {
           lodgeMessage = false;
         }
 
-        if (lodgeMessage && message.type !== "ready") {
-          vv.events.fire(vv, message.type, messageData, false, true);
-        }
-
+        // we know it came from lodge, so let's figure out what to do with it
         if (lodgeMessage) {
-          // now figure out what to do with it
-          switch (message.type) {
-            case "resize":
-              vv.embeds.resize(messageData); // corrected
-              break;
-            case "overlayreveal":
-              vv.overlay.reveal(messageData);
-              break;
-            case "overlayhide":
-              vv.overlay.hide();
-              break;
-            case "addoverlaytrigger":
-              vv.overlay.addOverlayTrigger(messageData); // corrected
-              break;
-            case "overlaysetloading":
-              vv.overlay.setLoading(messageData); // corrected
-              break;
-            case "injectcss":
-              vv.styles.injectCSS(messageData); // corrected
-              break;
-            case "addclass":
-              vv.styles.addClass(messageData); // corrected
-              break;
-            case "removeclass":
-              vv.styles.removeClass(messageData); // corrected
-              break;
-            case "swapclasses":
-              vv.styles.swapClasses(messageData); // corrected
-              break;
-            case "begincheckout":
-              if (!vv.checkout) {
-                vv.loadScript(
-                  `${vv.path}/checkout/checkout.js`,
-                  function beginCheckout() {
-                    vv.checkout.begin(messageData);
-                  }
-                );
-              } else {
-                vv.checkout.begin(messageData);
-              }
-              break;
-            default:
-              break;
+          if (routing[message.type]) {
+            const splitHandler = routing[message.type].handler.split(".");
+            const handlerFunction = splitHandler.pop();
+            let route = vv;
+            if (splitHandler.length) {
+              // after popping off the function there's still some handler left, meaning
+              // we've got an object. grabbing the first value and assuming one level deep.
+              route = vv[splitHandler[0]];
+            }
+
+            // we have a recognized type with a lodge handler
+            if (!routing[message.type].require) {
+              // no script dependency, so call the handler and pass the message data
+              route[handlerFunction](message.data);
+            } else {
+              // there's a script dependency — load the script and set a callback
+              // (if script is already loaded, loadScript will check and immediately do callback)
+              vv.loadScript(
+                `${vv.path}/${routing[message.type].require}`,
+                function beginCheckout() {
+                  route[handlerFunction](message.data);
+                }
+              );
+            }
+          } else if (message.type !== "ready") {
+            // for anything else, we fire the event through the stack of embeds
+            // (we do NOT fire for "ready" because we don't want to falsely trigger ready events)
+            vv.events.fire(vv, message.type, message.data, false, true);
           }
         }
       },
