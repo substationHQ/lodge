@@ -7,15 +7,14 @@
 /**
  *
  * △△
- * The core lodge.js file
  *
- * COMPRESSION SETTINGS
- * http://closure-compiler.appspot.com/
- * Closure compiler, SIMPLE MODE
+ * /// Lodge.js: Core
+ * @version 1.0
+ * @namespace lodge
  *
- * @author Jesse von Doom
  * @link http://lodge.glitch.me/
  *
+ * @license MIT
  * Copyright (c) 2019, Jesse von Doom
  * All rights reserved.
  *
@@ -115,19 +114,19 @@ if (!window.lodge) {
 
         // using messages passed between the request and this script to resize the iframe
         window.addEventListener("message", function addMessage(e) {
-          // make sure the message comes from our embeds OR the main embedding lodge.js instance (via origin whitelist)
-          if (vv.embeds.whitelist.indexOf(e.origin) !== -1) {
+          // make sure the message comes from our embeds OR the main embedding lodge.js instance (via origin allowed)
+          if (vv.embeds.allowed.indexOf(e.origin) !== -1) {
             vv._handleMessage(e);
           }
         });
 
-        // add current domain to whitelist for postmesage calls (regardless of embed or no)
-        vv.embeds.whitelist += window.location.href
+        // add current domain to allowed for postmessage calls (regardless of embed or no)
+        vv.embeds.allowed += window.location.href
           .split("/")
           .slice(0, 3)
           .join("/");
         if (vv.get.params.location) {
-          vv.embeds.whitelist += vv.get.params.location
+          vv.embeds.allowed += vv.get.params.location
             .split("/")
             .slice(0, 3)
             .join("/");
@@ -190,7 +189,7 @@ if (!window.lodge) {
 
         if (vv.get.params.lodgelocation) {
           vv.parent = vv.get.params.lodgelocation;
-          vv.embeds.whitelist = `${vv.embeds.whitelist},${vv.parent}`;
+          vv.embeds.allowed = `${vv.embeds.allowed},${vv.parent}`;
         }
 
         if (vv.get.params.name) {
@@ -302,29 +301,12 @@ if (!window.lodge) {
 
       /** *************************************************************************************
        *
-       * window.lodge.embeds (object)
+       * // lodge.embeds (object)
        * Everything we need to create embed iframes
        *
-       * PUBLIC-ISH FUNCTIONS
-       *
-       *
-       * window.lodge.embed(string src, string options, string alt, object targetNode, string css)
-       * Generates the embed iFrame code for embedding a given element.
-       * Optional third and fourth parameters allow the element to be
-       * embedded as a modal with a lightbox and to customize the text of modal
-       * opener link. (default: 'open element')
-       *
-       * The iFrame is embedded at 1px high and sends a postMessage back
-       * to this parent window with its proper height.
-       *
-       * This is called in a script inline as a piece of blocking script — calling it before
-       * DomContentLoaded because the partial load tells us where to embed each chunk — we find the
-       * last script node and inject the content by it. For dynamic calls you need to specify
-       * a targetNode to serve as the anchor — with the embed chucked immediately after that
-       * element in the DOM.
        ************************************************************************************** */
       embeds: {
-        whitelist: "",
+        allowed: "",
         all: [],
 
         /**
@@ -333,13 +315,22 @@ if (!window.lodge) {
          *
          * @param {object} component
          * @param {string} component.src - The URL or relative link for the iframe source.
-         * @param {number} [component.alt=open] - Taken from an embed's title parameter, this is used as link text for opening a modal component.
+         * @param {string} [component.alt=open] - Taken from an embed's title parameter, this is used as link text for opening a modal component.
          * @param {object|string} component.target - A target DOM element used for location of the embed or open link (for modal components.) If a string is passed rather than a true DOM element it will be tested with queryselector.
          * @param {string} [component.css] - CSS override passed to the iframe, expecting a lodge-powered component.
          * @param {string} component.id - Taken from the embed id, this id will be used for the new iframe. The embed tag will be removed from the DOM, removing conflict.
          * @param {boolean} [component.modal=false] - Open the component in a modal, generating an open link in place of the embed element.
+         * @param {boolean} [component.forwardquery=false] - Open the component in a modal, generating an open link in place of the embed element.
          */
-        create({ src, alt = "open", target, css, id, modal = false }) {
+        create({
+          src,
+          alt = "open",
+          target,
+          css,
+          id,
+          modal = false,
+          forwardquery = false,
+        }) {
           const vv = window.lodge;
           let currentNode;
 
@@ -365,7 +356,13 @@ if (!window.lodge) {
               currentNode = target;
             }
 
-            const iframe = vv.embeds.buildIframe({ src, css, modal, id });
+            const iframe = vv.embeds.buildIframe({
+              src,
+              css,
+              modal,
+              id,
+              forwardquery,
+            });
 
             // be nice neighbors. if we can't find currentNode, don't do the rest or pitch errors. silently fail.
             if (currentNode) {
@@ -402,7 +399,7 @@ if (!window.lodge) {
           }
         },
 
-        buildIframe({ src, cssoverride, querystring, id }) {
+        buildIframe({ src, cssoverride, modal, id, forwardquery = false }) {
           const vv = window.lodge;
           const iframe = document.createElement("iframe");
           let embedURL = src;
@@ -417,8 +414,11 @@ if (!window.lodge) {
           if (cssoverride) {
             embedURL += `&cssoverride=${encodeURIComponent(cssoverride)}`;
           }
-          if (querystring) {
-            embedURL += `&${querystring}`;
+          if (forwardquery) {
+            embedURL += `&${vv.get.qs}`;
+          }
+          if (modal) {
+            embedURL += "&modal=1";
           }
           if (vv.debug.show) {
             embedURL += "&debug=1";
@@ -440,8 +440,8 @@ if (!window.lodge) {
           let origin = window.location;
           if (embedURL.includes("://")) {
             origin = embedURL.split("/").slice(0, 3).join("/");
-            if (vv.embeds.whitelist.indexOf(origin) === -1) {
-              vv.embeds.whitelist += `,${origin}`;
+            if (vv.embeds.allowed.indexOf(origin) === -1) {
+              vv.embeds.allowed += `,${origin}`;
             }
           }
           vv.embeds.all.push({
@@ -1320,6 +1320,10 @@ if (!window.lodge) {
               el,
               classname: "modal",
             });
+            const forwardquery = lodge.styles.hasClass({
+              el,
+              classname: "forwardquery",
+            });
             if (src) {
               lodge.embeds.create({
                 src,
@@ -1328,6 +1332,7 @@ if (!window.lodge) {
                 css,
                 id,
                 modal,
+                forwardquery,
               });
             }
           });
