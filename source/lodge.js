@@ -135,9 +135,8 @@ if (!window.lodge) {
         if (vv.embedded) {
           vv.loaded = Date.now(); // ready and loaded
           vv._drawQueuedEmbeds();
-          if (vv.debug.show) {
-            vv.debug.out("finished initializing", vv);
-          }
+          // log it
+          vv.debug.out({ message: "finished initializing", obj: vv });
           // tell em
           vv.events.fire(vv, "ready", vv.loaded);
         } else {
@@ -163,9 +162,8 @@ if (!window.lodge) {
           vv.loaded = Date.now(); // ready and loaded
           // eslint-disable-next-line no-underscore-dangle
           vv._drawQueuedEmbeds();
-          if (vv.debug.show) {
-            vv.debug.out("finished initializing", vv);
-          }
+          // log it
+          vv.debug.out({ message: "finished initializing", obj: vv });
           // tell em
           vv.events.fire(vv, "ready", vv.loaded);
         }
@@ -454,7 +452,7 @@ if (!window.lodge) {
             source: null,
             origin,
           });
-          vv.debug.store(`building iframe for ${src}`);
+          vv.debug.out({ message: `building iframe for ${id}` });
 
           return iframe;
         },
@@ -557,13 +555,7 @@ if (!window.lodge) {
           head.insertBefore(script, head.firstChild);
         }
         // log it
-        if (vv.debug.show) {
-          if (!vv.loaded) {
-            vv.debug.store(`loaded script: ${url}`);
-          } else {
-            vv.debug.out(`loaded script: ${url}`);
-          }
-        }
+        vv.debug.out({ message: `loaded script: ${url}` });
       },
 
       /** *************************************************************************************
@@ -579,73 +571,84 @@ if (!window.lodge) {
       debug: {
         show: false,
 
-        store(msg, o) {
+        store({ message, obj }) {
           // making a debug message queue
           const vv = window.lodge;
           if (!vv.storage.debug) {
             vv.storage.debug = [];
           }
-          vv.storage.debug.push({ msg, o });
+          vv.storage.debug.push({ message, obj });
         },
 
-        out(msg, o) {
+        out({ message, obj }) {
           const vv = window.lodge;
-          const styles = {
-            main: {
-              logo: "color:#093;font-weight:bold;",
-              name: "color:#093;font-weight:bold;",
-              message: "font-weight:normal;",
-            },
-            embed: {
-              logo: "color:#69f;font-weight:bold;",
-              name: "color:#69f;font-weight:bold;",
-              message: "font-weight:normal;",
-            },
-          };
-          let type = "main";
-          if (vv.embedded) {
-            type = "embed";
-          }
 
-          if (!vv.storage.debug) {
-            // no queue: just spit out the message and (optionally) object
-            if (o) {
-              console.log(
-                `%c△△%c ${vv.name}:%c\n   ${msg} %O`,
-                styles[type].logo,
-                styles[type].name,
-                styles[type].message,
-                o
-              );
+          // if debug is off just skip all this when called
+          // checking here means we can just call out any time without checks
+          if (vv.debug.show) {
+            if (!vv.loaded) {
+              // not ready? store and exit
+              vv.debug.store({ message, obj });
+              return;
+            }
+
+            const styles = {
+              main: {
+                logo: "color:#093;font-weight:bold;",
+                name: "color:#093;font-weight:bold;",
+                message: "font-weight:normal;",
+              },
+              embed: {
+                logo: "color:#69f;font-weight:bold;",
+                name: "color:#69f;font-weight:bold;",
+                message: "font-weight:normal;",
+              },
+            };
+            let type = "main";
+            if (vv.embedded) {
+              type = "embed";
+            }
+
+            if (!vv.storage.debug) {
+              // no queue: just spit out the message and (optionally) object
+              if (obj) {
+                console.log(
+                  `%c△△%c ${vv.name}:%c\n   ${message} %O`,
+                  styles[type].logo,
+                  styles[type].name,
+                  styles[type].message,
+                  obj
+                );
+              } else {
+                console.log(
+                  `%c△△%c ${vv.name}:%c\n   ${message}`,
+                  styles[type].logo,
+                  styles[type].name,
+                  styles[type].message
+                );
+              }
             } else {
-              console.log(
-                `%c△△%c ${vv.name}:%c\n   ${msg}`,
+              // queue: run through all of it as part of a collapsed group
+              console.groupCollapsed(
+                `%c△△%c ${vv.name}:%c\n   ${message}`,
                 styles[type].logo,
                 styles[type].name,
                 styles[type].message
               );
-            }
-          } else {
-            // queue: run through all of it as part of a collapsed group
-            console.groupCollapsed(
-              `%c△△%c ${vv.name}:%c\n   ${msg}`,
-              styles[type].logo,
-              styles[type].name,
-              styles[type].message
-            );
-            if (o) {
-              console.log("   attachment: %O", o);
-            }
-            vv.storage.debug.forEach(function logMessages(d) {
-              if (d.o) {
-                console.log(`   ${d.msg} %O`, d.o);
-              } else {
-                console.log(`   ${d.msg}`);
+              if (obj) {
+                console.log("   attachment: %O", obj);
               }
-            });
-            console.groupEnd();
-            // now clear the debug queue
-            delete vv.storage.debug;
+              vv.storage.debug.forEach(function logMessages(queued) {
+                if (queued.o) {
+                  console.log(`   ${queued.message} %O`, queued.obj);
+                } else {
+                  console.log(`   ${queued.message}`);
+                }
+              });
+              console.groupEnd();
+              // now clear the debug queue
+              delete vv.storage.debug;
+            }
           }
         },
       },
@@ -839,16 +842,10 @@ if (!window.lodge) {
               );
             }
             // log it
-            if (vv.debug.show) {
-              if (!vv.loaded) {
-                vv.debug.store(
-                  `targeted ${target.id} with ${type} event.`,
-                  data
-                );
-              } else {
-                vv.debug.out(`targeted ${target.id} with ${type} event.`, data);
-              }
-            }
+            vv.debug.out({
+              message: `targeted ${target.id} with ${type} event.`,
+              obj: data,
+            });
           } else {
             let e = null;
             // fire the event locally if not targeted
@@ -877,17 +874,11 @@ if (!window.lodge) {
               vv.events.relay(type, data);
             }
             // log it
-            if (vv.debug.show) {
-              let verb = "firing ";
-              if (e.relay) {
-                verb = "relaying ";
-              }
-              if (!vv.loaded) {
-                vv.debug.store(`${verb + type} event.`, data);
-              } else {
-                vv.debug.out(`${verb + type} event.`, data);
-              }
+            let verb = "firing ";
+            if (e.relay) {
+              verb = "relaying ";
             }
+            vv.debug.out({ message: `${verb + type} event.`, obj: data });
           }
         },
 
