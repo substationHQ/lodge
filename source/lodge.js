@@ -327,14 +327,19 @@ if (!window.lodge) {
         whitelist: "",
         all: [],
 
-        create({
-          src = null,
-          alt = "open",
-          target = null,
-          css = null,
-          id = null,
-          modal = false,
-        }) {
+        /**
+         * /// lodge.embeds.create
+         * Formats and injects an iframe into the DOM
+         *
+         * @param {object} component
+         * @param {string} component.src - The URL or relative link for the iframe source.
+         * @param {number} [component.alt=open] - Taken from an embed's title parameter, this is used as link text for opening a modal component.
+         * @param {object|string} component.target - A target DOM element used for location of the embed or open link (for modal components.) If a string is passed rather than a true DOM element it will be tested with queryselector.
+         * @param {string} [component.css] - CSS override passed to the iframe, expecting a lodge-powered component.
+         * @param {string} component.id - Taken from the embed id, this id will be used for the new iframe. The embed tag will be removed from the DOM, removing conflict.
+         * @param {boolean} [component.modal=false] - Open the component in a modal, generating an open link in place of the embed element.
+         */
+        create({ src, alt = "open", target, css, id, modal = false }) {
           const vv = window.lodge;
           let currentNode;
 
@@ -360,7 +365,7 @@ if (!window.lodge) {
               currentNode = target;
             }
 
-            const iframe = vv.embeds.buildIframe({ src, css, modal, id, name });
+            const iframe = vv.embeds.buildIframe({ src, css, modal, id });
 
             // be nice neighbors. if we can't find currentNode, don't do the rest or pitch errors. silently fail.
             if (currentNode) {
@@ -397,7 +402,7 @@ if (!window.lodge) {
           }
         },
 
-        buildIframe({ src, cssoverride, querystring, id, name }) {
+        buildIframe({ src, cssoverride, querystring, id }) {
           const vv = window.lodge;
           const iframe = document.createElement("iframe");
           let embedURL = src;
@@ -414,12 +419,6 @@ if (!window.lodge) {
           }
           if (querystring) {
             embedURL += `&${querystring}`;
-          }
-          if (!name && id) {
-            name = id;
-          }
-          if (name) {
-            embedURL += `&name=${encodeURIComponent(name)}`;
           }
           if (vv.debug.show) {
             embedURL += "&debug=1";
