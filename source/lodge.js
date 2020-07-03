@@ -10,7 +10,6 @@
  *
  * /// Lodge.js: Core
  * @version 1.0
- * @namespace lodge
  *
  * @link http://lodge.glitch.me/
  *
