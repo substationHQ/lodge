@@ -329,11 +329,10 @@ if (!window.lodge) {
 
         create({
           src = null,
-          alt = null,
+          alt = "open",
           target = null,
           css = null,
           id = null,
-          name = null,
           modal = false,
         }) {
           const vv = window.lodge;
@@ -351,7 +350,6 @@ if (!window.lodge) {
               target,
               css,
               id,
-              name,
               modal,
             });
           } else {
@@ -372,9 +370,6 @@ if (!window.lodge) {
                 embedNode.className = "vv-modalopen";
 
                 // open in a lightbox with a link in the target div
-                if (!alt) {
-                  alt = "open";
-                }
                 vv.overlay.create(function addMarkup() {
                   const a = document.createElement("a");
                   a.href = "";
@@ -1315,22 +1310,25 @@ if (!window.lodge) {
         const tags = document.querySelectorAll("embed.lodge");
         if (typeof tags === "object") {
           const t = Array.prototype.slice.call(tags);
-          t.forEach(function check(e) {
-            e.style.height = "1px";
-            e.style.visibility = "hidden";
-            const css = e.getAttribute("data-css");
-            const src = e.getAttribute("src");
-            const alt = e.getAttribute("title");
-            const id = e.getAttribute("id");
-            const name = e.getAttribute("name");
+          t.forEach(function check(el) {
+            el.style.height = "1px";
+            el.style.visibility = "hidden";
+            const src = el.getAttribute("src");
+            const alt = el.getAttribute("title");
+            const css = el.getAttribute("data-css");
+            const id = el.getAttribute("id");
+            const modal = lodge.styles.hasClass({
+              el,
+              classname: "modal",
+            });
             if (src) {
               lodge.embeds.create({
-                css,
                 src,
-                target: e,
                 alt,
+                target: el,
+                css,
                 id,
-                name,
+                modal,
               });
             }
           });
