@@ -1294,50 +1294,49 @@ if (!window.lodge) {
       },
     };
 
-    /*
-     *	Post-definition (runtime) calls. For the _init() function to "auto" load...
-     */
-
-    // set path and get all script options
-    // file location and path
-    const s = document.querySelector('script[src$="lodge.js"]');
-    if (s) {
-      // chop off last 9 characters for '/lodge.js' -- not just a replace in case
-      // a directory is actually named 'lodge.js'
-      lodge.path = s.src.substr(0, s.src.length - 9);
-    }
-    // get and store options
-    lodge.options = String(s.getAttribute("data-options"));
-
-    const checkEmbeds = function checkEmbeds() {
-      // check for element definition in script data-element
-      const tags = document.querySelectorAll("embed.lodge");
-      if (typeof tags === "object") {
-        const t = Array.prototype.slice.call(tags);
-        t.forEach(function check(e) {
-          e.style.height = "1px";
-          e.style.visibility = "hidden";
-          const css = e.getAttribute("data-css");
-          const src = e.getAttribute("src");
-          const alt = e.getAttribute("title");
-          const id = e.getAttribute("id");
-          const name = e.getAttribute("name");
-          if (src) {
-            lodge.embeds.create({
-              css,
-              src,
-              target: e,
-              alt,
-              id,
-              name,
-            });
-          }
-        });
-      }
-    };
-
     const init = function init() {
-      // function traps lodge in a closure
+      /*
+       *	Post-definition (runtime) calls. For the _init() function to "auto" load...
+       */
+
+      // set path and get all script options
+      // file location and path
+      const s = document.querySelector('script[src$="lodge.js"]');
+      if (s) {
+        // chop off last 9 characters for '/lodge.js' -- not just a replace in case
+        // a directory is actually named 'lodge.js'
+        lodge.path = s.src.substr(0, s.src.length - 9);
+      }
+      // get and store options
+      lodge.options = String(s.getAttribute("data-options"));
+
+      const checkEmbeds = function checkEmbeds() {
+        // check for element definition in script data-element
+        const tags = document.querySelectorAll("embed.lodge");
+        if (typeof tags === "object") {
+          const t = Array.prototype.slice.call(tags);
+          t.forEach(function check(e) {
+            e.style.height = "1px";
+            e.style.visibility = "hidden";
+            const css = e.getAttribute("data-css");
+            const src = e.getAttribute("src");
+            const alt = e.getAttribute("title");
+            const id = e.getAttribute("id");
+            const name = e.getAttribute("name");
+            if (src) {
+              lodge.embeds.create({
+                css,
+                src,
+                target: e,
+                alt,
+                id,
+                name,
+              });
+            }
+          });
+        }
+      };
+
       if (lodge.options.indexOf("lazy") !== -1) {
         // lazy mode...chill for a second
         setTimeout(function check() {
@@ -1353,8 +1352,7 @@ if (!window.lodge) {
       // Loading hasn't finished yet
       document.addEventListener("DOMContentLoaded", init);
     } else {
-      // `DOMContentLoaded` has already fired
-      init();
+      init(); // `DOMContentLoaded` has already fired
     }
 
     // return the main object in case it's called into a different scope
