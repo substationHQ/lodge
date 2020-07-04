@@ -200,10 +200,10 @@
                               document.querySelector("#last-name").value
                             }&amount=${options.amount}&nonce=${payload.nonce}`;
                             vv.overlay.showLoading();
-                            vv.ajax.send(
-                              options.endpoint,
-                              poststring,
-                              function reveal(r) {
+                            vv.ajax.send({
+                              url: options.endpoint,
+                              postString: poststring,
+                              successCallback: function reveal(r) {
                                 if (r === "OK") {
                                   vv.overlay.reveal({
                                     innerContent: `<h2 class="vv-checkout-success">${options.successMsg}</h2>`,
@@ -213,8 +213,8 @@
                                     innerContent: `<h2 class="vv-checkout-error">${options.errorMsg}</h2>`,
                                   });
                                 }
-                              }
-                            );
+                              },
+                            });
                           }
                         });
                       },
@@ -252,10 +252,10 @@
     prep() {
       if (!vv.checkout.prepped) {
         // add in styles
-        vv.loadScript({
+        vv.getScript({
           url: "https://js.braintreegateway.com/web/3.46.0/js/client.min.js",
           callback: function callback() {
-            vv.loadScript({
+            vv.getScript({
               url:
                 "https://js.braintreegateway.com/web/3.46.0/js/hosted-fields.min.js",
               callback: function secondCallback() {
@@ -273,7 +273,7 @@
 
     begin(options, source) {
       if (vv.embedded) {
-        vv.events.fire(vv, "begincheckout", options);
+        vv.events.fire({ obj: vv, type: "begincheckout", data: options });
       } else {
         vv.checkout.prep();
         // set up the empty object we'll populate in the return
@@ -305,7 +305,12 @@
       }
       // Paypal only
       else if (!options.braintree && options.paypal) {
-        vv.events.fire(vv, "checkoutdata", options, source);
+        vv.events.fire({
+          obj: vv,
+          type: "checkoutdata",
+          data: options,
+          target: source,
+        });
         vv.overlay.reveal({ innerContent: '<div class="vv-loading"></div>' });
       }
       // Stripe and Paypal
@@ -326,7 +331,12 @@
         ppspan.addEventListener("click", function (e) {
           e.preventDefault();
           e.stopPropagation();
-          vv.events.fire(vv, "checkoutdata", options, source);
+          vv.events.fire({
+            obj: vv,
+            type: "checkoutdata",
+            data: options,
+            target: source,
+          });
           vv.overlay.showLoading();
         });
 

@@ -159,9 +159,10 @@
     var vv = window.lodge;
     vv.addEventListener('ready', function(e) {
       vv.addEventListener('startshuffle', function(e) {
-        window.lodge.events.fire(window.lodge,'doshuffle','','embed1');
-        window.lodge.events.fire(window.lodge,'doshuffle','','embed2');
-        window.lodge.events.fire(window.lodge,'doshuffle','','embed3');
+        // obj, type, data, target, localonly
+        window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed1' });
+        window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed2' });
+        window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed3' });
       });
     });
   </script>

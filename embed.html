@@ -146,7 +146,7 @@
       changebutton.addEventListener("click", function(e){
         e.stopPropagation();
         e.preventDefault();
-        vv.events.fire(vv,'startshuffle','');
+        vv.events.fire({ obj: vv, type: 'startshuffle' });
       }, false);
       
       // opens an overlay in the main window based on a click in an embed

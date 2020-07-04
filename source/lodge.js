@@ -131,7 +131,7 @@ if (!window.lodge) {
         );
         if (vv.options.indexOf("lightboxvideo") !== -1 || imgTest.length > 0) {
           // load lightbox.js
-          vv.loadScript({ url: `${vv.path}/lightbox/lightbox.js` });
+          vv.getScript({ url: `${vv.path}/lightbox/lightbox.js` });
         }
 
         // using messages passed between the request and this script to resize the iframe
@@ -164,7 +164,7 @@ if (!window.lodge) {
         // log it
         vv.debug.out({ message: "finished initializing", obj: vv });
         // tell em
-        vv.events.fire(vv, "ready", vv.loaded);
+        vv.events.fire({ obj: vv, type: "ready", data: vv.loaded });
       },
 
       _findEmbeds() {
@@ -240,14 +240,18 @@ if (!window.lodge) {
         // resize to fit
         if (!vv.get.params.fixedsize) {
           vv.storage.embedheight = vv.measure.scrollheight(); // store current height
-          vv.events.fire(vv, "resize", { height: vv.storage.embedheight }); // fire resize event immediately
+          vv.events.fire({
+            obj: vv,
+            type: "resize",
+            data: { height: vv.storage.embedheight },
+          }); // fire resize event immediately
 
           // poll for height and fire resize event if it changes
           window.setInterval(function resizeIframe() {
             const h = vv.measure.scrollheight();
             if (h !== vv.storage.embedheight) {
               vv.storage.embedheight = h;
-              vv.events.fire(vv, "resize", { height: h });
+              vv.events.fire({ obj: vv, type: "resize", data: { height: h } });
             }
           }, 250);
         }
@@ -314,8 +318,8 @@ if (!window.lodge) {
               route[handlerFunction](message.data);
             } else {
               // there's a script dependency — load the script and set a callback
-              // (if script is already loaded, loadScript will check and immediately do callback)
-              vv.loadScript({
+              // (if script is already loaded, getScript will check and immediately do callback)
+              vv.getScript({
                 url: `${vv.path}/${routing[message.type].require}`,
                 callback: function beginCheckout() {
                   route[handlerFunction](message.data);
@@ -325,7 +329,13 @@ if (!window.lodge) {
           } else if (message.type !== "ready") {
             // for anything else, we fire the event through the stack of embeds
             // (we do NOT fire for "ready" because we don't want to falsely trigger ready events)
-            vv.events.fire(vv, message.type, message.data, false, true);
+            vv.events.fire({
+              obj: vv,
+              type: message.type,
+              data: message.data,
+              target: false,
+              localonly: true,
+            });
           }
         }
       },
@@ -337,15 +347,15 @@ if (!window.lodge) {
           successCallback(templates[templateName]);
         } else {
           // get the template
-          this.ajax.jsonp(
-            `${vv.path}/templates/${templateName}.js`,
-            "callback",
-            function templateLoaded(json) {
+          this.ajax.jsonp({
+            url: `${vv.path}/templates/${templateName}.js`,
+            method: "callback",
+            callback: function templateLoaded(json) {
               templates[templateName] = json.template;
               successCallback(json.template);
             },
-            `lodge${templateName}Callback`
-          );
+            forceCallbackName: `lodge${templateName}Callback`,
+          });
 
           if (loadCSS) {
             // check for existence of the CSS file and if not found, include it
@@ -363,7 +373,7 @@ if (!window.lodge) {
       },
 
       // stolen from jQuery
-      loadScript({ url, callback }) {
+      getScript({ url, callback }) {
         const vv = window.lodge;
         if (vv.scripts.indexOf(url) > -1) {
           if (typeof callback === "function") {
@@ -691,7 +701,7 @@ if (!window.lodge) {
          * Do a POST or GET request via XHR/AJAX. Passing a postString will
          * force a POST request, whereas passing false will send a GET.
          */
-        send(url, postString, successCallback, failureCallback) {
+        send({ url, postString, successCallback, failureCallback = false }) {
           const method = "POST";
           const xhr = new XMLHttpRequest();
           if (xhr) {
@@ -709,6 +719,7 @@ if (!window.lodge) {
                   if (xhr.status === 200) {
                     successCallback(xhr.responseText);
                   } else if (typeof failureCallback === "function") {
+                    // testing typof to ensure we've got a callback to call
                     failureCallback(xhr.responseText);
                   }
                 }
@@ -718,7 +729,7 @@ if (!window.lodge) {
           }
         },
 
-        jsonp(url, method, callback, forceCallbackName) {
+        jsonp({ url, method, callback, forceCallbackName }) {
           // lifted from Oscar Godson here:
           // http://oscargodson.com/posts/unmasking-jsonp.html
 
@@ -803,7 +814,7 @@ if (!window.lodge) {
           return encodeURI(querystring);
         },
 
-        getHeaderForURL(url, header, callback) {
+        getHeaderForURL({ url, header, callback }) {
           const xhr = new XMLHttpRequest();
           xhr.open("HEAD", url);
           xhr.onreadystatechange = function doCallback() {
@@ -826,11 +837,11 @@ if (!window.lodge) {
       // before the object let's map to standard HTML element event footprints
       addEventListener(eventName, callback) {
         const vv = window.lodge;
-        vv.events.addListener(eventName, callback);
+        vv.events.addListener({ eventName, callback });
       },
       removeEventListener(eventName, callback) {
         const vv = window.lodge;
-        vv.events.removeListener(eventName, callback);
+        vv.events.removeListener({ eventName, callback });
       },
       dispatchEvent(e) {
         const vv = window.lodge;
@@ -839,7 +850,7 @@ if (!window.lodge) {
 
       events: {
         // added the fourth "target" parameter
-        fire(obj, type, data, target, localonly) {
+        fire({ obj, type, data, target, localonly }) {
           const vv = window.lodge;
           if (target) {
             // target object found, so push to it via postMessage
@@ -891,7 +902,7 @@ if (!window.lodge) {
               obj.fireEvent(`on${type}`, e);
             }
             if (e.relay) {
-              vv.events.relay(type, data);
+              vv.events.relay({ type, data });
             }
             // log it
             let verb = "firing ";
@@ -902,7 +913,7 @@ if (!window.lodge) {
           }
         },
 
-        relay(type, data) {
+        relay({ type, data }) {
           const vv = window.lodge;
           let targetOrigin = "*";
           if (vv.parent) {
@@ -918,7 +929,7 @@ if (!window.lodge) {
           );
         },
 
-        addListener(eventName, callback) {
+        addListener({ eventName, callback }) {
           const vv = window.lodge;
           // eslint-disable-next-line no-prototype-builtins
           if (!vv.eventlist.hasOwnProperty(eventName)) {
@@ -927,7 +938,7 @@ if (!window.lodge) {
           vv.eventlist[eventName].push(callback);
         },
 
-        removeListener(eventName, callback) {
+        removeListener({ eventName, callback }) {
           const vv = window.lodge;
           // eslint-disable-next-line no-prototype-builtins
           if (vv.eventlist.hasOwnProperty(eventName)) {
@@ -1017,8 +1028,12 @@ if (!window.lodge) {
           const vv = window.lodge;
           vv.overlay.loadingContent = loadString.toString();
           if (vv.embedded) {
-            vv.events.fire(vv, "overlaysetloading", {
-              loadString: vv.overlay.loadingContent,
+            vv.events.fire({
+              obj: vv,
+              type: "overlaysetloading",
+              data: {
+                loadString: vv.overlay.loadingContent,
+              },
             });
           }
         },
@@ -1072,10 +1087,10 @@ if (!window.lodge) {
           const self = vv.overlay;
           const db = document.body;
           if (vv.embedded) {
-            vv.events.fire(vv, "overlayhide"); // request that the parent hides overlay
+            vv.events.fire({ obj: vv, type: "overlayhide" }); // request that the parent hides overlay
           } else {
             self.content.style.opacity = 0;
-            vv.events.fire(vv, "overlayhidden", ""); // announce it's been hidden
+            vv.events.fire({ obj: vv, type: "overlayhidden" }); // announce it's been hidden
 
             // self.content.innerHTML = '';
             while (self.content.firstChild) {
@@ -1109,9 +1124,13 @@ if (!window.lodge) {
           const wrapper = document.createElement("div");
           if (vv.embedded) {
             // ask the parent to reveal overlay with contents
-            vv.events.fire(vv, "overlayreveal", {
-              innerContent,
-              wrapClass,
+            vv.events.fire({
+              obj: vv,
+              type: "overlayreveal",
+              data: {
+                innerContent,
+                wrapClass,
+              },
             });
           } else {
             // if the overlay is already visible, kill the contents first
@@ -1152,7 +1171,7 @@ if (!window.lodge) {
               window.getComputedStyle(self.content).opacity;
               // initiate fade-in
               self.content.style.opacity = 1;
-              vv.events.fire(vv, "overlayrevealed", ""); // broadcast that it's revealed
+              vv.events.fire({ obj: vv, type: "overlayrevealed" }); // broadcast that it's revealed
             }
           }
         },
@@ -1162,10 +1181,14 @@ if (!window.lodge) {
           // const self = vv.overlay;
           const db = document.body;
           if (vv.embedded) {
-            vv.events.fire(vv, "addoverlaytrigger", {
-              content,
-              className,
-              ref,
+            vv.events.fire({
+              obj: vv,
+              type: "addoverlaytrigger",
+              data: {
+                content,
+                className,
+                ref,
+              },
             });
           } else {
             const el = document.createElement("div");
@@ -1178,7 +1201,7 @@ if (!window.lodge) {
             });
             db.appendChild(el);
             vv.storage[ref] = el;
-            vv.events.fire(vv, "triggeradded", ref);
+            vv.events.fire({ obj: vv, type: "triggeradded", data: { ref } });
           }
         },
       }, /// END lodge.overlay
@@ -1204,9 +1227,13 @@ if (!window.lodge) {
         addClass({ el, className, top }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
-            vv.events.fire(vv, "addclass", {
-              el,
-              className,
+            vv.events.fire({
+              obj: vv,
+              type: "addclass",
+              data: {
+                el,
+                className,
+              },
             });
           } else {
             el = vv.styles.resolveElement(el);
@@ -1224,9 +1251,13 @@ if (!window.lodge) {
           const vv = window.lodge;
           let el;
           if (top && vv.embedded) {
-            vv.events.fire(vv, "injectcss", {
-              css,
-              important,
+            vv.events.fire({
+              obj: vv,
+              type: "injectcss",
+              data: {
+                css,
+                important,
+              },
             });
           } else {
             const head =
@@ -1260,9 +1291,13 @@ if (!window.lodge) {
         removeClass({ el, className, top }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
-            vv.events.fire(vv, "removeclass", {
-              el,
-              className,
+            vv.events.fire({
+              obj: vv,
+              type: "removeclass",
+              data: {
+                el,
+                className,
+              },
             });
           } else {
             // extra spaces allow for consistent matching.
@@ -1280,10 +1315,14 @@ if (!window.lodge) {
         swapClasses({ el, oldClass, newClass, top }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
-            vv.events.fire(vv, "swapclasses", {
-              el,
-              oldClass,
-              newClass,
+            vv.events.fire({
+              obj: vv,
+              type: "swapclasses",
+              data: {
+                el,
+                oldClass,
+                newClass,
+              },
             });
           } else {
             // add spaces to ensure we're not doing a partial find/replace,
