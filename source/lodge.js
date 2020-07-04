@@ -63,8 +63,9 @@ if (!window.lodge) {
 
       /**
        * /// lodge._constructor()
-       * Runs a number of checks, finds embeds, sets up lodge object parameters and defaults.
-       */
+       * Runs a few checks, finds embeds, sets up lodge object parameters and defaults.
+       *
+       ********************************************************************************** */
       // eslint-disable-next-line consistent-return
       _constructor() {
         const vv = window.lodge;
@@ -167,6 +168,12 @@ if (!window.lodge) {
         vv.events.fire({ obj: vv, type: "ready", data: vv.loaded });
       },
 
+      /**
+       * /// lodge._findEmbeds()
+       * Looks for embed.lodge <embed> tags and passes them to embeds.create()
+       *
+       ********************************************************************************** */
+      // eslint-disable-next-line consistent-return
       _findEmbeds() {
         // check for element definition in script data-element
         const tags = document.querySelectorAll("embed.lodge");
@@ -202,6 +209,13 @@ if (!window.lodge) {
         }
       },
 
+      /**
+       * /// lodge._drawQueuedEmbeds()
+       * If embeds.create() is run before lodge is fully loaded (as it is in _findEmbeds())
+       * it queues embeds to be passed to embeds.create() — _drawQueuedEmbeds() finishes
+       * the job if needed.
+       *
+       ********************************************************************************** */
       _drawQueuedEmbeds() {
         const vv = window.lodge;
         if (typeof vv.storage.elementQueue === "object") {
@@ -214,6 +228,13 @@ if (!window.lodge) {
         }
       },
 
+      /**
+       * /// lodge._initEmbed()
+       * Called when lodge figures out it's running as an embed rather than in the main
+       * window. Sets a few parameters and CSS classes, mesures itself for iframe height
+       * and identifies itself before reporting back up to the main window.
+       *
+       ********************************************************************************** */
       _initEmbed() {
         const vv = window.lodge;
         vv.embedded = true; // set this as an embed
@@ -257,17 +278,26 @@ if (!window.lodge) {
         }
       },
 
-      _handleMessage(e) {
+      /**
+       * /// lodge._handleMessage()
+       * Takes message type and data, either handling them with a predefined internal
+       * function or firing an event that an external script can listen for and react to.
+       *
+       * @param {object} msg - The message event to be parsed.
+       *
+       ********************************************************************************** */
+      _handleMessage(msg) {
         const vv = window.lodge;
-        const message = JSON.parse(e.data);
+        const message = JSON.parse(msg.data);
         const routing = {
           /*
-          we'll pass message.data to the handler for each route.
-          requre a script to load/verify it before firing the handler.
-          (in an ideal world these would nest indefinitely, but it's
-          not worth the extra array/reduce load. just a function name
-          at the root of lodge or one object deep. 
-          [function] OR [object.function])
+          we'll pass message.data to the handler for each route. requre a script to 
+          load/verify it before firing the handler. (in an ideal world these would nest 
+          indefinitely, but it's not worth the extra array/reduce load. just a function 
+          name at the root of lodge or one object deep. [function] OR [object.function])
+
+          a required lodge script module can be defined, and the handler will be called
+          as a callback once that's loaded.
           */
           addclass: { handler: "styles.addClass" },
           begincheckout: {
@@ -288,9 +318,9 @@ if (!window.lodge) {
         try {
           // find the source of the message in our embeds object
           for (let i = 0; i < vv.embeds.all.length; i++) {
-            if (vv.embeds.all[i].el.contentWindow === e.source) {
+            if (vv.embeds.all[i].el.contentWindow === msg.source) {
               if (!vv.embeds.all[i].el.source) {
-                vv.embeds.all[i].source = e.source;
+                vv.embeds.all[i].source = msg.source;
               }
               message.data._source = vv.embeds.all[i];
               break;
@@ -340,6 +370,15 @@ if (!window.lodge) {
         }
       },
 
+      /**
+       * /// lodge.getTemplate()
+       * Loads a view template and coressponding CSS from the templates folder.
+       *
+       * @param {string} templateName - The name of the template as it appears in the templates/ folder (minus the ".js").
+       * @param {function} successCallback - A callback function that will fire after the template has been fully loaded.
+       * @param {boolean} [loadCSS=true] - Should we look for and load the matching CSS file?
+       *
+       ********************************************************************************** */
       getTemplate({ templateName, successCallback, loadCSS = true }) {
         const vv = window.lodge;
         const { templates } = vv;
@@ -372,7 +411,16 @@ if (!window.lodge) {
         }
       },
 
-      // stolen from jQuery
+      /**
+       * /// lodge.getScript()
+       * Largely lifted from jQuery, this function loads an external script into the DOM.
+       * Lodge uses it primarily to load sub-modules — since they're same-origin we can
+       * load them safely.
+       *
+       * @param {string} url - The script location.
+       * @param {function} successCallback - A callback function that will fire after the script has been fully loaded.
+       *
+       ********************************************************************************** */
       getScript({ url, callback }) {
         const vv = window.lodge;
         if (vv.scripts.indexOf(url) > -1) {
@@ -440,7 +488,8 @@ if (!window.lodge) {
          * @param {string} component.id - Taken from the embed id, this id will be used for the new iframe. The embed tag will be removed from the DOM, removing conflict.
          * @param {boolean} [component.modal=false] - Open the component in a modal, generating an open link in place of the embed element.
          * @param {boolean} [component.forwardquery=false] - Open the component in a modal, generating an open link in place of the embed element.
-         */
+         *
+         ************************************************************************************ */
         create({
           src,
           alt = "open",
