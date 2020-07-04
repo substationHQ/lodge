@@ -374,9 +374,10 @@ if (!window.lodge) {
        * /// lodge.getTemplate()
        * Loads a view template and coressponding CSS from the templates folder.
        *
-       * @param {string} templateName - The name of the template as it appears in the templates/ folder (minus the ".js").
-       * @param {function} successCallback - A callback function that will fire after the template has been fully loaded.
-       * @param {boolean} [loadCSS=true] - Should we look for and load the matching CSS file?
+       * @param {object} template
+       * @param {string} template.templateName - The name of the template as it appears in the templates/ folder (minus the ".js").
+       * @param {function} template.successCallback - A callback function that will fire after the template has been fully loaded.
+       * @param {boolean} [template.loadCSS=true] - Should we look for and load the matching CSS file?
        *
        ********************************************************************************** */
       getTemplate({ templateName, successCallback, loadCSS = true }) {
@@ -487,7 +488,7 @@ if (!window.lodge) {
          * @param {string} [component.css] - CSS override passed to the iframe, expecting a lodge-powered component.
          * @param {string} component.id - Taken from the embed id, this id will be used for the new iframe. The embed tag will be removed from the DOM, removing conflict.
          * @param {boolean} [component.modal=false] - Open the component in a modal, generating an open link in place of the embed element.
-         * @param {boolean} [component.forwardquery=false] - Open the component in a modal, generating an open link in place of the embed element.
+         * @param {boolean} [component.forwardquery=false] - If true, all current querystring parameters are passed to the underlying embed's iframe.
          *
          ************************************************************************************ */
         create({
@@ -568,7 +569,22 @@ if (!window.lodge) {
           }
         },
 
-        buildIframe({ src, cssoverride, modal, id, forwardquery = false }) {
+        /**
+         * /// lodge.embeds.buildIframe
+         * Builds the actual iframe DOM element for the embed, setting classes and query
+         * strings that will tell the embed's lodge instance more about expectations for it.
+         *
+         * @param {object} component
+         * @param {string} component.src - The URL or relative link for the iframe source.
+         * @param {string} [component.css] - CSS override passed to the iframe via querystring.
+         * @param {string} component.id - Taken from the embed id, this id will be used for the new iframe.
+         * @param {boolean} [component.modal=false] - If true, a modal flag is set to tell the underlying iframe's lodge instance it's correctly running as a modal embed.
+         * @param {boolean} [component.forwardquery=false] - If true, all current querystring parameters are passed to the underlying embed's iframe.
+         *
+         * @returns {object} iframe
+         *
+         ************************************************************************************ */
+        buildIframe({ src, css, modal, id, forwardquery = false }) {
           const vv = window.lodge;
           const iframe = document.createElement("iframe");
           let embedURL = src;
@@ -583,8 +599,8 @@ if (!window.lodge) {
           }
           embedURL += `?lodgelocation=${originlocation}`;
 
-          if (cssoverride) {
-            embedURL += `&cssoverride=${encodeURIComponent(cssoverride)}`;
+          if (css) {
+            embedURL += `&cssoverride=${encodeURIComponent(css)}`;
           }
           if (forwardquery) {
             embedURL += `&${vv.get.qs}`;
@@ -626,13 +642,34 @@ if (!window.lodge) {
           return iframe;
         },
 
+        /**
+         * /// lodge.embeds.resize
+         * Resizes an iframe's height to match the height from a resize event. This is
+         * handled over event relays from inside the embed (measuring scrollheight) and
+         * passed up to the main window which then calls resize to set the height of the
+         * corresponding iframe, making sure there are no scrollbars.
+         *
+         * @param {object} request
+         * @param {object} request._source - Added automatically to message.data by lodge._handleMessage, the _source param specifies the source of the original message/request.
+         * @param {number} request.height - The scroll height, in pixels, of the iframe's content.
+         *
+         ************************************************************************************ */
         resize({ _source, height }) {
           const embed = _source.el;
           embed.height = height;
           embed.style.height = `${height}px`; // resize to correct height
         },
 
-        getById({ id }) {
+        /**
+         * /// lodge.embeds.getById
+         * Uses a lodge internal id to specify and find a specific embed for targeting.
+         *
+         * @param {string} id - The id of the embed to be returned.
+         *
+         * @returns {object} embed
+         *
+         ************************************************************************************ */
+        getById(id) {
           const vv = window.lodge;
           let embed = false;
           for (let i = 0; i < vv.embeds.all.length; i++) {
@@ -908,7 +945,7 @@ if (!window.lodge) {
             // target.origin and target.source should both be real
             // let's test and ensure we have the right thing
             if (typeof target === "string") {
-              target = vv.embeds.getById({ id: target });
+              target = vv.embeds.getById(target);
             } else if (!target.source || !target.origin) {
               target = false;
             }
