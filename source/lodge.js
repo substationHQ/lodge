@@ -689,7 +689,7 @@ if (!window.lodge) {
        *
        ************************************************************************************** */
       debug: {
-        show: false,
+        show: false, // debug flag set in _constructor by detecting a ?debug=true querystring
 
         store({ message, obj }) {
           // making a debug message queue
@@ -936,7 +936,7 @@ if (!window.lodge) {
 
       events: {
         // added the fourth "target" parameter
-        fire({ obj, type, data, target, localonly }) {
+        fire({ obj, type, data = "", target, localonly }) {
           const vv = window.lodge;
           if (target) {
             // target object found, so push to it via postMessage
