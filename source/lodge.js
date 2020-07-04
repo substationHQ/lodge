@@ -4,11 +4,9 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-underscore-dangle */
 
-/**
+/** *************************************************************************************
  *
- * △△
- *
- * /// Lodge.js: Core
+ * △△ Lodge.js: Core
  * @version 1.0
  *
  * @link http://lodge.glitch.me/
@@ -37,10 +35,16 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * */
+ ************************************************************************************** */
 
+// Only run the init() script (end of function) if lodge hasn't already been created.
 if (!window.lodge) {
-  // lodge hasn't been defined, so let's go
+  /** *************************************************************************************
+   *
+   * △△ lodge {object}
+   * Everything we need to create embed iframes
+   *
+   ************************************************************************************** */
   window.lodge = (function lodge() {
     // eslint-disable-next-line no-shadow
     const lodge = {
@@ -57,14 +61,31 @@ if (!window.lodge) {
       storage: {},
       templates: {},
 
+      /**
+       * /// lodge._constructor()
+       * Runs a number of checks, finds embeds, sets up lodge object parameters and defaults.
+       */
       // eslint-disable-next-line consistent-return
-      _init() {
+      _constructor() {
         const vv = window.lodge;
+
+        // set path and get all script options
+        // file location and path
+        const script = document.querySelector('script[src$="lodge.js"]');
+        if (script) {
+          // chop off last 9 characters for '/lodge.js' -- not just a replace in case
+          // a directory is actually named 'lodge.js'
+          vv.path = script.src.substr(0, script.src.length - 9);
+        }
+        // get and store options
+        lodge.options = String(script.getAttribute("data-options"));
+
+        // find all <embed> tags with the lodge class (embed.lodge) and process them
+        vv._findEmbeds();
 
         // look for GET string, parse that shit if we can
         vv.get.qs = window.location.search.substring(1);
         vv.get.params = false;
-
         if (vv.get.qs) {
           vv.get.params = {};
           let t;
@@ -75,6 +96,7 @@ if (!window.lodge) {
           }
         }
 
+        // enable debug if requested
         if (vv.get.params.debug) {
           vv.debug.show = true;
         }
@@ -94,7 +116,8 @@ if (!window.lodge) {
           vv.name = "main window";
         }
 
-        // modal?
+        // check for ?modal=1, added when we create a modal iframe
+        // if found add a class to the main doc for styling.
         if (vv.get.params.modal) {
           vv.styles.addClass({
             el: document.documentElement,
@@ -108,7 +131,7 @@ if (!window.lodge) {
         );
         if (vv.options.indexOf("lightboxvideo") !== -1 || imgTest.length > 0) {
           // load lightbox.js
-          vv.loadScript(`${vv.path}/lightbox/lightbox.js`);
+          vv.loadScript({ url: `${vv.path}/lightbox/lightbox.js` });
         }
 
         // using messages passed between the request and this script to resize the iframe
@@ -131,40 +154,51 @@ if (!window.lodge) {
             .join("/");
         }
 
-        if (vv.embedded) {
-          vv.loaded = Date.now(); // ready and loaded
-          vv._drawQueuedEmbeds();
-          // log it
-          vv.debug.out({ message: "finished initializing", obj: vv });
-          // tell em
-          vv.events.fire(vv, "ready", vv.loaded);
-        } else {
-          // look for GET string, parse that shit if we can
-          if (vv.get.qs) {
-            if (
-              vv.get.qs.indexOf("element_id") !== -1 ||
-              vv.get.qs.indexOf("handlequery") !== -1
-            ) {
-              if (window.history && history.pushState) {
-                // we know this is aimed at us, so we caught it. now remove it.
-                history.pushState(
-                  null,
-                  null,
-                  window.location.href.split("?")[0]
-                );
-              }
-            }
-          }
-
+        if (!vv.embedded) {
           // create overlay stuff first
           vv.overlay.create();
-          vv.loaded = Date.now(); // ready and loaded
-          // eslint-disable-next-line no-underscore-dangle
-          vv._drawQueuedEmbeds();
-          // log it
-          vv.debug.out({ message: "finished initializing", obj: vv });
-          // tell em
-          vv.events.fire(vv, "ready", vv.loaded);
+        }
+        vv.loaded = Date.now(); // ready and loaded
+        // eslint-disable-next-line no-underscore-dangle
+        vv._drawQueuedEmbeds();
+        // log it
+        vv.debug.out({ message: "finished initializing", obj: vv });
+        // tell em
+        vv.events.fire(vv, "ready", vv.loaded);
+      },
+
+      _findEmbeds() {
+        // check for element definition in script data-element
+        const tags = document.querySelectorAll("embed.lodge");
+        if (typeof tags === "object") {
+          const t = Array.prototype.slice.call(tags);
+          t.forEach(function createFrom(el) {
+            el.style.height = "1px";
+            el.style.visibility = "hidden";
+            const src = el.getAttribute("src");
+            const alt = el.getAttribute("title");
+            const css = el.getAttribute("data-css");
+            const id = el.getAttribute("id");
+            const modal = lodge.styles.hasClass({
+              el,
+              className: "modal",
+            });
+            const forwardquery = lodge.styles.hasClass({
+              el,
+              className: "forwardquery",
+            });
+            if (src) {
+              lodge.embeds.create({
+                src,
+                alt,
+                target: el,
+                css,
+                id,
+                modal,
+                forwardquery,
+              });
+            }
+          });
         }
       },
 
@@ -281,12 +315,12 @@ if (!window.lodge) {
             } else {
               // there's a script dependency — load the script and set a callback
               // (if script is already loaded, loadScript will check and immediately do callback)
-              vv.loadScript(
-                `${vv.path}/${routing[message.type].require}`,
-                function beginCheckout() {
+              vv.loadScript({
+                url: `${vv.path}/${routing[message.type].require}`,
+                callback: function beginCheckout() {
                   route[handlerFunction](message.data);
-                }
-              );
+                },
+              });
             }
           } else if (message.type !== "ready") {
             // for anything else, we fire the event through the stack of embeds
@@ -296,10 +330,87 @@ if (!window.lodge) {
         }
       },
 
+      getTemplate({ templateName, successCallback, loadCSS = true }) {
+        const vv = window.lodge;
+        const { templates } = vv;
+        if (templates[templateName] !== undefined) {
+          successCallback(templates[templateName]);
+        } else {
+          // get the template
+          this.ajax.jsonp(
+            `${vv.path}/templates/${templateName}.js`,
+            "callback",
+            function templateLoaded(json) {
+              templates[templateName] = json.template;
+              successCallback(json.template);
+            },
+            `lodge${templateName}Callback`
+          );
+
+          if (loadCSS) {
+            // check for existence of the CSS file and if not found, include it
+            const test = document.querySelectorAll(
+              `link[href="${vv.path}/templates/${templateName}.css"]`
+            );
+            if (!test.length) {
+              // if found
+              vv.styles.injectCSS({
+                css: `${vv.path}/templates/${templateName}.css`,
+              });
+            }
+          }
+        }
+      },
+
+      // stolen from jQuery
+      loadScript({ url, callback }) {
+        const vv = window.lodge;
+        if (vv.scripts.indexOf(url) > -1) {
+          if (typeof callback === "function") {
+            callback();
+          }
+        } else {
+          vv.scripts.push(url);
+          const head =
+            document.getElementsByTagName("head")[0] ||
+            document.documentElement;
+          const script = document.createElement("script");
+          script.src = url;
+
+          // Handle Script loading
+          let done = false;
+
+          // Attach handlers for all browsers
+          // eslint-disable-next-line no-multi-assign
+          script.onload = script.onreadystatechange = function attachHandlers() {
+            if (
+              !done &&
+              (!this.readyState ||
+                this.readyState === "loaded" ||
+                this.readyState === "complete")
+            ) {
+              done = true;
+              if (typeof callback === "function") {
+                callback();
+              }
+
+              // Handle memory leak in IE
+              // eslint-disable-next-line no-multi-assign
+              script.onload = script.onreadystatechange = null;
+              if (head && script.parentNode) {
+                head.removeChild(script);
+              }
+            }
+          };
+          head.insertBefore(script, head.firstChild);
+        }
+        // log it
+        vv.debug.out({ message: `loaded script: ${url}` });
+      },
+
       /** *************************************************************************************
        *
-       * /// lodge.embeds (object)
-       * @memberof lodge
+       * /// lodge.embeds {object}
        * Everything we need to create embed iframes
        *
        ************************************************************************************** */
@@ -462,7 +573,7 @@ if (!window.lodge) {
           embed.style.height = `${height}px`; // resize to correct height
         },
 
-        getById(id) {
+        getById({ id }) {
           const vv = window.lodge;
           let embed = false;
           for (let i = 0; i < vv.embeds.all.length; i++) {
@@ -473,98 +584,12 @@ if (!window.lodge) {
           }
           return embed;
         },
-      },
-
-      getTemplate(templateName, successCallback, loadCSS) {
-        const vv = window.lodge;
-        const { templates } = vv;
-        if (templates[templateName] !== undefined) {
-          successCallback(templates[templateName]);
-        } else {
-          // get the template
-          this.ajax.jsonp(
-            `${vv.path}/templates/${templateName}.js`,
-            "callback",
-            function templateLoaded(json) {
-              templates[templateName] = json.template;
-              successCallback(json.template);
-            },
-            `lodge${templateName}Callback`
-          );
-
-          if (loadCSS !== false) {
-            loadCSS = true;
-          }
-
-          if (loadCSS) {
-            // check for existence of the CSS file and if not found, include it
-            const test = document.querySelectorAll(
-              `link[href="${vv.path}/templates/${templateName}.css"]`
-            );
-            if (!test.length) {
-              // if nothing found
-              vv.styles.injectCSS({
-                css: `${vv.path}/templates/${templateName}.css`,
-              });
-            }
-          }
-        }
-      },
-
-      // stolen from jQuery
-      loadScript(url, callback) {
-        const vv = window.lodge;
-        if (vv.scripts.indexOf(url) > -1) {
-          if (typeof callback === "function") {
-            callback();
-          }
-        } else {
-          vv.scripts.push(url);
-          const head =
-            document.getElementsByTagName("head")[0] ||
-            document.documentElement;
-          const script = document.createElement("script");
-          script.src = url;
-
-          // Handle Script loading
-          let done = false;
-
-          // Attach handlers for all browsers
-          // eslint-disable-next-line no-multi-assign
-          script.onload = script.onreadystatechange = function attachHandlers() {
-            if (
-              !done &&
-              (!this.readyState ||
-                this.readyState === "loaded" ||
-                this.readyState === "complete")
-            ) {
-              done = true;
-              if (typeof callback === "function") {
-                callback();
-              }
-
-              // Handle memory leak in IE
-              // eslint-disable-next-line no-multi-assign
-              script.onload = script.onreadystatechange = null;
-              if (head && script.parentNode) {
-                head.removeChild(script);
-              }
-            }
-          };
-          head.insertBefore(script, head.firstChild);
-        }
-        // log it
-        vv.debug.out({ message: `loaded script: ${url}` });
-      },
+      }, /// END lodge.embeds
 
       /** *************************************************************************************
        *
-       * window.lodge.debug (object)
+       * /// lodge.debug {object}
        * Store debug messages for grouping OR dump a message / all stored messages
-       *
-       * PUBLIC-ISH FUNCTIONS
-       * window.lodge.debug.store(string msg,optional object o)
-       * window.lodge.debug.out(string msg,optional object o)
        *
        ************************************************************************************** */
       debug: {
@@ -604,15 +629,17 @@ if (!window.lodge) {
               },
             };
             let type = "main";
+            let icon = "△△";
             if (vv.embedded) {
               type = "embed";
+              icon = "▽▽";
             }
 
             if (!vv.storage.debug) {
               // no queue: just spit out the message and (optionally) object
               if (obj) {
                 console.log(
-                  `%c△△%c ${vv.name}:%c\n   ${message} %O`,
+                  `%c${icon}%c ${vv.name}:%c\n   ${message} %O`,
                   styles[type].logo,
                   styles[type].name,
                   styles[type].message,
@@ -620,7 +647,7 @@ if (!window.lodge) {
                 );
               } else {
                 console.log(
-                  `%c△△%c ${vv.name}:%c\n   ${message}`,
+                  `%c${icon}%c ${vv.name}:%c\n   ${message}`,
                   styles[type].logo,
                   styles[type].name,
                   styles[type].message
@@ -629,7 +656,7 @@ if (!window.lodge) {
             } else {
               // queue: run through all of it as part of a collapsed group
               console.groupCollapsed(
-                `%c△△%c ${vv.name}:%c\n   ${message}`,
+                `%c${icon}%c ${vv.name}:%c\n   ${message}`,
                 styles[type].logo,
                 styles[type].name,
                 styles[type].message
@@ -650,16 +677,12 @@ if (!window.lodge) {
             }
           }
         },
-      },
+      }, /// END lodge.debug
 
       /** *************************************************************************************
        *
-       * window.lodge.ajax (object)
+       * /// lodge.ajax {object}
        * Object wrapping XHR calls cross-browser and providing form encoding for POST
-       *
-       * PUBLIC-ISH FUNCTIONS
-       * window.lodge.ajax.send(string url, string postString, function successCallback)
-       * window.lodge.ajax.encodeForm(object form)
        *
        ************************************************************************************** */
       ajax: {
@@ -790,15 +813,13 @@ if (!window.lodge) {
           };
           xhr.send();
         },
-      },
+      }, /// END lodge.ajax
 
       /** *************************************************************************************
        *
-       * window.lodge.events (object)
-       * Add, remove, and fire events
-       *
-       * PUBLIC-ISH FUNCTIONS
-       * window.lodge.events.fire(object obj, string type, object/any data)
+       * /// lodge.events {object}
+       * Give standard .addEventListener footprint to object, fire and relay events through
+       * the chain of embeds
        *
        ************************************************************************************** */
 
@@ -827,7 +848,7 @@ if (!window.lodge) {
             // target.origin and target.source should both be real
             // let's test and ensure we have the right thing
             if (typeof target === "string") {
-              target = vv.embeds.getById(target);
+              target = vv.embeds.getById({ id: target });
             } else if (!target.source || !target.origin) {
               target = false;
             }
@@ -929,16 +950,12 @@ if (!window.lodge) {
             }
           }
         },
-      },
+      }, /// END lodge.events
 
       /** *************************************************************************************
        *
-       * window.lodge.measure (object)
+       * /// lodge.measure {object}
        * Basic window/element measurements
-       *
-       * PUBLIC-ISH FUNCTIONS
-       * window.lodge.measure.viewport()
-       * window.lodge.measure.getClickPosition(event e)
        *
        ************************************************************************************** */
       measure: {
@@ -966,36 +983,28 @@ if (!window.lodge) {
             de.clientHeight
           );
         },
-      },
+      }, /// END lodge.events
 
       /** *************************************************************************************
        *
-       * window.lodge.validate (object)
-       * check a string for format, mostly for form validation, etc.
-       *
-       * PUBLIC-ISH FUNCTIONS
-       * window.lodge.validate.email()
+       * /// lodge.validate {object}
+       * Email validation, but placeholder object for future needs
        *
        ************************************************************************************** */
       validate: {
-        email(address) {
+        email({ address }) {
           // hell no i didn't write this long, bonkers regex
           // thanks to: https://stackoverflow.com/a/46181
           // eslint-disable-next-line no-useless-escape
           const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           return re.test(String(address).toLowerCase());
         },
-      },
+      }, /// END lodge.validate
 
       /** *************************************************************************************
        *
-       * window.lodge.overlay (object)
-       * Building the actual lightbox bits
-       *
-       * PUBLIC-ISH FUNCTIONS
-       * window.lodge.overlay.create(function callback)
-       * window.lodge.overlay.hide()
-       * window.lodge.overlay.reveal(string/object innerContent, string wrapClass)
+       * /// lodge.overlay {object}
+       * Build, modify, hide, or reveal the modal overlay.
        *
        ************************************************************************************** */
       overlay: {
@@ -1172,19 +1181,13 @@ if (!window.lodge) {
             vv.events.fire(vv, "triggeradded", ref);
           }
         },
-      },
+      }, /// END lodge.overlay
 
       /** *************************************************************************************
        *
-       * window.lodge.styles (object)
-       * Building the actual lightbox bits
-       *
-       * PUBLIC-ISH FUNCTIONS
-       * window.lodge.styles.addClass(HTML element el, string classname)
-       * window.lodge.styles.hasClass(HTML element el, string classname)
-       * window.lodge.styles.injectCSS(string css, boolean important)
-       * window.lodge.styles.removeClass(HTML element el, string classname)
-       * window.lodge.styles.swapClasses(HTML element el, string oldclass, string newclass)
+       * /// lodge.styles {object}
+       * Add, remove, swap, and check classes for a given DOM element or inject CSS rules into
+       * the main document space.
        *
        ************************************************************************************** */
       styles: {
@@ -1295,78 +1298,17 @@ if (!window.lodge) {
           }
         },
       },
-    };
+    }; /// END △△ lodge {object}
 
-    const init = function init() {
-      /*
-       *	Post-definition (runtime) calls. For the _init() function to "auto" load...
-       */
-
-      // set path and get all script options
-      // file location and path
-      const s = document.querySelector('script[src$="lodge.js"]');
-      if (s) {
-        // chop off last 9 characters for '/lodge.js' -- not just a replace in case
-        // a directory is actually named 'lodge.js'
-        lodge.path = s.src.substr(0, s.src.length - 9);
-      }
-      // get and store options
-      lodge.options = String(s.getAttribute("data-options"));
-
-      const checkEmbeds = function checkEmbeds() {
-        // check for element definition in script data-element
-        const tags = document.querySelectorAll("embed.lodge");
-        if (typeof tags === "object") {
-          const t = Array.prototype.slice.call(tags);
-          t.forEach(function check(el) {
-            el.style.height = "1px";
-            el.style.visibility = "hidden";
-            const src = el.getAttribute("src");
-            const alt = el.getAttribute("title");
-            const css = el.getAttribute("data-css");
-            const id = el.getAttribute("id");
-            const modal = lodge.styles.hasClass({
-              el,
-              className: "modal",
-            });
-            const forwardquery = lodge.styles.hasClass({
-              el,
-              className: "forwardquery",
-            });
-            if (src) {
-              lodge.embeds.create({
-                src,
-                alt,
-                target: el,
-                css,
-                id,
-                modal,
-                forwardquery,
-              });
-            }
-          });
-        }
-      };
-
-      if (lodge.options.indexOf("lazy") !== -1) {
-        // lazy mode...chill for a second
-        setTimeout(function check() {
-          lodge._init(lodge);
-          checkEmbeds();
-        }, 1000);
-      } else {
-        lodge._init(lodge);
-        checkEmbeds();
-      }
-    };
+    // now we check if the DOM is loaded and call lodge._constructor() if/when it is.
     if (document.readyState === "loading") {
       // Loading hasn't finished yet
-      document.addEventListener("DOMContentLoaded", init);
+      document.addEventListener("DOMContentLoaded", lodge._constructor);
     } else {
-      init(); // `DOMContentLoaded` has already fired
+      lodge._constructor(); // `DOMContentLoaded` has already fired
     }
 
-    // return the main object in case it's called into a different scope
+    // return the lodge object so it becomes properly set as window.lodge
     return lodge;
   })();
 }
