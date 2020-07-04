@@ -1,6 +1,6 @@
 {
   "name": "lodge",
-  "version": "1.0.0",
+  "version": "1.0.0-0",
   "description": "A small javascript library for modals, embeds, and passing events around like prison cigarettes.",
   "main": "source/lodge.js",
   "scripts": {
