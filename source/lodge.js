@@ -903,17 +903,6 @@ if (!window.lodge) {
           }
           return encodeURI(querystring);
         },
-
-        getHeaderForURL({ url, header, callback }) {
-          const xhr = new XMLHttpRequest();
-          xhr.open("HEAD", url);
-          xhr.onreadystatechange = function doCallback() {
-            if (this.readyState === this.DONE) {
-              callback(this.getResponseHeader(header));
-            }
-          };
-          xhr.send();
-        },
       }, /// END lodge.ajax
 
       /** *************************************************************************************
@@ -927,11 +916,11 @@ if (!window.lodge) {
       // before the object let's map to standard HTML element event footprints
       addEventListener(eventName, callback) {
         const vv = window.lodge;
-        vv.events.addListener({ eventName, callback });
+        vv.events.addListener(eventName, callback);
       },
       removeEventListener(eventName, callback) {
         const vv = window.lodge;
-        vv.events.removeListener({ eventName, callback });
+        vv.events.removeListener(eventName, callback);
       },
       dispatchEvent(e) {
         const vv = window.lodge;
@@ -939,7 +928,19 @@ if (!window.lodge) {
       },
 
       events: {
-        // added the fourth "target" parameter
+        /**
+         * /// lodge.events.fire
+         * Trigger a specific custom event, target it to a specific embed, or use it
+         * specifically as a locals-only event.
+         *
+         * @param {object} event
+         * @param {object} event.obj - The object that will own and fire the event. Event listeners should be tageting this object.
+         * @param {string} event.type - The name of the event.
+         * @param {object|any} [event.data] - The data attached to the event itself. For internal lodge purposes this should be formatted as an object, but for external scripts any data type, including none, is fine.
+         * @param {object|string} [event.target] - A lodge-powered iframe embed, specified either by an internal lodge id or with a direct pointer.
+         * @param {boolean} [event.localonly] - If called in an embed, do not bubble this event up to the main window.
+         *
+         ************************************************************************************ */
         fire({ obj, type, data = "", target, localonly }) {
           const vv = window.lodge;
           if (target) {
@@ -1003,6 +1004,15 @@ if (!window.lodge) {
           }
         },
 
+        /**
+         * /// lodge.events.relay
+         * Relay an event, via postMessage, up to the main window.
+         *
+         * @param {object} event
+         * @param {string} event.type - The name of the event.
+         * @param {object|any} [event.data] - The data attached to the event itself.
+         *
+         ************************************************************************************ */
         relay({ type, data }) {
           const vv = window.lodge;
           let targetOrigin = "*";
@@ -1019,7 +1029,15 @@ if (!window.lodge) {
           );
         },
 
-        addListener({ eventName, callback }) {
+        /**
+         * /// lodge.events.addListener
+         * Providing standard event listener add/remove/dispatch footprints for window.lodge
+         *
+         * @param {string} eventName - The name of the event.
+         * @param {function} callback - A callback function.
+         *
+         ************************************************************************************ */
+        addListener(eventName, callback) {
           const vv = window.lodge;
           // eslint-disable-next-line no-prototype-builtins
           if (!vv.eventlist.hasOwnProperty(eventName)) {
@@ -1028,7 +1046,15 @@ if (!window.lodge) {
           vv.eventlist[eventName].push(callback);
         },
 
-        removeListener({ eventName, callback }) {
+        /**
+         * /// lodge.events.addListener
+         * Providing standard event listener add/remove/dispatch footprints for window.lodge
+         *
+         * @param {string} eventName - The name of the event.
+         * @param {function} callback - A callback function.
+         *
+         ************************************************************************************ */
+        removeListener(eventName, callback) {
           const vv = window.lodge;
           // eslint-disable-next-line no-prototype-builtins
           if (vv.eventlist.hasOwnProperty(eventName)) {
@@ -1039,6 +1065,13 @@ if (!window.lodge) {
           }
         },
 
+        /**
+         * /// lodge.events.addListener
+         * Providing standard event listener add/remove/dispatch footprints for window.lodge
+         *
+         * @param {object} e - The event to dispatch.
+         *
+         ************************************************************************************ */
         dispatch(e) {
           const vv = window.lodge;
           // eslint-disable-next-line no-prototype-builtins
@@ -1060,6 +1093,13 @@ if (!window.lodge) {
        *
        ************************************************************************************** */
       measure: {
+        /**
+         * /// lodge.measure.viewport
+         * Measures width and height for the current viewport size.
+         *
+         * @returns {object} Sets return.x to width (px) and return.y to height (px)
+         *
+         ************************************************************************************ */
         viewport() {
           /*
 						x: viewport width
@@ -1071,6 +1111,15 @@ if (!window.lodge) {
           };
         },
 
+        /**
+         * /// lodge.measure.scrollheight
+         * Measures The total scroll height of the current window. Used in resizing iframes
+         * to make sure we don't show scrollbars, and takes the largest value of all the
+         * variou ways different browsers measure height.
+         *
+         * @returns {number} height in px
+         *
+         ************************************************************************************ */
         scrollheight() {
           // returns scrollable content height
           const db = document.body;
@@ -1093,6 +1142,14 @@ if (!window.lodge) {
        *
        ************************************************************************************** */
       validate: {
+        /**
+         * /// lodge.validate.email
+         * Validates a string against a holy shit level regex to check if it's a valid email
+         * address. Who knows what's in that black magic.
+         *
+         * @returns {boolean} valid or no
+         *
+         ************************************************************************************ */
         email({ address }) {
           // hell no i didn't write this long, bonkers regex
           // thanks to: https://stackoverflow.com/a/46181
