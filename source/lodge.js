@@ -389,12 +389,11 @@ if (!window.lodge) {
           // get the template
           this.ajax.jsonp({
             url: `${vv.path}/templates/${templateName}.js`,
-            method: "callback",
             callback: function templateLoaded(json) {
               templates[templateName] = json.template;
               successCallback(json.template);
             },
-            forceCallbackName: `lodge${templateName}Callback`,
+            remoteCallback: `_${templateName}Callback`,
           });
 
           if (loadCSS) {
@@ -685,12 +684,22 @@ if (!window.lodge) {
       /** *************************************************************************************
        *
        * /// lodge.debug {object}
-       * Store debug messages for grouping OR dump a message / all stored messages
+       * Outputs messages and object details to the dev console.
        *
        ************************************************************************************** */
       debug: {
         show: false, // debug flag set in _constructor by detecting a ?debug=true querystring
 
+        /**
+         * /// lodge.debug.store
+         * Stores debug messages in a queue to be processed later. Used for messages that are
+         * sent beore lodge is fully loaded, or for grouped messages.
+         *
+         * @param {object} debug
+         * @param {object} debug.message - The message to output to the console.
+         * @param {object} debug.obj - An object attachment that will be output along with the message. Allows for more in-depth debugging.
+         *
+         ************************************************************************************ */
         store({ message, obj }) {
           // making a debug message queue
           const vv = window.lodge;
@@ -700,6 +709,15 @@ if (!window.lodge) {
           vv.storage.debug.push({ message, obj });
         },
 
+        /**
+         * /// lodge.debug.out
+         * Outputs debug messages or message groups to the dev console.
+         *
+         * @param {object} debug
+         * @param {object} debug.message - The message to output to the console.
+         * @param {object} debug.obj - An object attachment that will be output along with the message. Allows for more in-depth debugging.
+         *
+         ************************************************************************************ */
         out({ message, obj }) {
           const vv = window.lodge;
 
@@ -778,16 +796,29 @@ if (!window.lodge) {
       /** *************************************************************************************
        *
        * /// lodge.ajax {object}
-       * Object wrapping XHR calls cross-browser and providing form encoding for POST
+       * Object wrapping XHR and JSONP calls. Also provides form encoding for POST forms.
        *
        ************************************************************************************** */
       ajax: {
-        /*
-         * window.lodge.ajax.send(string url, string postString, function successCallback)
-         * Do a POST or GET request via XHR/AJAX. Passing a postString will
-         * force a POST request, whereas passing false will send a GET.
-         */
-        send({ url, postString, successCallback, failureCallback = false }) {
+        /**
+         * /// lodge.ajax.send
+         * Sends a GET or POST request with the response sent to success or failure callback
+         * functions. Passing a postString will force a POST request. Omitting it will result
+         * in a GET request.
+         *
+         * @param {object} xhr
+         * @param {string} xhr.url - The endpoint where we're sending our request.
+         * @param {string} xhr.postString - A POST string (value=1&other=2) from an encoded form that will be sent with the request.
+         * @param {function} xhr.successCallback - A callback function called on a success (200) state.
+         * @param {function} xhr.failureCallback - A callback function called on a fail (!200) state.
+         *
+         ************************************************************************************ */
+        send({
+          url,
+          postString = false,
+          successCallback,
+          failureCallback = false,
+        }) {
           const method = "POST";
           const xhr = new XMLHttpRequest();
           if (xhr) {
@@ -815,68 +846,41 @@ if (!window.lodge) {
           }
         },
 
-        jsonp({ url, method, callback, forceCallbackName }) {
-          // lifted from Oscar Godson here:
-          // http://oscargodson.com/posts/unmasking-jsonp.html
-
-          // added the forceCallbackName bits, and callback queing/stacking
-
-          url = url || "";
-          method = method || "";
-          callback = callback || function newFunction() {};
-          forceCallbackName = forceCallbackName || false;
-
-          let generatedFunction = null;
-          let oldCallback = function oldCallback() {};
-
-          if (typeof method === "function") {
-            callback = method;
-            method = "callback";
-          }
-
-          if (forceCallbackName) {
-            // this is weird. it looks to see if the callback is already defined
-            // if it is it means we hit a race condition loading the template and
-            // handling the callback.
-            generatedFunction = forceCallbackName;
-            if (typeof window[generatedFunction] === "function") {
-              // we grab the old callback, create a new closure for it, and call
-              // it in our new callback — nests as deep as it needs to go, calling
-              // every callback in reverse order
-              oldCallback = window[generatedFunction];
-            }
-          } else {
-            generatedFunction = `jsonp${Math.round(Math.random() * 1000001)}`;
-          }
-
-          window[generatedFunction] = function generated(json) {
+        /**
+         * /// lodge.ajax.jsonp
+         * Does a JSONP request for a remote script, which we use primarily to load templates
+         * stored in JSON as scripts we can then use in lodge.
+         *
+         * Boiled down from https://github.com/OscarGodson/JSONP/blob/master/JSONP.js
+         *
+         * @param {object} jsonp
+         * @param {string} jsonp.url - The script URL to be called.
+         * @param {function} jsonp.callback - Our callback function that takes the resulting JSON as an argument.
+         * @param {string} jsonp.remoteCallback - The name of the remote callback function.
+         *
+         ************************************************************************************ */
+        jsonp({ url, callback, remoteCallback = "callback" }) {
+          // callback wrapper is a basic function we define as a global under the window object.
+          // it waits to be called by the injected JSONP script and then deletes itself.
+          window[remoteCallback] = function wrapper(json) {
             callback(json);
-            if (!forceCallbackName) {
-              delete window[generatedFunction];
-            } else {
-              // here we start the weird loop down through all the defined
-              // callbacks. if no callbacks were defined oldCallback is an
-              // empty function so it does nothing.
-              oldCallback(json);
-            }
+            delete window[remoteCallback];
           };
 
-          if (url.indexOf("?") === -1) {
-            url += "?";
-          } else {
-            url += "&";
-          }
-
+          // create a script node and reference the remote callback and local callback
           const s = document.createElement("script");
-          s.setAttribute("src", `${url + method}=${generatedFunction}`);
+          s.setAttribute("src", url);
+          // add the script node to the DOM
           document.getElementsByTagName("head")[0].appendChild(s);
         },
 
-        /*
-         * window.lodge.ajax.encodeForm(object form)
-         * Takes a form object returned by a document.getElementBy... call
-         * and turns it into a querystring to be used with a GET or POST call.
-         */
+        /**
+         * /// lodge.ajax.encodeForm
+         * Takes a form element and *LIKE MAGIC* turns it into a query string. Like magic.
+         *
+         * @param {object} form
+         *
+         ************************************************************************************ */
         encodeForm(form) {
           if (typeof form !== "object") {
             return false;
