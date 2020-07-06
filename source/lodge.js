@@ -77,9 +77,9 @@ if (!window.lodge) {
           // chop off last 9 characters for '/lodge.js' -- not just a replace in case
           // a directory is actually named 'lodge.js'
           vv.path = script.src.substr(0, script.src.length - 9);
+          // get and store options
+          lodge.options = String(script.getAttribute("data-options"));
         }
-        // get and store options
-        lodge.options = String(script.getAttribute("data-options"));
 
         // find all <embed> tags with the lodge class (embed.lodge) and process them
         vv._findEmbeds();
@@ -304,7 +304,6 @@ if (!window.lodge) {
             handler: "checkout.begin",
             require: "checkout/checkout.js",
           },
-          addoverlaytrigger: { handler: "overlay.addOverlayTrigger" },
           injectcss: { handler: "styles.injectCSS" },
           overlayhide: { handler: "overlay.hide" },
           overlayreveal: { handler: "overlay.reveal" },
@@ -1147,10 +1146,12 @@ if (!window.lodge) {
          * Validates a string against a holy shit level regex to check if it's a valid email
          * address. Who knows what's in that black magic.
          *
+         * @param {string} email - The email address to test.
+         *
          * @returns {boolean} valid or no
          *
          ************************************************************************************ */
-        email({ address }) {
+        email(address) {
           // hell no i didn't write this long, bonkers regex
           // thanks to: https://stackoverflow.com/a/46181
           // eslint-disable-next-line no-useless-escape
@@ -1162,7 +1163,8 @@ if (!window.lodge) {
       /** *************************************************************************************
        *
        * /// lodge.overlay {object}
-       * Build, modify, hide, or reveal the modal overlay.
+       * Build, modify, hide, or reveal a consistent modal overlay in the main window and give
+       * all lodge embeds access to it.
        *
        ************************************************************************************** */
       overlay: {
@@ -1171,6 +1173,17 @@ if (!window.lodge) {
         loadingContent: false,
         callbacks: [],
 
+        /**
+         * /// lodge.overlay.setLoading
+         * Sets a string (can contain markup) for the loading screen of the overlay. Note:
+         * because this is often called via embed event postMessage the loadString parameter
+         * exists in a deconstructed object even though it is a single parameter. This makes
+         * it easier to pass the event data object straight to this function.
+         *
+         * @param {object} overlay
+         * @param {string} overlay.loadString - The content string for the loading state.
+         *
+         ************************************************************************************ */
         setLoading({ loadString }) {
           const vv = window.lodge;
           vv.overlay.loadingContent = loadString.toString();
@@ -1185,6 +1198,13 @@ if (!window.lodge) {
           }
         },
 
+        /**
+         * /// lodge.overlay.showLoading
+         * Displays the loading screen for the overlay. This can be triggered to show a
+         * progress indicator as a component loads templates or if there's an extended action
+         * like an API call.
+         *
+         ************************************************************************************ */
         showLoading() {
           const vv = window.lodge;
           if (vv.overlay.loadingContent) {
@@ -1192,6 +1212,14 @@ if (!window.lodge) {
           }
         },
 
+        /**
+         * /// lodge.overlay.create
+         * Loads the overlay template/CSS and creates necessary DOM elements to go with it.
+         * Called automatically as part of the lodge _constructor setup.
+         *
+         * @param {function} [callback] - Fired once all elements are created and the overlay template/styles have loaded.
+         *
+         ************************************************************************************ */
         create(callback) {
           const vv = window.lodge;
           const self = vv.overlay;
@@ -1229,6 +1257,12 @@ if (!window.lodge) {
           }
         },
 
+        /**
+         * /// lodge.overlay.hide
+         * Hides the overlay and unloads content. Also does some CSS class manipulation to
+         * make sure normal page scroll is restored.
+         *
+         ************************************************************************************ */
         hide() {
           const vv = window.lodge;
           const self = vv.overlay;
@@ -1262,6 +1296,16 @@ if (!window.lodge) {
           }
         },
 
+        /**
+         * /// lodge.overlay.reveal
+         * Takes content, either DOM nodes or a markup string, and inserts it into the
+         * overlay before making sure the overlay is visible.
+         *
+         * @param {object} overlay
+         * @param {string|object} overlay.innerContent - Either a DOM node tree or string representation of content to be shown in the overlay.
+         * @param {string} [overlay.wrapClass="vv-component"] - A class name for the wrapper DIV. Allows for easy styling of content shown in the overlay.
+         *
+         ************************************************************************************ */
         reveal({ innerContent, wrapClass = "vv-component" }) {
           // add the correct content to the content div
           const vv = window.lodge;
@@ -1322,35 +1366,6 @@ if (!window.lodge) {
             }
           }
         },
-
-        addOverlayTrigger({ content, className, ref }) {
-          const vv = window.lodge;
-          // const self = vv.overlay;
-          const db = document.body;
-          if (vv.embedded) {
-            vv.events.fire({
-              obj: vv,
-              type: "addoverlaytrigger",
-              data: {
-                content,
-                className,
-                ref,
-              },
-            });
-          } else {
-            const el = document.createElement("div");
-            el.className = `${className.toString()} vv-overlaytrigger`;
-            el.addEventListener("click", function addTrigger(e) {
-              vv.overlay.reveal({ innerContent: content });
-              this.style.visibility = "hidden";
-              e.preventDefault();
-              return false;
-            });
-            db.appendChild(el);
-            vv.storage[ref] = el;
-            vv.events.fire({ obj: vv, type: "triggeradded", data: { ref } });
-          }
-        },
       }, /// END lodge.overlay
 
       /** *************************************************************************************
@@ -1361,6 +1376,14 @@ if (!window.lodge) {
        *
        ************************************************************************************** */
       styles: {
+        /**
+         * /// lodge.overlay.resolveElement
+         * A mostly internal function that allows a DOM element to be found either by internal
+         * storage reference or using standard DOM querySelector.
+         *
+         * @param {string} el - A pointer to the element — either the internal storage id, prepended with "storage:" or a string that can be passed to querySelector.
+         *
+         ************************************************************************************ */
         resolveElement(el) {
           if (typeof el === "string") {
             if (el.substr(0, 8) === "storage:") {
@@ -1371,7 +1394,17 @@ if (!window.lodge) {
           return el;
         },
 
-        addClass({ el, className, top }) {
+        /**
+         * /// lodge.overlay.addClass
+         * Adds a CSS class to a given element.
+         *
+         * @param {object} style
+         * @param {string|object} style.el - A pointer to the element — either the internal storage id, prepended with "storage:", a string that can be passed to querySelector, or a pointer to the element itself.
+         * @param {string} style.className - The class name to add to the element.
+         * @param {boolean} [style.top=false] - If top is set to true, addClass will fire an event asking the main window to add a class to a specific element. Primarily used to interact with the overlay.
+         *
+         ************************************************************************************ */
+        addClass({ el, className, top = false }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
             vv.events.fire({
@@ -1390,10 +1423,33 @@ if (!window.lodge) {
           }
         },
 
+        /**
+         * /// lodge.overlay.hasClass
+         * Tests if a given element currently has a given class assigned to it.
+         *
+         * @param {object} style
+         * @param {string|object} style.el - A pointer to the element — either the internal storage id, prepended with "storage:", a string that can be passed to querySelector, or a pointer to the element itself.
+         * @param {string} style.className - The class name to test.
+         *
+         * @returns {boolean} is class present
+         *
+         ************************************************************************************ */
         hasClass({ el, className }) {
+          const vv = window.lodge;
+          el = vv.styles.resolveElement(el);
           return ` ${el.className} `.indexOf(` ${className} `) > -1;
         },
 
+        /**
+         * /// lodge.overlay.injectCSS
+         * Injects a new <link> or <style> tag into a page, altering styles in the global scope.
+         *
+         * @param {object} style
+         * @param {string} style.css - Either a URL or a string of CSS rules. URL will be auto-detected and set as the rel for a <link> element, where a CSS string will be included in a style tag.
+         * @param {boolean} [style.important=false] - By default, CSS will be added at the top of the <head>, allowing other CSS to take precedence. If important is true the CSS will be injected at the end of <head>, allowing it to be last in the cascade.
+         * @param {boolean} [style.top=false] - If top is set to true, injectCSS will fire an event asking the main window to add the CSS at that level instead of in the embed.
+         *
+         ************************************************************************************ */
         injectCSS({ css, important = false, top = false }) {
           const vv = window.lodge;
           let el;
@@ -1435,7 +1491,17 @@ if (!window.lodge) {
           }
         },
 
-        removeClass({ el, className, top }) {
+        /**
+         * /// lodge.overlay.removeClass
+         * Removes a CSS class from a given element.
+         *
+         * @param {object} style
+         * @param {string|object} style.el - A pointer to the element — either the internal storage id, prepended with "storage:", a string that can be passed to querySelector, or a pointer to the element itself.
+         * @param {string} style.className - The class name to remove from the element.
+         * @param {boolean} [style.top=false] - If top is set to true, removeClass will fire an event asking the main window to remove a class from a specific element. Primarily used to interact with the overlay.
+         *
+         ************************************************************************************ */
+        removeClass({ el, className, top = false }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
             vv.events.fire({
@@ -1459,7 +1525,18 @@ if (!window.lodge) {
           }
         },
 
-        swapClasses({ el, oldClass, newClass, top }) {
+        /**
+         * /// lodge.overlay.swapClasses
+         * Swaps one class name to another. Think ".visible" changing to ".hidden" to trigger states.
+         *
+         * @param {object} style
+         * @param {string|object} style.el - A pointer to the element — either the internal storage id, prepended with "storage:", a string that can be passed to querySelector, or a pointer to the element itself.
+         * @param {string} style.oldClass - The class name we're swapping out.
+         * @param {string} style.newClass - The class name we're swapping in.
+         * @param {boolean} [style.top=false] - If top is set to true, swapClasses will fire an event asking the main window to swap classes on a specific element. Primarily used to interact with the overlay.
+         *
+         ************************************************************************************ */
+        swapClasses({ el, oldClass, newClass, top = false }) {
           const vv = window.lodge;
           if (top && vv.embedded) {
             vv.events.fire({
@@ -1486,6 +1563,10 @@ if (!window.lodge) {
       },
     }; /// END △△ lodge {object}
 
+    //
+    //
+    //
+    //
     // now we check if the DOM is loaded and call lodge._constructor() if/when it is.
     if (document.readyState === "loading") {
       // Loading hasn't finished yet
