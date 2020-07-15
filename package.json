@@ -21,8 +21,8 @@
   },
   "browserslist": "> 0.25%, not dead",
   "scripts": {
-    "build": "babel source --out-dir lib --copy-files --presets=@babel/preset-env,minify",
-    "run": "ws"
+    "build": "babel source --out-dir lib --copy-files --no-comments --presets=@babel/preset-env,minify",
+    "start": "ws"
   },
   "repository": {
     "type": "git",
