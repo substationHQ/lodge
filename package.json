@@ -1,0 +1,37 @@
+{
+  "name": "@substation/lodge",
+  "version": "0.8.0",
+  "description": "A front-end library managing embeds, modals, and events across iframes",
+  "main": "source/lodge.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.10.4",
+    "babel-preset-minify": "^0.5.1",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jsdoc": "^3.6.4",
+    "jsdocs": "^1.0.0",
+    "local-web-server": "^4.2.1",
+    "prettier": "^2.0.5"
+  },
+  "browserslist": "> 0.25%, not dead",
+  "scripts": {
+    "build": "babel source --out-dir lib --copy-files --presets=@babel/preset-env,minify",
+    "run": "ws"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/substation-me/lodge.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/substation-me/lodge/issues"
+  },
+  "homepage": "https://github.com/substation-me/lodge#readme"
+}

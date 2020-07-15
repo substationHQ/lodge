@@ -1,13 +1,6 @@
 /**
  * Handle images/videos/embeds in the primary lodge.js overlay
  *
- * COMPRESSION SETTINGS
- * http://closure-compiler.appspot.com/
- * Closure compiler, SIMPLE MODE, then append a semi-colon to the front to be careful
- *
- * PUBLIC-ISH FUNCTIONS
- * window.lodge.lightbox.injectIframe(url url)
- *
  * @author Jesse von Doom
  * @link http://lodge.glitch.me/
  *
@@ -36,7 +29,7 @@
  *
  * */
 
-(function () {
+(function lightbox() {
   const vv = window.lodge;
   vv.lightbox = {
     injectIframe(url) {
@@ -75,7 +68,7 @@
       if (caption) {
         markup += `<div class="vv-gallery-caption">${caption}</div>`;
       }
-      vv.overlay.reveal({innerContent: markup, wrapClass: "vv-gallery"});
+      vv.overlay.reveal({ innerContent: markup, wrapClass: "vv-gallery" });
       if (gallery) {
         const prev = document.createElement("div");
         prev.className = "vv-gallery-prev";
@@ -106,16 +99,16 @@
       let g = keys[keys.length - 1];
       let r = obj[keys[0]];
       let m = 1;
-      if (w == "prev") {
+      if (w === "prev") {
         g = keys[0];
         r = obj[keys[keys.length - 1]];
         m = -1;
       }
-      if (g == key) {
+      if (g === key) {
         return r;
       }
       for (let i = 0; i < keys.length; i++) {
-        if (keys[i] == key) {
+        if (keys[i] === key) {
           return obj[keys[i + m]];
         }
       }
