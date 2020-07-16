@@ -312,12 +312,16 @@ if (!window.lodge) {
           resize: { handler: "embeds.resize" },
           swapclasses: { handler: "styles.swapClasses" },
         };
-        let lodgeMessage = true;
+        let lodgeMessage = false;
 
-        try {
-          // find the source of the message in our embeds object
+        if (vv.embedded && window.parent === msg.source) {
+          // we're in an embed, so if the message came from the parent it's cool
+          lodgeMessage = true;
+        } else {
+          // not an embed? find the source of the message in our embeds object
           for (let i = 0; i < vv.embeds.all.length; i++) {
             if (vv.embeds.all[i].el.contentWindow === msg.source) {
+              lodgeMessage = true;
               if (!vv.embeds.all[i].el.source) {
                 vv.embeds.all[i].source = msg.source;
               }
@@ -325,8 +329,6 @@ if (!window.lodge) {
               break;
             }
           }
-        } catch (ee) {
-          lodgeMessage = false;
         }
 
         // we know it came from lodge, so let's figure out what to do with it
@@ -940,7 +942,7 @@ if (!window.lodge) {
          * @param {boolean} [event.localonly] - If called in an embed, do not bubble this event up to the main window.
          *
          ************************************************************************************ */
-        fire({ obj, type, data = "", target, localonly }) {
+        fire({ obj, type, data = "", target, localonly = false }) {
           const vv = window.lodge;
           if (target) {
             // target object found, so push to it via postMessage
@@ -970,27 +972,15 @@ if (!window.lodge) {
           } else {
             let e = null;
             // fire the event locally if not targeted
-            if (document.dispatchEvent) {
-              // standard
-              e = document.createEvent("CustomEvent");
-              e.initCustomEvent(type, false, false, data);
-              if (vv.embedded && !localonly) {
-                e.relay = true;
-                e.source = window; // window
-                e.origin = window.location.origin; // url
-              }
-              obj.dispatchEvent(e);
-            } else {
-              // dispatch for IE < 9
-              e = document.createEventObject();
-              e.detail = data;
-              if (vv.embedded && !localonly) {
-                e.relay = true;
-                e.source = window; // window
-                e.origin = window.location.origin; // url
-              }
-              obj.fireEvent(`on${type}`, e);
+            // standard
+            e = document.createEvent("CustomEvent");
+            e.initCustomEvent(type, false, false, data);
+            if (vv.embedded && !localonly) {
+              e.relay = true;
+              e.source = window; // window
+              e.origin = window.location.origin; // url
             }
+            obj.dispatchEvent(e);
             if (e.relay) {
               vv.events.relay({ type, data });
             }
