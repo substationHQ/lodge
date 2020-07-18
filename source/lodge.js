@@ -825,11 +825,14 @@ if (!window.lodge) {
          ************************************************************************************ */
         send({
           url,
-          postString = false,
+          postString = null,
           successCallback,
           failureCallback = false,
         }) {
-          const method = "POST";
+          let method = "POST";
+          if (!postString) {
+            method = "GET";
+          }
           const xhr = new XMLHttpRequest();
           if (xhr) {
             xhr.open(method, url, true);
