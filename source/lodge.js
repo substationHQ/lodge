@@ -78,7 +78,16 @@ if (!window.lodge) {
           // a directory is actually named 'lodge.js'
           vv.path = script.src.substr(0, script.src.length - 9);
           // get and store options
-          lodge.options = String(script.getAttribute("data-options"));
+          try {
+            lodge.options = JSON.parse(
+              `{"${script
+                .getAttribute("data-options")
+                .replace(/&/g, '","')
+                .replace(/=/g, '":"')}"}`
+            );
+          } catch (error) {
+            lodge.options = "error";
+          }
         }
 
         // find all <embed> tags with the lodge class (embed.lodge) and process them
@@ -105,7 +114,7 @@ if (!window.lodge) {
         // if we're running in an iframe assume it's an embed (won't do any harm if not)
         if (self !== top) {
           // first check for noembed. if we find it AND we're in an iframe die immediately
-          if (vv.options.indexOf("noembed") !== -1) {
+          if (vv.options.noembed) {
             return false;
           }
           vv.styles.addClass({
@@ -130,7 +139,7 @@ if (!window.lodge) {
         const imgTest = document.querySelectorAll(
           "a.lodge.gallery,div.lodge.gallery"
         );
-        if (vv.options.indexOf("lightboxvideo") !== -1 || imgTest.length > 0) {
+        if (vv.options.lightboxvideo || imgTest.length > 0) {
           // load lightbox.js
           vv.getScript({ url: `${vv.path}/lightbox/lightbox.js` });
         }
