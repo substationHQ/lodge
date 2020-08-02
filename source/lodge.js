@@ -847,10 +847,10 @@ if (!window.lodge) {
               xhr.onreadystatechange = function doCallbacks() {
                 if (xhr.readyState === 4) {
                   if (xhr.status === 200) {
-                    successCallback(xhr.responseText);
+                    successCallback(null, xhr.responseText);
                   } else if (typeof failureCallback === "function") {
                     // testing typof to ensure we've got a callback to call
-                    failureCallback(xhr.responseText);
+                    failureCallback({ error: xhr.responseText }, null);
                   }
                 }
               };

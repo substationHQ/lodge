@@ -203,14 +203,14 @@
                             vv.ajax.send({
                               url: options.endpoint,
                               postString: poststring,
-                              successCallback: function reveal(r) {
-                                if (r === "OK") {
+                              successCallback: function reveal(e, r) {
+                                if (e) {
                                   vv.overlay.reveal({
-                                    innerContent: `<h2 class="vv-checkout-success">${options.successMsg}</h2>`,
+                                    innerContent: `<h2 class="vv-checkout-error">${options.errorMsg}</h2>`,
                                   });
                                 } else {
                                   vv.overlay.reveal({
-                                    innerContent: `<h2 class="vv-checkout-error">${options.errorMsg}</h2>`,
+                                    innerContent: `<h2 class="vv-checkout-success">${options.successMsg}</h2>`,
                                   });
                                 }
                               },
