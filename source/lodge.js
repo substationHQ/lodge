@@ -846,7 +846,7 @@ if (!window.lodge) {
             if (typeof successCallback === "function") {
               xhr.onreadystatechange = function doCallbacks() {
                 if (xhr.readyState === 4) {
-                  if (xhr.status === 200) {
+                  if (xhr.status === 200 || xhr.status === 201) {
                     successCallback(null, xhr.responseText);
                   } else if (typeof failureCallback === "function") {
                     // testing typof to ensure we've got a callback to call
