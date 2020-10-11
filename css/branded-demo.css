@@ -1,0 +1,80 @@
+/* Brand starter pack */
+@import url('https://fonts.googleapis.com/css?family=Quicksand|Roboto+Slab:300&display=swap');
+
+*, *::before, *::after{
+    box-sizing: border-box;
+}
+
+:root{
+    font-size: 20px;
+}
+body{
+    font-family: "Roboto Slab";
+    font-weight: 300;
+}
+h1,h2,h3,h4,h5,h6{
+    font-family: Quicksand;
+}
+main {
+    position: relative;
+}
+.slashes-overprint{
+    background-image: url('/assets/slashes-overprint.svg');
+    background-repeat: no-repeat;
+    height: 50em;
+    left: -35vw;
+    min-width: 520px;
+    position: absolute;
+    top: -40vh;
+    width: 100%;
+}
+
+.logo-lodge-w{
+    background-image: url('/assets/logo-lodge-w.svg');
+    background-repeat: no-repeat;
+    height: 10em;
+    width: 11em;
+    position: absolute;
+    left: 12%;
+    top: 20%;
+}
+
+
+/* Layout for this page specifically */
+
+main {
+    max-width: 25em;
+    margin: 0 auto;
+    padding-top: 10em;
+}
+
+.logo-lodge::before {
+    content: '';
+    background-image: url('/assets/logo-lodge.svg');
+    display: inline-block;
+    background-repeat: no-repeat;
+    height: .8em;
+    width: 1.2em;
+}
+
+.icon-paragraph {
+    position: relative;
+}
+
+.icon-paragraph::before {
+    content: '';
+    display: block;
+    background-repeat: no-repeat;
+    height: 5em;
+    width: 5em;
+    position: absolute;
+    left: -5em;
+}
+
+.feature-embed::before {
+    background-image: url('/assets/feature-embed.svg');
+}
+
+.feature-overlay::before {
+    background-image: url('/assets/feature-overlay.svg');
+}
