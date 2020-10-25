@@ -39,14 +39,42 @@ main {
     top: 20%;
 }
 
+footer {
+    padding-top: 8em;
+    position: relative;
+}
+footer::before{
+    content:'';
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 8em;
+    display: block;
+    background-image: url('/assets/wordmark-overprint.svg');
+    background-repeat: no-repeat;
+    background-position: center 5%;
+    background-size: 200%;
+}
+.footer-logo-wrap{
+    background: black;
+    text-align: center;
+    padding: 0.5em;
+}
+.footer-logo {
+    display: block;
+    margin: 0 auto;
+    line-height: 1;
+}
+
 
 /* Layout for this page specifically */
 
-main {
+.intro{
     max-width: 25em;
     margin: 0 auto;
     padding-top: 10em;
 }
+
 
 .logo-lodge::before {
     content: '';
@@ -77,4 +105,50 @@ main {
 
 .feature-overlay::before {
     background-image: url('/assets/feature-overlay.svg');
+}
+
+.alt-section {
+    color: white;
+    position: relative;
+    padding: 0.5em 4vw;
+    background-image: url('/assets/lodge-logo-darkgray.svg');
+    background-position: bottom 125% right -100px;
+    background-color: black;
+    background-repeat: no-repeat;
+    background-size: 400px;
+    justify-content: center;
+    display: flex;
+}
+
+.content {
+    width: 100%;
+    padding: 0 1em;
+    max-width: 60em;
+}
+
+.split-content{
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 2em;
+    max-width: 1000px;
+    margin: 4em auto 1em;
+}
+
+.split-content section {
+    background: #ccc;
+    min-height: 100px;
+    padding: 1em;
+    margin: 0.5em;
+    flex: 1;
+    min-width: 300px;
+}
+
+.split-content .narrow{
+    max-width: 400px;
+}
+.split-content .narrow > div {
+    margin-bottom: 1em;
+}
+.split-content .docs {
+    margin-top: 4em;
 }
