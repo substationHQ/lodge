@@ -819,16 +819,10 @@ if (!window.lodge) {
          * @param {object} xhr
          * @param {string} xhr.url - The endpoint where we're sending our request.
          * @param {string} xhr.postString - A POST string (value=1&other=2) from an encoded form that will be sent with the request.
-         * @param {function} xhr.successCallback - A callback function called on a success (200) state.
-         * @param {function} xhr.failureCallback - A callback function called on a fail (!200) state.
+         * @param {function} xhr.callback - A callback function called with results, using (err, result) footprint
          *
          ************************************************************************************ */
-        send({
-          url,
-          postString = null,
-          successCallback,
-          failureCallback = false,
-        }) {
+        send({ url, postString = null, callback }) {
           let method = "POST";
           if (!postString) {
             method = "GET";
@@ -843,14 +837,14 @@ if (!window.lodge) {
                 "application/x-www-form-urlencoded"
               );
             }
-            if (typeof successCallback === "function") {
-              xhr.onreadystatechange = function doCallbacks() {
+            if (typeof callback === "function") {
+              xhr.onreadystatechange = function doCallback() {
                 if (xhr.readyState === 4) {
                   if (xhr.status >= 200 && xhr.status <= 299) {
-                    successCallback(null, xhr.responseText);
-                  } else if (typeof failureCallback === "function") {
+                    callback(null, xhr.responseText);
+                  } else {
                     // testing typof to ensure we've got a callback to call
-                    failureCallback({ error: xhr.responseText }, null);
+                    callback({ error: xhr.responseText }, null);
                   }
                 }
               };
