@@ -1266,7 +1266,6 @@ if (!window.lodge) {
           if (vv.embedded) {
             vv.events.fire({ obj: vv, type: "overlayhide" }); // request that the parent hides overlay
           } else {
-            self.content.style.opacity = 0;
             vv.events.fire({ obj: vv, type: "overlayhidden" }); // announce it's been hidden
 
             // self.content.innerHTML = '';
@@ -1320,9 +1319,10 @@ if (!window.lodge) {
               },
             });
           } else {
-            // if the overlay is already visible, kill the contents first
-            if (self.content.style.opacity === 1) {
-              self.content.innerHTML = "";
+            // empty the content of the overlay — only needed if it hasn't been closed,
+            // but doesn't hurt anything if it's empty
+            while (self.content.firstChild) {
+              self.content.removeChild(self.content.firstChild);
             }
             positioning.className = "vv-position";
             wrapper.className = wrapClass;
@@ -1348,18 +1348,17 @@ if (!window.lodge) {
               });
             }
 
-            // if not already showing, go!
-            if (self.content.style.opacity !== 1) {
+            if (self.content.parentNode !== db) {
               self.content.style.opacity = 0;
               db.appendChild(self.content);
               db.appendChild(self.close);
               // force style refresh/redraw on element (dumb fix, older browsers)
               // eslint-disable-next-line no-unused-expressions
               window.getComputedStyle(self.content).opacity;
-              // initiate fade-in
-              self.content.style.opacity = 1;
-              vv.events.fire({ obj: vv, type: "overlayrevealed" }); // broadcast that it's revealed
             }
+            // will initiate fade-in if needed
+            self.content.style.opacity = 1;
+            vv.events.fire({ obj: vv, type: "overlayrevealed" }); // broadcast that it's revealed
           }
         },
       }, /// END lodge.overlay
