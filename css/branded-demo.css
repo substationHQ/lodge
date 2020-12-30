@@ -118,11 +118,11 @@ footer::before{
     position: relative;
     padding: 0.5em 4vw;
     margin: 0 -0.5em;
-    background-image: url('/assets/lodge-logo-darkgray.svg');
-    background-position: bottom 125% right -100px;
+    /* background-image: url('/assets/lodge-logo-darkgray.svg');
+    background-position: bottom 125% right -100px; */
     background-color: black;
-    background-repeat: no-repeat;
-    background-size: 400px;
+    /* background-repeat: no-repeat;
+    background-size: 400px; */
     justify-content: center;
     display: flex;
 }
@@ -134,19 +134,25 @@ footer::before{
 }
 
 .split-content{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    margin-top: 2em;
+    display: flex;
+    flex-wrap: wrap;
     max-width: 1000px;
-    margin: 4em auto 1em;
+    margin: 0em auto 1em;
 }
 
 .split-content section {
-    background: #ccc;
     min-height: 100px;
     padding: 1em;
     margin: 0.5em;
+    flex: 1;
+    min-width: 300px;
 }
+
+.split-content .narrow{
+    max-width: 400px;
+    margin-top: 4em;
+}
+
 
 .split-content .narrow > div {
     margin-bottom: 1em;

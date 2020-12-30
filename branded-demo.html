@@ -38,22 +38,55 @@
             <div class="content">
                 <h2>What do you want an embed to do?</h2>
                 <p>
-                    [demos here]
+                    Lodge is intended to bring consistency in interaction to the little workflows we often reinvent — modals, quick forms, embeds, even checkout flow. The idea is a single lightweight library that can provide simplified modal content, securely synchronize events between windows, and generally make working bite-sized functionality much simpler.
                 </p>
             </div>
         </section>
         <div class="split-content">
             <div class="narrow">
                 <section class="features">
-                    [feature details]
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sin autem eos non probabat, quid attinuit cum iis, quibuscum re concinebat, verbis discrepare? Vulgo enim dicitur: Iucundi acti labores, nec male Euripidesconcludam, si potero, Latine; Intellegi quidem, ut propter aliam quampiam rem, verbi gratia propter voluptatem, nos amemus; Pauca mutat vel plura sane;
+                    <h3>Features</h3> 
+                    <ul>
+                        <li><span class="logo"></span>Easily create iframe embeds with secure cross-window event relays</li>
+                        <li>
+                        <span class="logo"></span>A universal and responsive 
+                        <span class="vv-modalopen"><a href="" target="_blank">modal overlay</a></span>
+                        </li>
+                        <li><span class="logo"></span>Debug mode to help see what's happening while you build</li>
+                        <li><span class="logo"></span>Override CSS of embeds with a simple data attribute</li>
+                        <li><span class="logo"></span>Automatically <a href="https://www.youtube.com/watch?v=WQPfQvLIseA">show</a> <a href="https://vimeo.com/15744536">videos</a> in a modal overlay (optional)</li>
+                        <li><span class="logo"></span>Request simple user input with generated modal forms</li>
+                    </ul>
                 </section>
                 <section class="links">[github, glitch, etc]</section>
             </div>
-            <section class="docs">[docs]
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quid igitur dubitamus in tota eius natura quaerere quid sit effectum? Utilitatis causa amicitia est quaesita. Ita ceterorum sententiis semotis relinquitur non mihi cum Torquato, sed virtuti cum voluptate certatio. Tu autem, si tibi illa probabantur, cur non propriis verbis ea tenebas? Uterque enim summo bono fruitur, id est voluptate. Nulla erit controversia. 
-
-Nihil opus est exemplis hoc facere longius. Quae animi affectio suum cuique tribuens atque hanc, quam dico. Duo Reges: constructio interrete. Quonam, inquit, modo? Pauca mutat vel plura sane; Portenta haec esse dicit, neque ea ratione ullo modo posse vivi; Quid est, quod ab ea absolvi et perfici debeat? Itaque haec cum illis est dissensio, cum Peripateticis nulla sane. Dempta enim aeternitate nihilo beatior Iuppiter quam Epicurus; Satis est tibi in te, satis in legibus, satis in mediocribus amicitiis praesidii.
+            <section class="docs">
+                <h3 id="docs">Quick usage overview</h3>
+                <p>
+                  Embeds are created with a single line of code:<br>
+                  <code>&lt;embed class="lodge" src="embed.html"&gt;</code>
+                </p>
+                <p>
+                  To force an override of the embed's CSS rules, just add a data attribute:<br>
+                  <code>data-css=".logo{color:#a00;}"</code>
+                </p>
+                <p>
+                  Want to use different styles for an embed and a modal? No problem. Just add CSS. Look for these classes
+                  situationally added to the main html element:<br>
+                  <code>.vv-embed, .vv-modal</code>
+                </p>
+                <p>
+                  It's all event driven, and Lodge will tell you when it's ready:
+                  <code>
+                    window.lodge.events.add(vv,'ready', function(e) {<br>
+                      &nbsp;&nbsp;// ...do something <br>
+                    });
+                  </code>
+                </p>
+                <p>
+                  Need to see what's happening in real-time as your scripts run? Pop open the console and add '?debug=true' to
+                  the URL. Easy.
+                </p>
             </section>
         </div>
     </main>
