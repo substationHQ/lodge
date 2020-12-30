@@ -45,7 +45,7 @@ main {
 }
 
 footer {
-    padding-top: 8em;
+    padding-top: 11vw;
     position: relative;
 }
 footer::before{
@@ -53,17 +53,17 @@ footer::before{
     position: absolute;
     top: 0;
     width: 100%;
-    height: 8em;
+    height: 11vw;
     display: block;
     background-image: url('/assets/wordmark-overprint.svg');
     background-repeat: no-repeat;
-    background-position: center 5%;
-    background-size: 200%;
+    background-position: center 0;
+    background-size: 225vw;
 }
 .footer-logo-wrap{
     background: black;
     text-align: center;
-    padding: 0.5em;
+    padding: 1em 0;
 }
 .footer-logo {
     display: block;
