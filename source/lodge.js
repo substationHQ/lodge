@@ -1555,7 +1555,61 @@ if (!window.lodge) {
             }
           }
         },
-      },
+      }, /// END lodge.overlay
+
+      /** *************************************************************************************
+       *
+       * /// lodge.prompt {object}
+       * Send a message to the user and prompt for close or input.
+       *
+       ************************************************************************************** */
+      prompt: {
+        /**
+         * /// lodge.prompt.message
+         * Displays a message in the overlay
+         *
+         * @param {object} message
+         * @param {object} message.message - The main message
+         * @param {object} message.context - Context and/or additional details
+         * @param {object} message.button - Text for the close button, default: "Close"
+         *
+         ************************************************************************************ */
+        message({ message, context, button = "Close" }) {
+          const vv = window.lodge;
+          let output = `<h2>${message}</h2>`;
+          if (context) output += `<p>${context}</p>`;
+          if (button) {
+            // the if statement means we can pass false to button and have no button display
+            output += `<button>${button}</button>`; // <-- obvious hot garbage placeholder
+          }
+          vv.overlay.reveal({ innerContent: output });
+        },
+
+        /**
+         * /// lodge.prompt.modal
+         * Displays a message requiring a user to choose between two buttons (OK / Cancel)
+         *
+         * @param {object} modal
+         * @param {object} modal.message - The main message / question
+         * @param {object} modal.context - Context and/or additional details
+         * @param {object} modal.buttons - Text for the "OK" / "Cancel" buttons
+         *
+         ************************************************************************************ */
+        modal({
+          message,
+          context,
+          buttons = { modal0: "Cancel", modal1: "OK" },
+        }) {
+          const vv = window.lodge;
+          let output = `<h2>${message}</h2>`;
+          if (context) output += `<p>${context}</p>`;
+          output += `<button>${buttons.modal0}</button>`; // <-- (another) obvious hot garbage placeholder
+          output += `<button>${buttons.modal1}</button>`; // <-- (yet another) obvious hot garbage placeholder
+          vv.overlay.reveal({ innerContent: output });
+          // TODO: need to relay the OK/Cancel choice back down, and we should do it with a
+          //       universal argument on the close event for the overlay? tomorrow problems...
+        },
+      }, /// END lodge.prompt
     }; /// END △△ lodge {object}
 
     //
