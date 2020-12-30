@@ -15,28 +15,33 @@ body{
 h1,h2,h3,h4,h5,h6{
     font-family: Quicksand;
 }
+h1{
+    font-size: 3em;
+}
+
 main {
     position: relative;
+    padding: 0 .5em;
 }
 .slashes-overprint{
     background-image: url('/assets/slashes-overprint.svg');
     background-repeat: no-repeat;
-    height: 50em;
-    left: -35vw;
-    min-width: 520px;
+    background-position-x: -18vw;
+    background-position-y: -18vw;
+    background-size: auto;
+    height: 60vw;
+    width: 60vw;
     position: absolute;
-    top: -40vh;
-    width: 100%;
 }
 
 .logo-lodge-w{
     background-image: url('/assets/logo-lodge-w.svg');
     background-repeat: no-repeat;
-    height: 10em;
-    width: 11em;
+    height: 30vw;
+    width: 30vw;
     position: absolute;
-    left: 12%;
-    top: 20%;
+    left: 5vw;
+    top: 5vw;
 }
 
 footer {
@@ -71,8 +76,9 @@ footer::before{
 
 .intro{
     max-width: 25em;
-    margin: 0 auto;
-    padding-top: 10em;
+    margin: 0 auto 2em;
+    padding-top: max(15vh, 8em);
+    min-height: 90vh;
 }
 
 
@@ -111,6 +117,7 @@ footer::before{
     color: white;
     position: relative;
     padding: 0.5em 4vw;
+    margin: 0 -0.5em;
     background-image: url('/assets/lodge-logo-darkgray.svg');
     background-position: bottom 125% right -100px;
     background-color: black;
@@ -127,8 +134,8 @@ footer::before{
 }
 
 .split-content{
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     margin-top: 2em;
     max-width: 1000px;
     margin: 4em auto 1em;
@@ -139,16 +146,8 @@ footer::before{
     min-height: 100px;
     padding: 1em;
     margin: 0.5em;
-    flex: 1;
-    min-width: 300px;
 }
 
-.split-content .narrow{
-    max-width: 400px;
-}
 .split-content .narrow > div {
     margin-bottom: 1em;
-}
-.split-content .docs {
-    margin-top: 4em;
 }
