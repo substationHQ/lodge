@@ -1127,7 +1127,7 @@ if (!window.lodge) {
             de.clientHeight
           );
         },
-      }, /// END lodge.events
+      }, /// END lodge.measure
 
       /** *************************************************************************************
        *
@@ -1338,7 +1338,12 @@ if (!window.lodge) {
          * @param {string} [overlay.wrapClass="vv-component"] - A class name for the wrapper DIV. Allows for easy styling of content shown in the overlay.
          *
          ************************************************************************************ */
-        reveal({ innerContent, wrapClass = "vv-component", modal = false }) {
+        reveal({
+          innerContent,
+          wrapClass = "vv-component",
+          modal = false,
+          buttons = false,
+        }) {
           // add the correct content to the content div
           const vv = window.lodge;
           const self = vv.overlay;
@@ -1353,6 +1358,8 @@ if (!window.lodge) {
               data: {
                 innerContent,
                 wrapClass,
+                modal,
+                buttons,
               },
             });
           } else {
@@ -1385,15 +1392,24 @@ if (!window.lodge) {
               });
             }
 
+            if (!modal) {
+              db.appendChild(self.close);
+            }
+            if (buttons) {
+              if (buttons.modal0) {
+                self.buttonFalse.textContent = buttons.modal0;
+                self.buttonFalse.style.display = "inline-block";
+              }
+              if (buttons.modal1) {
+                self.buttonFalse.textContent = buttons.modal1;
+                self.buttonTrue.style.display = "inline-block";
+              }
+              wrapper.appendChild(self.buttons);
+            }
+
             if (self.content.parentNode !== db) {
               self.content.style.opacity = 0;
               db.appendChild(self.content);
-              if (!modal) {
-                db.appendChild(self.close);
-              } else {
-                vv.overlay.buttonFalse.style.display = "inline-block";
-                vv.overlay.buttonTrue.style.display = "inline-block";
-              }
               // force style refresh/redraw on element (dumb fix, older browsers)
               // eslint-disable-next-line no-unused-expressions
               window.getComputedStyle(self.content).opacity;
@@ -1619,12 +1635,14 @@ if (!window.lodge) {
         message({ message, context = false, button = "Close" }) {
           const vv = window.lodge;
           let output = `<h2>${message}</h2>`;
+          let buttons = false;
           if (context) output += `<p>${context}</p>`;
-          if (button) {
-            // vv.overlay.buttonFalse.textContent = button;
-            // vv.overlay.buttonFalse.style.display = "inline-block";
-          }
-          vv.overlay.reveal({ innerContent: output });
+          if (button) buttons = { modal0: button, modal1: false };
+          console.log(buttons);
+          vv.overlay.reveal({
+            innerContent: output,
+            buttons,
+          });
         },
 
         /**
@@ -1645,11 +1663,11 @@ if (!window.lodge) {
           const vv = window.lodge;
           let output = `<h2>${message}</h2>`;
           if (context) output += `<p>${context}</p>`;
-          // vv.overlay.buttonFalse.textContent = buttons.modal0;
-          // vv.overlay.buttonTrue.textContent = buttons.modal1;
-          vv.overlay.reveal({ innerContent: output, modal: true });
-          // TODO: need to relay the OK/Cancel choice back down, and we should do it with a
-          //       universal argument on the close event for the overlay? tomorrow problems...
+          vv.overlay.reveal({
+            innerContent: output,
+            modal: true,
+            buttons,
+          });
         },
       }, /// END lodge.prompt
     }; /// END △△ lodge {object}
