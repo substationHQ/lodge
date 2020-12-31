@@ -2,3 +2,4 @@
 node_modules/
 .glitch-assets
 cypress/integration/examples/
+dist/
