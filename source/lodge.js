@@ -562,7 +562,6 @@ if (!window.lodge) {
                     a.addEventListener("click", function showIframe(e) {
                       vv.overlay.reveal({ innerContent: iframe });
                       e.preventDefault();
-                      return false;
                     });
                   })();
                 });
@@ -1223,22 +1222,15 @@ if (!window.lodge) {
 
           vv.styles.injectCSS({ css: `${vv.path}/templates/overlay.css` });
 
+          // first we create the overlay div for the whole overlay
           self.content = document.createElement("div");
           self.content.className = "vv-overlay";
-
-          self.close = document.createElement("div");
-          self.close.className = "vv-close";
-
-          window.addEventListener("keyup", function addKeyup(e) {
-            if (e.keyCode === 27) {
+          // bind the esc key to hiding the overlay
+          document.addEventListener("keyup", function addKeyup(e) {
+            if (e.key === "Escape") {
               if (self.content.parentNode === document.body) {
                 self.hide();
               }
-            }
-          });
-          self.close.addEventListener("click", function addClick() {
-            if (self.content.parentNode === document.body) {
-              self.hide();
             }
           });
           /*
@@ -1248,6 +1240,46 @@ if (!window.lodge) {
 						}
 					});
 					*/
+
+          // now the close button in the corner
+          self.close = document.createElement("div");
+          self.close.className = "vv-close";
+          self.close.addEventListener("click", function addClick() {
+            if (self.content.parentNode === document.body) {
+              self.hide();
+            }
+          });
+
+          // finally OK/Cancel buttons — these basically work
+          self.buttonTrue = document.createElement("button");
+          self.buttonTrue.style.display = "none";
+          self.buttonFalse = document.createElement("button");
+          self.buttonFalse.style.display = "none";
+          // add close events to the buttons, passing true/false
+          self.buttonTrue.addEventListener("click", function addClick() {
+            if (self.content.parentNode === document.body) {
+              const returnTarget = null;
+              const returnData = false;
+              // TODO: get data-target from the button to set target
+              window.lodge.overlay.hide({ returnData, returnTarget });
+              // TODO: clear data-target from the button
+            }
+          });
+          self.buttonFalse.addEventListener("click", function addClick() {
+            if (self.content.parentNode === document.body) {
+              const returnTarget = null;
+              const returnData = true;
+              // TODO: get data-target from the button to set target
+              window.lodge.overlay.hide({ returnData, returnTarget });
+              // TODO: clear data-target from the button
+            }
+          });
+
+          self.buttons = document.createElement("div");
+          self.buttons.className = "vv-buttons";
+          self.buttons.appendChild(self.buttonTrue);
+          self.buttons.appendChild(self.buttonFalse);
+
           if (typeof callback === "function") {
             callback();
           }
@@ -1258,7 +1290,12 @@ if (!window.lodge) {
          * Hides the overlay and unloads content. Also does some CSS class manipulation to
          * make sure normal page scroll is restored.
          *
+         * @param {object} overlay
+         * @param {data} overlay.returnData
+         * @param {string} overlay.returnTarget
+         *
          ************************************************************************************ */
+        // hide({ returnData = null, returnTarget = null }) {
         hide() {
           const vv = window.lodge;
           const self = vv.overlay;
@@ -1275,7 +1312,7 @@ if (!window.lodge) {
             db.removeChild(self.close);
             db.removeChild(self.content);
 
-            // reveal any (if) overlay triggers
+            // reveal any (if) overlay triggers (for inline text+overlay embeds)
             const t = document.querySelectorAll(".vv-overlaytrigger");
             if (t.length > 0) {
               for (let i = 0, len = t.length; i < len; i++) {
@@ -1301,7 +1338,7 @@ if (!window.lodge) {
          * @param {string} [overlay.wrapClass="vv-component"] - A class name for the wrapper DIV. Allows for easy styling of content shown in the overlay.
          *
          ************************************************************************************ */
-        reveal({ innerContent, wrapClass = "vv-component" }) {
+        reveal({ innerContent, wrapClass = "vv-component", modal = false }) {
           // add the correct content to the content div
           const vv = window.lodge;
           const self = vv.overlay;
@@ -1351,7 +1388,12 @@ if (!window.lodge) {
             if (self.content.parentNode !== db) {
               self.content.style.opacity = 0;
               db.appendChild(self.content);
-              db.appendChild(self.close);
+              if (!modal) {
+                db.appendChild(self.close);
+              } else {
+                vv.overlay.buttonFalse.style.display = "inline-block";
+                vv.overlay.buttonTrue.style.display = "inline-block";
+              }
               // force style refresh/redraw on element (dumb fix, older browsers)
               // eslint-disable-next-line no-unused-expressions
               window.getComputedStyle(self.content).opacity;
@@ -1574,13 +1616,13 @@ if (!window.lodge) {
          * @param {object} message.button - Text for the close button, default: "Close"
          *
          ************************************************************************************ */
-        message({ message, context, button = "Close" }) {
+        message({ message, context = false, button = "Close" }) {
           const vv = window.lodge;
           let output = `<h2>${message}</h2>`;
           if (context) output += `<p>${context}</p>`;
           if (button) {
-            // the if statement means we can pass false to button and have no button display
-            output += `<button>${button}</button>`; // <-- obvious hot garbage placeholder
+            // vv.overlay.buttonFalse.textContent = button;
+            // vv.overlay.buttonFalse.style.display = "inline-block";
           }
           vv.overlay.reveal({ innerContent: output });
         },
@@ -1603,9 +1645,9 @@ if (!window.lodge) {
           const vv = window.lodge;
           let output = `<h2>${message}</h2>`;
           if (context) output += `<p>${context}</p>`;
-          output += `<button>${buttons.modal0}</button>`; // <-- (another) obvious hot garbage placeholder
-          output += `<button>${buttons.modal1}</button>`; // <-- (yet another) obvious hot garbage placeholder
-          vv.overlay.reveal({ innerContent: output });
+          // vv.overlay.buttonFalse.textContent = buttons.modal0;
+          // vv.overlay.buttonTrue.textContent = buttons.modal1;
+          vv.overlay.reveal({ innerContent: output, modal: true });
           // TODO: need to relay the OK/Cancel choice back down, and we should do it with a
           //       universal argument on the close event for the overlay? tomorrow problems...
         },
