@@ -19,11 +19,14 @@
     "jsdoc": "^3.6.4",
     "jsdocs": "^1.0.0",
     "local-web-server": "^4.2.1",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "webpack": "^5.11.1",
+    "webpack-cli": "^4.3.0"
   },
   "scripts": {
     "build": "babel source --out-dir dist --copy-files --no-comments --presets=minify",
     "cypress:open": "cypress open",
+    "webpack": "webpack",
     "dev": "browser-sync start --server --files 'css/*.css'",
     "start": "ws"
   },
