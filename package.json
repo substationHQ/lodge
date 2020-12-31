@@ -20,7 +20,7 @@
     "prettier": "^2.0.5"
   },
   "scripts": {
-    "build": "babel source --out-dir lib --copy-files --no-comments --presets=minify",
+    "build": "babel source --out-dir dist --copy-files --no-comments --presets=minify",
     "dev": "browser-sync start --server --files 'css/*.css'",
     "start": "ws"
   },
