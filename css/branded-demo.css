@@ -1,0 +1,159 @@
+/* Brand starter pack */
+@import url('https://fonts.googleapis.com/css?family=Quicksand|Roboto+Slab:300&display=swap');
+
+*, *::before, *::after{
+    box-sizing: border-box;
+}
+
+:root{
+    font-size: 20px;
+}
+body{
+    font-family: "Roboto Slab";
+    font-weight: 300;
+}
+h1,h2,h3,h4,h5,h6{
+    font-family: Quicksand;
+}
+h1{
+    font-size: 3em;
+}
+
+main {
+    position: relative;
+    padding: 0 .5em;
+}
+.slashes-overprint{
+    background-image: url('/assets/slashes-overprint.svg');
+    background-repeat: no-repeat;
+    background-position-x: -18vw;
+    background-position-y: -18vw;
+    background-size: auto;
+    height: 60vw;
+    width: 60vw;
+    position: absolute;
+}
+
+.logo-lodge-w{
+    background-image: url('/assets/logo-lodge-w.svg');
+    background-repeat: no-repeat;
+    height: 30vw;
+    width: 30vw;
+    position: absolute;
+    left: 5vw;
+    top: 5vw;
+}
+
+footer {
+    padding-top: 11vw;
+    position: relative;
+}
+footer::before{
+    content:'';
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 11vw;
+    display: block;
+    background-image: url('/assets/wordmark-overprint.svg');
+    background-repeat: no-repeat;
+    background-position: center 0;
+    background-size: 225vw;
+}
+.footer-logo-wrap{
+    background: black;
+    text-align: center;
+    padding: 1em 0;
+}
+.footer-logo {
+    display: block;
+    margin: 0 auto;
+    line-height: 1;
+}
+
+
+/* Layout for this page specifically */
+
+.intro{
+    max-width: 25em;
+    margin: 0 auto 2em;
+    padding-top: max(15vh, 8em);
+    min-height: 90vh;
+}
+
+
+.logo-lodge::before {
+    content: '';
+    background-image: url('/assets/logo-lodge.svg');
+    display: inline-block;
+    background-repeat: no-repeat;
+    height: .8em;
+    width: 1.2em;
+}
+
+.icon-paragraph {
+    position: relative;
+}
+
+.icon-paragraph::before {
+    content: '';
+    display: block;
+    background-repeat: no-repeat;
+    height: 5em;
+    width: 5em;
+    position: absolute;
+    left: -5em;
+}
+
+.feature-embed::before {
+    background-image: url('/assets/feature-embed.svg');
+}
+
+.feature-overlay::before {
+    background-image: url('/assets/feature-overlay.svg');
+}
+
+.alt-section {
+    color: white;
+    position: relative;
+    padding: 1.5em 4vw;
+    margin: 0 -0.5em;
+    /* background-image: url('/assets/lodge-logo-darkgray.svg');
+    background-position: bottom 125% right -100px; */
+    background-color: black;
+    /* background-repeat: no-repeat;
+    background-size: 400px; */
+    justify-content: center;
+    display: flex;
+}
+
+.content {
+    width: 100%;
+    padding: 0 1em;
+    max-width: 60em;
+}
+
+.split-content{
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1000px;
+    margin: 0em auto 1em;
+}
+
+.split-content section {
+    min-height: 100px;
+    padding: 1em;
+    margin: 0.5em;
+    flex: 1;
+    min-width: 300px;
+}
+
+.split-content .narrow{
+    max-width: 400px;
+    margin-top: 4em;
+}
+
+
+.split-content .narrow > div {
+    margin-bottom: 1em;
+}
