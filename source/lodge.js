@@ -819,16 +819,10 @@ if (!window.lodge) {
          * @param {object} xhr
          * @param {string} xhr.url - The endpoint where we're sending our request.
          * @param {string} xhr.postString - A POST string (value=1&other=2) from an encoded form that will be sent with the request.
-         * @param {function} xhr.successCallback - A callback function called on a success (200) state.
-         * @param {function} xhr.failureCallback - A callback function called on a fail (!200) state.
+         * @param {function} xhr.callback - A callback function called with results, using (err, result) footprint
          *
          ************************************************************************************ */
-        send({
-          url,
-          postString = null,
-          successCallback,
-          failureCallback = false,
-        }) {
+        send({ url, postString = null, callback }) {
           let method = "POST";
           if (!postString) {
             method = "GET";
@@ -843,14 +837,14 @@ if (!window.lodge) {
                 "application/x-www-form-urlencoded"
               );
             }
-            if (typeof successCallback === "function") {
-              xhr.onreadystatechange = function doCallbacks() {
+            if (typeof callback === "function") {
+              xhr.onreadystatechange = function doCallback() {
                 if (xhr.readyState === 4) {
                   if (xhr.status >= 200 && xhr.status <= 299) {
-                    successCallback(null, xhr.responseText);
-                  } else if (typeof failureCallback === "function") {
+                    callback(null, xhr.responseText);
+                  } else {
                     // testing typof to ensure we've got a callback to call
-                    failureCallback({ error: xhr.responseText }, null);
+                    callback({ error: xhr.responseText }, null);
                   }
                 }
               };
@@ -1272,7 +1266,6 @@ if (!window.lodge) {
           if (vv.embedded) {
             vv.events.fire({ obj: vv, type: "overlayhide" }); // request that the parent hides overlay
           } else {
-            self.content.style.opacity = 0;
             vv.events.fire({ obj: vv, type: "overlayhidden" }); // announce it's been hidden
 
             // self.content.innerHTML = '';
@@ -1326,9 +1319,10 @@ if (!window.lodge) {
               },
             });
           } else {
-            // if the overlay is already visible, kill the contents first
-            if (self.content.style.opacity === 1) {
-              self.content.innerHTML = "";
+            // empty the content of the overlay — only needed if it hasn't been closed,
+            // but doesn't hurt anything if it's empty
+            while (self.content.firstChild) {
+              self.content.removeChild(self.content.firstChild);
             }
             positioning.className = "vv-position";
             wrapper.className = wrapClass;
@@ -1354,18 +1348,17 @@ if (!window.lodge) {
               });
             }
 
-            // if not already showing, go!
-            if (self.content.style.opacity !== 1) {
+            if (self.content.parentNode !== db) {
               self.content.style.opacity = 0;
               db.appendChild(self.content);
               db.appendChild(self.close);
               // force style refresh/redraw on element (dumb fix, older browsers)
               // eslint-disable-next-line no-unused-expressions
               window.getComputedStyle(self.content).opacity;
-              // initiate fade-in
-              self.content.style.opacity = 1;
-              vv.events.fire({ obj: vv, type: "overlayrevealed" }); // broadcast that it's revealed
             }
+            // will initiate fade-in if needed
+            self.content.style.opacity = 1;
+            vv.events.fire({ obj: vv, type: "overlayrevealed" }); // broadcast that it's revealed
           }
         },
       }, /// END lodge.overlay
