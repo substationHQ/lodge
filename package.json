@@ -9,9 +9,11 @@
     "@babel/core": "^7.0.0",
     "babel-preset-minify": "^0.5.1",
     "browser-sync": "^2.26.13",
+    "cypress": "^6.2.0",
     "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-cypress": "^2.11.2",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-prettier": "^3.1.4",
     "jsdoc": "^3.6.4",
@@ -21,6 +23,7 @@
   },
   "scripts": {
     "build": "babel source --out-dir dist --copy-files --no-comments --presets=minify",
+    "cypress:open": "cypress open",
     "dev": "browser-sync start --server --files 'css/*.css'",
     "start": "ws"
   },
