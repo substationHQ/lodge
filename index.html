@@ -1,173 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<!doctype html>
+<html lang="en" class="substation-brand-page">
+
 <head>
-
-  <!-- Basic Page Needs
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
-  <title>△ lodge.js</title>
-  <meta name="description" content="A lightweight JavaScript library to handle embeds, modals, and events across windows.">
-  <meta name="author" content="@jessevondoom">
-
-  <!-- Mobile Specific Metas
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <title></title>
+  <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- CSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta property="og:title" content="">
+  <meta property="og:type" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content="">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
   <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/skeleton.css">
-  <link rel="stylesheet" href="css/custom.css">
+  <link rel="stylesheet" href="css/index.css">
 
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="icon" type="image/png" href="https://cdn.glitch.com/ae8fe322-3d99-45d4-b293-37c0791f3234%2Flodge.png">
   <script type="text/javascript" src="dist/lodge.js" data-options="lightboxvideo=true&noembed=true"></script>
-  
+
 </head>
+<div class="slashes-overprint"></div>
+<div class="logo-lodge-w"></div>
+
 <body>
-
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-
-  <div class="section hero">
-    <div class="container">
-      <div class="row">
-        <div class="nine columns">
-          <h1><span class="logo"></span> lodge.js</h1>
-          <h2>
-            A small javascript library for modals, embeds, and passing events around like prison cigarettes. <span class="nobr">By <a href="https://twitter.com/jessevondoom">@jessevondoom</a>.</span>
-          </h2>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section more">
-    <div class="container">
-      
-      <div class="row">
-        <div class="nine columns">
-          <p class="overview">
-            Lodge is intended to bring consistency in interaction to the little workflows we often
-            reinvent — modals, quick forms, embeds, even checkout flow. The idea is a single lightweight
-            library that can provide simplified modal content, securely synchronize events between windows,
-            and generally make working bite-sized functionality much simpler.
-          </p>
-          
-        </div>
-        <div class="three columns technical">
-          <h3><span class="logo"></span>Quick links</h3>
-          <ul>
-            <li><a href="https://glitch.com/~lodge">🐟 Remix on Glitch</a></li>
-            <li><a href="#docs">📖 Read the docs</a></li>
-            <li><a href="LICENSE">📎 License</a></li>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="row demos">
-        <div class="one column">
-          &nbsp;
-        </div>
-        <div class="ten columns technical">
-          <div class="row">
-            <h3><span class="logo"></span>Demos</h3>
-            <p>
-              Take a look at the boxes below. Each is an iframe of the same embed. The first plain, the 
-              second with a minor CSS overwrite, the third hosted on a different domain. Click one.
-            </p>
-          </div>
-          <div class="row">
-            <div class="four columns">
-              <embed class="lodge" src="embed.html" id="embed1">
+    <main>
+        <section class="intro">
+            <h1 class="logo-lodge">lodge</h1>
+            <h2>We use the friendly Quicksand Regular for headers and titles</h2>
+            <p>Roboto Slab is a simple, easy-to-read choice for our paragraphs, completing the text choices. Sizes should be on the large side of normal, with generous line spacing and no long spans.</p>
+            <p class="icon-paragraph feature-embed">Roboto Slab is a simple, easy-to-read choice for our paragraphs, completing the text choices. Sizes should be on the large side of normal, with generous line spacing and no long spans.</p>
+            <p class="icon-paragraph feature-overlay">Roboto Slab is a simple, easy-to-read choice for our paragraphs, completing the text choices. Sizes should be on the large side of normal, with generous line spacing and no long spans.</p>
+        </section>
+        <section class="alt-section">
+            <div class="content">
+                <h2>What do you want an embed to do?</h2>
+                <p>
+                    Lodge is intended to bring consistency in interaction to the little workflows we often reinvent — modals, quick forms, embeds, even checkout flow. The idea is a single lightweight library that can provide simplified modal content, securely synchronize events between windows, and generally make working bite-sized functionality much simpler.
+                </p>
+                <embed class="lodge" src="embed.html" id="embed1">
+                <embed class="lodge" src="embed.html" id="embed2" title="middle embed" data-css=".logo{color:#a00;}">
             </div>
-            <div class="four columns">
-              <embed class="lodge" src="embed.html" id="embed2" title="middle embed" data-css=".logo{color:#a00;}">
+        </section>
+        <div class="split-content">
+            <div class="narrow">
+                <section class="features">
+                    <h3>Features</h3> 
+                    <ul>
+                        <li><span class="logo"></span>Easily create iframe embeds with secure cross-window event relays</li>
+                        <li>
+                        <span class="logo"></span>A universal and responsive 
+                        <span class="vv-modalopen"><a href="" target="_blank">modal overlay</a></span>
+                        </li>
+                        <li><span class="logo"></span>Debug mode to help see what's happening while you build</li>
+                        <li><span class="logo"></span>Override CSS of embeds with a simple data attribute</li>
+                        <li><span class="logo"></span>Automatically <a href="https://www.youtube.com/watch?v=WQPfQvLIseA">show</a> <a href="https://vimeo.com/15744536">videos</a> in a modal overlay (optional)</li>
+                        <li><span class="logo"></span>Request simple user input with generated modal forms</li>
+                    </ul>
+                </section>
+                <section class="links">[github, glitch, etc]</section>
             </div>
-            <div class="four columns">
-              
-            </div>
-          </div>
+            <section class="docs">
+                <h3 id="docs">Quick usage overview</h3>
+                <p>
+                  Embeds are created with a single line of code:<br>
+                  <code>&lt;embed class="lodge" src="embed.html"&gt;</code>
+                </p>
+                <p>
+                  To force an override of the embed's CSS rules, just add a data attribute:<br>
+                  <code>data-css=".logo{color:#a00;}"</code>
+                </p>
+                <p>
+                  Want to use different styles for an embed and a modal? No problem. Just add CSS. Look for these classes
+                  situationally added to the main html element:<br>
+                  <code>.vv-embed, .vv-modal</code>
+                </p>
+                <p>
+                  It's all event driven, and Lodge will tell you when it's ready:
+                  <code>
+                    window.lodge.events.add(vv,'ready', function(e) {<br>
+                      &nbsp;&nbsp;// ...do something <br>
+                    });
+                  </code>
+                </p>
+                <p>
+                  Need to see what's happening in real-time as your scripts run? Pop open the console and add '?debug=true' to
+                  the URL. Easy.
+                </p>
+            </section>
         </div>
-      </div>
-
-      <div class="row">
-        <div class="four columns small">
-          <h3>Features</h3> 
-          <ul>
-            <li><span class="logo"></span>Easily create iframe embeds with secure cross-window event relays</li>
-            <li>
-              <span class="logo"></span>A universal and responsive 
-              <embed class="lodge modal" src="embed.html" id="embedmodal" title="modal overlay">
-            </li>
-            <li><span class="logo"></span>Debug mode to help see what's happening while you build</li>
-            <li><span class="logo"></span>Override CSS of embeds with a simple data attribute</li>
-            <li><span class="logo"></span>Automatically <a href="https://www.youtube.com/watch?v=WQPfQvLIseA">show</a> <a href="https://vimeo.com/15744536">videos</a> in a modal overlay (optional)</li>
-            <li><span class="logo"></span>Request simple user input with generated modal forms</li>
-          </ul>
-        </div>
-        <div class="eight columns">
-          <h3 id="docs">Quick usage overview</h3>
-          <p>
-            Embeds are created with a single line of code:<br />
-            <code>&lt;embed class="lodge" src="embed.html"&gt;</code>
-          </p>
-          <p>
-            To force an override of the embed's CSS rules, just add a data attribute:<br />
-            <code>data-css=".logo{color:#a00;}"</code>
-          </p>
-          <p>
-            Want to use different styles for an embed and a modal? No problem. Just add CSS. Look for these classes
-            situationally added to the main html element:<br />
-            <code>.vv-embed, .vv-modal</code>
-          </p>
-          <p>
-            It's all event driven, and Lodge will tell you when it's ready:
-            <code>
-              window.lodge.events.add(vv,'ready', function(e) {<br />
-                &nbsp;&nbsp;// ...do something <br />
-              });
-            </code>
-          </p>
-          <p>
-            Need to see what's happening in real-time as your scripts run? Pop open the console and add '?debug=true' to
-            the URL. Easy.
-          </p>
-        </div>
-      </div>
-      
+    </main>
+<footer>
+    <div class="footer-logo-wrap">
+    <a href="https://substation.me" class="footer-logo">
+        <img src="assets/logo.svg" alt="Substation" height="20">
+    </a>
     </div>
-  </div>
+</footer>
 
-  <div class="section footer">
-    <div class="container">
-      <div class="row">
-        <div class="column">
-          <span class="logo"></span><br />
-          <h4>Be kind.</h4>
-        </div>
-        
-      </div>
-    </div>
-  </div>
-  
-<!-- Scripts
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  
-  <script type="text/javascript">
-    var vv = window.lodge;
-    vv.addEventListener('ready', function(e) {
-      vv.addEventListener('startshuffle', function(e) {
-        // obj, type, data, target, localonly
-        window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed1' });
-        window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed2' });
-      });
+<script type="text/javascript">
+  var vv = window.lodge;
+  vv.addEventListener('ready', function(e) {
+    vv.addEventListener('startshuffle', function(e) {
+      // obj, type, data, target, localonly
+      window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed1' });
+      window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed2' });
     });
-  </script>
-  
-<!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  
+  });
+</script>
+
 </body>
+
 </html>
