@@ -4,7 +4,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
 module.exports = ["source-map"].map((devtool) => ({
-  mode: "production",
+  mode: "development",
+  watch: true,
   module: {
     rules: [
       {
@@ -19,12 +20,14 @@ module.exports = ["source-map"].map((devtool) => ({
     }),
   ],
   entry: {
-    lodge: "./source/index.js",
+    lodge: "./source/lodge.js",
+    lightbox: "./source/lightbox/lightbox.js",
     overlay: "./source/templates/overlay.css",
+    checkout: "./source/templates/checkout.js",
   },
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "[name].js",
+    filename: `[name].js`,
   },
   optimization: {
     minimizer: [new CssMinimizerPlugin()],
