@@ -6,13 +6,19 @@
 }
 
 :root{
-    font-size: 20px;
+    font-size: 18px;
 }
 body{
+    -webkit-font-smoothing: subpixel-antialiased;
     font-family: "Roboto Slab";
     font-weight: 300;
 }
+code {
+    font-size: 0.85em;
+    color: #00AEFF;
+}
 h1,h2,h3,h4,h5,h6{
+    color:#000;
     font-family: Quicksand;
 }
 h1{
@@ -20,6 +26,7 @@ h1{
 }
 
 main {
+    color:#222;
     position: relative;
     padding: 0 .5em;
 }
@@ -125,6 +132,10 @@ footer::before{
     background-size: 400px; */
     justify-content: center;
     display: flex;
+}
+
+.alt-section h1,.alt-section h2,.alt-section h3,.alt-section h4,.alt-section h5,.alt-section h6{
+    color:#fff;
 }
 
 .content {

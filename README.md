@@ -1,15 +1,13 @@
-<!-- Copy and paste the converted output. -->
-
-
-
 ## Substation: Lodge
 
+### Simple messaging, input, media, and checkout in a consistent overlay shared between iframes
+Lodge was made for a more decentralized web where anyone can build a space of their own. Platform features that 
+lets us talk, upload media, place orders, and connect can already be used via API. Lodge helps extend these 
+features into any site as easily as embedding a video.
 
-### Manage iframe embeds and give them better messaging, input, media and checkout in an easy-to-use overlay
+Built to bring UI consistency to critical workflows, Lodge is a lightweight, open library with no dependencies. It runs on both page and embed, securely synchronizing events and adding a shared overlay for modals, messages, and (coming soon) even a full checkout flow.
 
-Lodge is an open licensed (MIT) front-end JavaScript library that provides a light application layer for any website, specifically designed to coordinate with embedded iframes providing functionality. The goal is to use coordinated embeds as something greater than their parts, helping platforms that need centralized processing to decentralize the point of user interaction. Let’s help people embrace their own websites as the destination for their communities, customers, and supporters. 
-
-Along with some helper functions for basic DOM/style manipulation, Lodge brings iframe embedding and communication that allows child iframe components on a single page to coordinate through that parent. A universal top-level overlay is controlled by the Lodge script on the main page and can be used to display content and messaging, request input from a user, and offer a complete drop-in checkout flow with multiple supported payment services.
+Lodge is a toolkit for building rich embeds for your project.
 
 This document is half spec, half feature list, and half to-do list. (I really did try to work in a NaN joke here but never quite nailed it.
 
@@ -17,9 +15,6 @@ The project lives on [Glitch](https://lodge.glitch.me/) as well as [GitHub](http
 
 
 ## Managing iframes
-
-
-
 *   Lodge scans for &lt;embed> tags with a “.lodge” class added to them and converts them into iframes
 *   If the embedded page also contains the Lodge library, the iframe resizes intelligently, is added to a list of trusted iframes, and postMessage hooks allow for communication in a parent/child relationship
 *   Features can be enabled or disabled at the parent level for more granular control and security
@@ -31,9 +26,6 @@ The project lives on [Glitch](https://lodge.glitch.me/) as well as [GitHub](http
 
 
 ## Overlay
-
-
-
 *   Content
     *   Automatically lightboxes YouTube/Vimeo links (if requested with a startup parameter)
     *   Overlay can display custom markup passed in by scripts on the parent page, or as requested by the child iframe
@@ -55,17 +47,11 @@ The project lives on [Glitch](https://lodge.glitch.me/) as well as [GitHub](http
 
 
 ## Minimal DOM/style manipulation features
-
-
-
 *   No dependencies
 *   Includes bare-bones utility functions for measuring screen area, minimal style and class manipulation, ajax calls, and a few other utilities — to keep filesize small it mostly just includes what’s needed for rendering the overlay and, but it has enough that it can be used for basic DOM manipulation in lieu of a full-size framework in a simple use case
 
 
 ## Customization
-
-
-
 *   Hardened CSS for the overlay is included and injected (main page only) at the top of the document head. This allows for styles to be overridden in a traditional cascade. Some aspects, like fonts or colors, are easy to override, where things like positioning and scrollbar handling are significantly harder to override and require “!important” and other distinctions that show them to be significant
     *   **In-progress:** The CSS rules need to be rewritten from the ground up. Their outcome, including scroll handling, the background texture, and sprites are excellent, but the markup/CSS can be significantly improved with a more modern/compact approach
     *   **TBD:** Explore a light/dark theme for the overlay. Currently it’s a semi-transparent light-on-dark design, only offering that one mode  — this decision was made to use defaults that work over a light or dark theme, with subtle background textures introduced to reduce eye fatigue from text-on-text. Two distinct default themes might be overkill
