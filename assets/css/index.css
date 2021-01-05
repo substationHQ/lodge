@@ -1,5 +1,5 @@
 /* Brand starter pack */
-@import url('https://fonts.googleapis.com/css?family=Quicksand|Roboto+Slab:300&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Quicksand|Zilla+Slab:300&display=swap');
 
 *, *::before, *::after{
     box-sizing: border-box;
@@ -10,7 +10,7 @@
 }
 body{
     -webkit-font-smoothing: subpixel-antialiased;
-    font-family: "Roboto Slab";
+    font-family: "Zilla Slab";
     font-weight: 300;
 }
 code {
@@ -26,12 +26,49 @@ h1{
     line-height: 0.8em;
     font-weight: 300;
 }
-
 main {
     color:#222;
     position: relative;
     padding: 0 .5em;
 }
+a { 
+	color: #000;
+	text-decoration: none; 
+	-webkit-transition: box-shadow 150ms cubic-bezier(0.770, 0.000, 0.175, 1.000), color 150ms cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+    -moz-transition: box-shadow 150ms cubic-bezier(0.770, 0.000, 0.175, 1.000), color 150ms cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+    -o-transition: box-shadow 150ms cubic-bezier(0.770, 0.000, 0.175, 1.000), color 150ms cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+    transition: box-shadow 150ms cubic-bezier(0.770, 0.000, 0.175, 1.000), color 150ms cubic-bezier(0.770, 0.000, 0.175, 1.000); /* easeInOutQuart */
+    box-shadow: inset 0 -0.07em 0 #ec008c;
+}
+a:hover { 	
+    box-shadow: inset 0 -0.85em 0 #ffff00;
+    color: #000;
+}
+p, li {
+    font-size: 1.125em;
+}
+ul {
+    list-style: none;
+    padding-left: 1.5em;
+} 
+li:before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    top: 0.125em;
+    height: 0.75em;
+    width: 0.75em;
+    background-image: url('/assets/images/slashes.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 0.5em;
+    opacity: 0.33;
+}
+li {
+    text-indent: -1.25em;
+    margin-bottom: 0.5em;
+}
+
 .slashes-overprint{
     background-image: url('/assets/images/slashes-overprint.svg');
     background-repeat: no-repeat;
@@ -107,14 +144,22 @@ footer::before{
     content: '';
     display: block;
     background-repeat: no-repeat;
-    height: 5em;
-    width: 5em;
+    height: 4em;
+    width: 4em;
     position: absolute;
-    left: -5em;
+    left: -4em;
 }
 
 .split-content section.links {
-    padding: 1em 1em 1em 2em;
+    padding: 0 1em 1em 1.5em;
+}
+
+.split-content section.links a {
+    box-shadow: none;
+}
+
+.split-content section.links a:hover {
+    box-shadow: none;
 }
 
 .icon-service {
