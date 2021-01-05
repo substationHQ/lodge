@@ -33,7 +33,7 @@ main {
     padding: 0 .5em;
 }
 .slashes-overprint{
-    background-image: url('/assets/slashes-overprint.svg');
+    background-image: url('/assets/images/slashes-overprint.svg');
     background-repeat: no-repeat;
     background-position-x: -18vw;
     background-position-y: -18vw;
@@ -44,7 +44,7 @@ main {
 }
 
 .logo-lodge-w{
-    background-image: url('/assets/logo-lodge-w.svg');
+    background-image: url('/assets/images/logo-lodge-w.svg');
     background-repeat: no-repeat;
     height: 30vw;
     width: 30vw;
@@ -64,7 +64,7 @@ footer::before{
     width: 100%;
     height: 11vw;
     display: block;
-    background-image: url('/assets/wordmark-overprint.svg');
+    background-image: url('/assets/images/wordmark-overprint.svg');
     background-repeat: no-repeat;
     background-position: center 0;
     background-size: 225vw;
@@ -85,15 +85,14 @@ footer::before{
 
 .intro{
     max-width: 25em;
-    margin: 0 auto 2em;
+    margin: 0 auto 5em;
     padding-top: max(15vh, 8em);
-    min-height: 90vh;
 }
 
 
 .logo-lodge::before {
     content: '';
-    background-image: url('/assets/logo-lodge.svg');
+    background-image: url('/assets/images/logo-lodge.svg');
     display: inline-block;
     background-repeat: no-repeat;
     height: .8em;
@@ -127,11 +126,11 @@ footer::before{
 }
 
 .feature-embed::before {
-    background-image: url('/assets/feature-embed.svg');
+    background-image: url('/assets/images/feature-embed.svg');
 }
 
 .feature-overlay::before {
-    background-image: url('/assets/feature-overlay.svg');
+    background-image: url('/assets/images/feature-overlay.svg');
 }
 
 .alt-section {
