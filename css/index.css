@@ -114,6 +114,18 @@ footer::before{
     left: -5em;
 }
 
+.split-content section.links {
+    padding: 1em 1em 1em 2em;
+}
+
+.icon-service {
+    display: inline-block;
+    width: 2.5em;
+    height: auto;
+    border: 0;
+    margin-left: 1em;
+}
+
 .feature-embed::before {
     background-image: url('/assets/feature-embed.svg');
 }
