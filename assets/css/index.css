@@ -181,3 +181,11 @@ footer::before{
 .split-content .narrow > div {
     margin-bottom: 1em;
 }
+
+#slashes {
+    position: absolute;
+    width: 1.5em;
+    height: auto;
+    right: 2em;
+    bottom: 2em;
+  }
