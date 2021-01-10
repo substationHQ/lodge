@@ -150,15 +150,15 @@ footer::before{
     left: -4em;
 }
 
-.split-content section.links {
+.split-content div.links {
     padding: 0 1em 1em 1.5em;
 }
 
-.split-content section.links a {
+.split-content div.links a {
     box-shadow: none;
 }
 
-.split-content section.links a:hover {
+.split-content div.links a:hover {
     box-shadow: none;
 }
 
@@ -181,7 +181,7 @@ footer::before{
 .alt-section {
     color: white;
     position: relative;
-    padding: 1.5em 4vw;
+    padding: 1.5em 4vw 1.5em 4vw;
     margin: 0 -0.5em;
     /* background-image: url('/assets/lodge-logo-darkgray.svg');
     background-position: bottom 125% right -100px; */
@@ -206,22 +206,29 @@ footer::before{
     display: flex;
     flex-wrap: wrap;
     max-width: 1000px;
-    margin: 0em auto 1em;
+    margin: 0em auto;
 }
 
-.split-content section {
+.split-content section, div.demo-embed {
     min-height: 100px;
     padding: 1em;
-    margin: 0.5em;
+    margin: 0;
     flex: 1;
     min-width: 300px;
 }
 
-.split-content .narrow{
-    max-width: 400px;
-    margin-top: 4em;
+div.demo-embed {
+    min-height: 1px;
+    background-color: white;
+    border-radius: 1em;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
 }
 
+.split-content .narrow{
+    max-width: 400px;
+}
 
 .split-content .narrow > div {
     margin-bottom: 1em;
@@ -233,4 +240,8 @@ footer::before{
     height: auto;
     right: 2em;
     bottom: 2em;
+  }
+
+  section.features {
+    margin-top: 4em;
   }

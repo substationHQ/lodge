@@ -1,0 +1,16 @@
+/* Brand starter pack */
+@import url('https://fonts.googleapis.com/css?family=Quicksand|Zilla+Slab:300&display=swap');
+
+*, *::before, *::after{
+    box-sizing: border-box;
+}
+
+:root{
+    font-size: 18px;
+}
+body{
+    -webkit-font-smoothing: subpixel-antialiased;
+    font-family: "Zilla Slab";
+    font-weight: 300;
+    background-color: red;
+}

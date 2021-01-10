@@ -27,13 +27,13 @@
   <link rel="stylesheet" href="/assets/css/normalize.css">
   <link rel="stylesheet" href="/assets/css/index.css">
 
-  <script type="text/javascript" src="dist/lodge.js" data-options="lightboxvideo=true&noembed=true"></script>
+  <script src="/dist/lodge.js" data-options="lightboxvideo=true&noembed=true"></script>
 
 </head>
-<div class="slashes-overprint"></div>
-<div class="logo-lodge-w"></div>
 
 <body>
+  <div class="slashes-overprint"></div>
+  <div class="logo-lodge-w"></div>
     <main>
         <section class="intro">
           <h1 class="logo-lodge">lodge</h1>
@@ -41,13 +41,19 @@
           <p class="icon-paragraph feature-embed">Lodge was made for a more decentralized web where anyone can build a space of their own. Platform features let us talk, upload media, place orders, and connect. They're already used by developers via API. Lodge helps extend them into any site as easily as embedding a video.</p>
           <p class="icon-paragraph feature-overlay">Built to bring UI consistency to critical workflows, Lodge is a lightweight, open library with no dependencies. It runs on both page and embed, securely synchronizing events and adding a shared overlay for modals, messages, and (coming soon) even a full checkout flow.</p>
         </section>
-        <section class="alt-section">
-            <div class="content">
+        <div class="alt-section">
+          <div class="split-content">
+            <div class="narrow">
+              <section class="demo-copy">
                 <h2>What do you want an embed to do?</h2>
-                <embed class="lodge" src="embed.html" id="embed1">
-                <embed class="lodge" src="embed.html" id="embed2" title="middle embed" data-css=".logo{color:#a00;}">
+              </section>
             </div>
-        </section>
+            <div class="demo-embed">
+              <embed class="lodge" src="embed.html" id="embed1">
+              <embed class="lodge" src="embed.html" id="embed2" title="middle embed" data-css=".logo{color:#a00;}">
+            </div>
+          </div>
+        </div>
         <div class="split-content">
             <div class="narrow">
                 <section class="features">
@@ -61,11 +67,11 @@
                         <li>Request simple user input with generated modal forms</li>
                     </ul>
                 </section>
-                <section class="links">
+                <div class="links">
                   <a href="https://github.com/substationHQ"><img class="icon-service" src="/assets/images/icon-github.svg" alt="GitHub"></a>
                   <a href="https://twitter.com/substationHQ"><img class="icon-service" src="/assets/images/icon-twitter.svg" alt="Twitter"></a>
                   <a href="https://lodge.glitch.me/"><img class="icon-service" src="/assets/images/icon-glitch.svg" alt="Glitch"></a>
-                </section>
+                </div>
             </div>
             <section class="docs">
                 <h3 id="docs">A few basics</h3>
@@ -101,7 +107,7 @@
   <img id="slashes" src="/assets/images/slashes.svg" alt="///">
 </footer>
 
-<script type="text/javascript">
+<script>
   var vv = window.lodge;
   vv.addEventListener('ready', function(e) {
     vv.addEventListener('startshuffle', function(e) {
