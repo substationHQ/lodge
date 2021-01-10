@@ -10,7 +10,7 @@
 }
 body{
     -webkit-font-smoothing: subpixel-antialiased;
-    font-family: "Zilla Slab";
+    font-family: "Zilla Slab","Roboto Slab",serif;
     font-weight: 300;
 }
 code {
@@ -213,6 +213,7 @@ footer::before{
 
 div.demo-embed {
     padding: 0;
+    margin: 0 1em 0 1em;
     border-radius: 1em;
     overflow: hidden;
     align-self: flex-start;
