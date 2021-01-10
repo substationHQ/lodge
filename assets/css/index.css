@@ -205,14 +205,14 @@ footer::before{
 }
 
 .split-content section, div.demo-embed {
-    padding: 0;
+    padding: 1em;
     margin: 0;
     flex: 1;
     min-width: 300px;
 }
 
 div.demo-embed {
-    background-color: yellow;
+    padding: 0;
     border-radius: 1em;
     overflow: hidden;
     align-self: flex-start;
