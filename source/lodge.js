@@ -629,6 +629,7 @@ if (!window.lodge) {
           iframe.style.height = "0"; // if not explicitly set the scrollheight of the document will be wrong
           iframe.style.border = "0";
           iframe.style.overflow = "hidden"; // important for overlays, which flicker scrollbars on open
+          iframe.style.display = "block";
           iframe.scrolling = "no"; // programming
 
           let origin = window.location;

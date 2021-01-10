@@ -182,10 +182,8 @@ footer::before{
     color: white;
     position: relative;
     padding: 1.5em 4vw 1.5em 4vw;
-    margin: 0 -0.5em;
+    margin: 0 -0.5em 0 -0.5em;
     background-color: black;
-    justify-content: center;
-    display: flex;
 }
 
 .alt-section h1,.alt-section h2,.alt-section h3,.alt-section h4,.alt-section h5,.alt-section h6{
@@ -207,19 +205,23 @@ footer::before{
 }
 
 .split-content section, div.demo-embed {
-    min-height: 100px;
-    padding: 1em;
+    padding: 0;
     margin: 0;
     flex: 1;
     min-width: 300px;
 }
 
 div.demo-embed {
-    background-color: white;
+    background-color: yellow;
     border-radius: 1em;
     overflow: hidden;
+    align-self: flex-start;
+}
+
+div.demo-embed iframe {
+    margin: 0;
     padding: 0;
-    margin: 0 1em 0 1em;
+    border: 0;
 }
 
 .split-content .narrow{
