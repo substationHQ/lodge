@@ -7,6 +7,7 @@
 
 :root{
     font-size: 18px;
+    line-height: 1.5em;
 }
 body{
     -webkit-font-smoothing: subpixel-antialiased;
@@ -233,7 +234,7 @@ div.demo-embed iframe {
     margin-bottom: 1em;
 }
 
-#slashes {
+.slashes {
     position: absolute;
     width: 1.5em;
     height: auto;
@@ -244,3 +245,19 @@ div.demo-embed iframe {
   section.features {
     margin-top: 4em;
   }
+button{
+    border:0;
+    padding:1em 1.75em;
+    border-radius:0.5em;
+    margin-top:1em;
+    background-color:#ec008c;
+    color:#000;
+    font-family:Helvetica,Arial,sans-serif;
+    font-size:0.65em;
+    text-transform:uppercase;
+    font-weight:bold;
+}
+button:hover{
+    background-color:#ff0;
+    color:#000;
+}

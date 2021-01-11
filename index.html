@@ -45,9 +45,10 @@
           <div class="split-content">
               <section class="demo-copy">
                 <h2>It's probably easier just to show you.</h2>
+                <button class="demo-open">Show the demo embed</button>
               </section>
             <div class="demo-embed">
-              <embed class="lodge" src="embed.html" id="embed" title="middle embed" data-css=".logo{color:#a00;}">
+              <embed class="lodge" src="embed.html" id="demo" title="lodge demo embed" data-css=".logo{color:#a00;}">
             </div>
           </div>
         </div>
@@ -56,11 +57,11 @@
                 <section class="features">
                     <h3>Features</h3> 
                     <ul>
-                        <li>Easily create iframe embeds with secure cross-window event relays</li>
+                        <li>Easily create iframe embeds and securely share events across windows</li>
                         <li>A universal and responsive overlay</li>
                         <li>Debug mode to help see what's happening while you build</li>
                         <li>Override CSS of embeds with a simple data attribute</li>
-                        <li>Automatically <a href="https://www.youtube.com/watch?v=WQPfQvLIseA">show</a> <a href="https://vimeo.com/15744536">videos</a> in a modal overlay (optional)</li>
+                        <li>Automatically <a href="https://www.youtube.com/watch?v=h9T0ICrAzqU">show</a> <a href="https://vimeo.com/15744536">videos</a> in a modal overlay (optional)</li>
                         <li>Request simple user input with generated modal forms</li>
                     </ul>
                 </section>
@@ -101,20 +102,19 @@
         </div>
     </main>
 <footer>
-  <img id="slashes" src="/assets/images/slashes.svg" alt="///">
+  <img class="slashes" src="/assets/images/slashes.svg" alt="///">
 </footer>
 
 <script>
-  /*
   var vv = window.lodge;
   vv.addEventListener('ready', function(e) {
-    vv.addEventListener('startshuffle', function(e) {
-      // obj, type, data, target, localonly
-      window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed1' });
-      window.lodge.events.fire({ obj: window.lodge,type: 'doshuffle',target: 'embed2' });
-    });
+    var openbutton = document.querySelector('.demo-open');
+    openbutton.addEventListener('click', function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      vv.events.fire({ obj: window.lodge,type: 'openscreen',target: 'demo' });
+    }, false);
   });
-  */
 </script>
 
 </body>

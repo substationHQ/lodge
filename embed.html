@@ -14,16 +14,21 @@
 
 <body>
 
-  <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
+  <div class="screen">
+    <div class="screen-bg"></div>
+    <div class="screen-slashes"></div>
+    <div class="screen-mask"></div>
+  </div>
 
-    <h2>Hi there.</h2>
-    <a href="#" id="hellobutton">Say hello</a><br>
-    <a href="https://www.youtube.com/watch?v=WQPfQvLIseA">YouTube</a>
+  <div class="demo-panels">
+    <div class="demo-panel-0">
+      <h2>Hi there.</h2>
+      <a href="#" id="hellobutton">Say hello</a><br>
+      <a href="https://www.youtube.com/watch?v=smVoxgny20U">Watch a video</a>
+    </div>
+  </div>
   
-<!-- Scripts
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   
   <script type="text/javascript">
     var vv = window.lodge;
@@ -32,7 +37,7 @@
       
       // opens an overlay in the main window based on a click in an embed
       var hellobutton = document.getElementById('hellobutton');
-      hellobutton.addEventListener("click", function(e){
+      hellobutton.addEventListener('click', function(e){
         e.stopPropagation();
         e.preventDefault();
         vv.prompt.message({message: 'Hello.'});
@@ -40,15 +45,14 @@
       
     });
     
-    /*
-    vv.addEventListener('doshuffle', function(e) {
-      bigShuffle();
+    vv.addEventListener('openscreen', function(e) {
+      var screen = document.querySelector('div.screen');
+      screen.style.left = '-175vw';
+
+      var demos = document.querySelector('div.demo-panels');
+      demos.style.opacity = 1;
     });
-    */
   </script>
-  
-  <!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   
 </body>
 </html>
