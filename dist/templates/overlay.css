@@ -8,7 +8,7 @@
 .vv-close:hover{-webkit-animation: modalrotate ease-out 0.8s!important;-moz-animation: modalrotate ease-out 0.8s!important;animation: modalrotate ease-out  0.8s!important;}
 .vv-component {background-color:transparent;padding:20px;width:50vw;height:auto;position:relative;margin:0; padding:0;text-align:center;display:table-cell;vertical-align: middle;}
 .vv-media {background-color:#000;padding:0;width:76vw;height:auto;position:relative;margin:8vh auto 8vh auto;}
-.vv-overlay {all:initial;color:#fff !important;font-family:'Zilla Slab','Roboto Slab',serif !important;font-weight:300 !important;width:100%!important;height:100%!important;max-width:100%!important;position:fixed!important;top:0!important;left:0!important;z-index:65432!important;background:rgb(36,36,36);background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAATElEQVQYV2OYNmGaOggvmb8kCoTR+QwwgXmz5tmDMDqfYfn85bEglVP7pqog64TxGXDphPEZ5k2ap0WSG+ZOmIvqBnQ7YXyYQoJuAABKJ4Hmp8ET1QAAAABJRU5ErkJggg==), linear-gradient(to bottom, rgba(32,32,32,1) 0%,rgba(24,24,24,0.95) 70%, rgba(16,16,16,0.7) 100%)!important;overflow:auto!important;padding:0!important;-webkit-transition:all 0.4s ease!important;-moz-transition:all 0.4s ease!important;transition:all 0.4s ease!important;}
+.vv-overlay {all:initial;color:#fff !important;font-family:'Zilla Slab','Roboto Slab',serif !important;font-weight:300 !important;text-align:left !important;width:100%!important;height:100%!important;max-width:100%!important;position:fixed!important;top:0!important;left:0!important;z-index:65432!important;background:rgb(36,36,36);background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAATElEQVQYV2OYNmGaOggvmb8kCoTR+QwwgXmz5tmDMDqfYfn85bEglVP7pqog64TxGXDphPEZ5k2ap0WSG+ZOmIvqBnQ7YXyYQoJuAABKJ4Hmp8ET1QAAAABJRU5ErkJggg==), linear-gradient(to bottom, rgba(32,32,32,1) 0%,rgba(24,24,24,0.95) 70%, rgba(16,16,16,0.7) 100%)!important;overflow:auto!important;padding:0!important;-webkit-transition:all 0.4s ease!important;-moz-transition:all 0.4s ease!important;transition:all 0.4s ease!important;}
 .vv-overlay h1,.vv-overlay h2,.vv-overlay h3{font-family: Quicksand, sans-serif  !important;;color:#fff !important;}
 .vv-overlay button{border:0 !important;padding:1em 1.75em !important;border-radius:0.5em !important;margin-top:1em !important;background-color:#000 !important;color:#fff !important;font-family:Helvetica,Arial,sans-serif !important;font-size:0.65em !important;text-transform:uppercase !important;font-weight:bold !important;}
 .vv-overlay button:hover{background-color:#fff !important;color:#000 !important;}
@@ -20,7 +20,10 @@
 @media only screen and (max-device-width: 1024px) {
   .vv-active {filter:blur(0)!important;-webkit-filter:blur(0)!important;}
   .vv-overlay {background-color:rgba(0,0,0,0.95)!important;}
-  .vv-component {width:100%; display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */  display: -ms-flexbox; /* TWEENER - IE 10 */  display: -webkit-flex;display: flex;-webkit-box-align: stretch;-webkit-flex-align: stretch;-ms-flex-align: stretch;-webkit-align-items: stretch;align-items: stretch;position:fixed;height: 100%;width: 100%;top: 0;z-index: 999;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box; -webkit-overflow-scrolling: touch; overflow-y: scroll}
+  .vv-component {width:100%;text-align:left;display: block;position:fixed;height: 100%;width: 100%;top: 0;z-index: 999;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box; -webkit-overflow-scrolling: touch; overflow-y: scroll}
   .vv-component iframe {min-height:100%}
+  .vv-overlay button{margin:5vw;width:90vw}
+  .vv-overlay h1,.vv-overlay h2,.vv-overlay h3{margin-top:90px;padding:0 5vw !important;}
+  .vv-overlay p{padding:0 5vw !important;}
   .vv-position, .vv-overlay{ display:block!important;position:fixed!important;overflow:hidden!important;} 
 }

@@ -212,6 +212,15 @@ footer::before{
     min-width: 300px;
 }
 
+section.demo-copy {
+    margin: 0 1em;
+    padding: 0;
+}
+
+section.demo-copy h2  {
+    margin-top: 0;
+}
+
 div.demo-embed {
     padding: 0;
     margin: 0 1em 0 1em;
@@ -261,3 +270,12 @@ button:hover{
     background-color:#ff0;
     color:#000;
 }
+
+@media only screen and (max-device-width: 1024px) {
+    button {
+        width:100%;
+    }
+    section.demo-copy  {
+        padding-bottom: 3em;
+    }
+  }
