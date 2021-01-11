@@ -40,14 +40,17 @@
       hellobutton.addEventListener('click', function(e){
         e.stopPropagation();
         e.preventDefault();
-        vv.prompt.message({message: 'Hello.'});
+        vv.prompt.message({
+          message: 'Hi there.',
+          context: 'Just a single line of JavaScript opens full-page messaging and modal overlays.'
+        });
       }, false);
       
     });
     
     vv.addEventListener('openscreen', function(e) {
       var screen = document.querySelector('div.screen');
-      screen.style.left = '-175vw';
+      screen.style.left = '-176vw';
 
       var demos = document.querySelector('div.demo-panels');
       demos.style.opacity = 1;
