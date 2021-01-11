@@ -25,5 +25,6 @@
   .vv-overlay button{margin:5vw;width:90vw}
   .vv-overlay h1,.vv-overlay h2,.vv-overlay h3{margin-top:90px;padding:0 5vw !important;}
   .vv-overlay p{padding:0 5vw !important;}
+  .vv-media {width:100vw;margin:14vh 0 0 0;}
   .vv-position, .vv-overlay{ display:block!important;position:fixed!important;overflow:hidden!important;} 
 }

@@ -75,7 +75,7 @@
             <section class="docs">
                 <h3 id="docs">A few basics</h3>
                 <p>
-                  Embeds are created with simple markup:
+                  Embed iframes are created from simple markup:
                 </p>
                 <code>&lt;embed class="lodge" src="embed.html"&gt;</code>
                 <p>
@@ -108,6 +108,8 @@
 
 <script>
   var vv = window.lodge;
+  var currentDemo = 0;
+  
   vv.addEventListener('ready', function(e) {
     var openbutton = document.querySelector('.demo-open');
     openbutton.addEventListener('click', function(e){
