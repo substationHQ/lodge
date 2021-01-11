@@ -7,10 +7,11 @@
 
 :root{
     font-size: 18px;
+    line-height: 1.5em;
 }
 body{
     -webkit-font-smoothing: subpixel-antialiased;
-    font-family: "Zilla Slab";
+    font-family: "Zilla Slab","Roboto Slab",serif;
     font-weight: 300;
 }
 code {
@@ -150,15 +151,15 @@ footer::before{
     left: -4em;
 }
 
-.split-content section.links {
+.split-content div.links {
     padding: 0 1em 1em 1.5em;
 }
 
-.split-content section.links a {
+.split-content div.links a {
     box-shadow: none;
 }
 
-.split-content section.links a:hover {
+.split-content div.links a:hover {
     box-shadow: none;
 }
 
@@ -181,15 +182,9 @@ footer::before{
 .alt-section {
     color: white;
     position: relative;
-    padding: 1.5em 4vw;
-    margin: 0 -0.5em;
-    /* background-image: url('/assets/lodge-logo-darkgray.svg');
-    background-position: bottom 125% right -100px; */
+    padding: 1.5em 4vw 1.5em 4vw;
+    margin: 0 -0.5em 0 -0.5em;
     background-color: black;
-    /* background-repeat: no-repeat;
-    background-size: 400px; */
-    justify-content: center;
-    display: flex;
 }
 
 .alt-section h1,.alt-section h2,.alt-section h3,.alt-section h4,.alt-section h5,.alt-section h6{
@@ -203,34 +198,66 @@ footer::before{
 }
 
 .split-content{
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     max-width: 1000px;
-    margin: 0em auto 1em;
+    margin: 1em auto;
 }
 
-.split-content section {
-    min-height: 100px;
+.split-content section, div.demo-embed {
     padding: 1em;
-    margin: 0.5em;
+    margin: 0;
     flex: 1;
     min-width: 300px;
 }
 
-.split-content .narrow{
-    max-width: 400px;
-    margin-top: 4em;
+div.demo-embed {
+    padding: 0;
+    margin: 0 1em 0 1em;
+    border-radius: 1em;
+    overflow: hidden;
+    align-self: flex-start;
 }
 
+div.demo-embed iframe {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.split-content .narrow{
+    max-width: 400px;
+}
 
 .split-content .narrow > div {
     margin-bottom: 1em;
 }
 
-#slashes {
+.slashes {
     position: absolute;
     width: 1.5em;
     height: auto;
     right: 2em;
     bottom: 2em;
   }
+
+  section.features {
+    margin-top: 4em;
+  }
+button{
+    border:0;
+    padding:1em 1.75em;
+    border-radius:0.5em;
+    margin-top:1em;
+    background-color:#ec008c;
+    color:#000;
+    font-family:Helvetica,Arial,sans-serif;
+    font-size:0.65em;
+    text-transform:uppercase;
+    font-weight:bold;
+}
+button:hover{
+    background-color:#ff0;
+    color:#000;
+}
