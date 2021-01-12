@@ -23,8 +23,9 @@ h1,h2,h3,h4,h5,h6{
     font-family: Quicksand;
 }
 h1{
-    font-size: 4em;
-    line-height: 0.8em;
+    font-size: 4.5em;
+    line-height: 1em;
+    margin-bottom: 0;
     font-weight: 300;
 }
 main {
@@ -68,6 +69,15 @@ li:before {
 li {
     text-indent: -1.25em;
     margin-bottom: 0.5em;
+}
+
+.background-wrapper{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 90vw;
+    height: 90vh;
+    overflow: hidden;
 }
 
 .slashes-overprint{
@@ -200,7 +210,7 @@ footer::before{
 .split-content{
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap-reverse;
     max-width: 1000px;
     margin: 1em auto;
 }
@@ -215,6 +225,8 @@ footer::before{
 section.demo-copy {
     margin: 0 1em;
     padding: 0;
+    opacity: 1;
+    transition: opacity 0.4s ease-out;
 }
 
 section.demo-copy h2  {
@@ -265,6 +277,7 @@ button{
     font-size:0.65em;
     text-transform:uppercase;
     font-weight:bold;
+    outline: none;
 }
 button:hover{
     background-color:#ff0;
@@ -276,6 +289,19 @@ button:hover{
         width:100%;
     }
     section.demo-copy  {
-        padding-bottom: 3em;
+        padding-top: 3em;
+    }
+    .slashes-overprint{
+        background-position-x: -36vw;
+        background-position-y: -64vw;
+        height: 120vw;
+        width: 120vw;
+    }
+    
+    .logo-lodge-w{
+        height: 64vw;
+        width: 64vw;
+        left: 4vw;
+        top: -6vw;
     }
   }

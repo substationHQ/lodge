@@ -32,8 +32,11 @@
 </head>
 
 <body>
-  <div class="slashes-overprint"></div>
-  <div class="logo-lodge-w"></div>
+  <div class="background-wrapper">
+    <div class="slashes-overprint"></div>
+    <div class="logo-lodge-w"></div>
+  </div>
+
     <main>
         <section class="intro">
           <h1 class="logo-lodge">lodge</h1>
@@ -44,9 +47,9 @@
         <div class="alt-section">
           <div class="split-content">
               <section class="demo-copy">
-                <h2>Let's just take a look.</h2>
-                <p>Some things are easier to show than tell, so we set up a quick demo to show how Lodge works with embeds.</p>
-                <button class="demo-open">Show the demo embed</button>
+                <h2 class="demo-copy-header">Let's just take a look.</h2>
+                <p class="demo-copy-text">Some things are easier to show than tell, so we set up a quick demo to show how Lodge works with embeds.</p>
+                <button class="demo-copy-button">Show the demo embed</button>
               </section>
             <div class="demo-embed">
               <embed class="lodge" src="embed.html" id="demo" title="lodge demo embed" data-css=".logo{color:#a00;}">
@@ -107,15 +110,58 @@
 </footer>
 
 <script>
+  /*
+    Most of this is just dealing with the demo content and relaying
+    events down to the demo embed.
+  */
   var vv = window.lodge;
-  var currentDemo = 0;
-  
-  vv.addEventListener('ready', function(e) {
-    var openbutton = document.querySelector('.demo-open');
-    openbutton.addEventListener('click', function(e){
+  var demoPosition = -1; // -1 just indicates that we're at 0 with the screen closed
+  var demoCopy = document.querySelector('.demo-copy');
+  var demoHeader = document.querySelector('.demo-copy-header');
+  var demoText = document.querySelector('.demo-copy-text');
+  var demoButton = document.querySelector('.demo-copy-button');
+  var demoScript = [
+    {
+      // 0: showing the embed itself, resizing, etc
+      'header':'Pretty neat, right?',
+      'text':'Lodge turns a simple &lt;embed&gt; tag into an iframe, sized to fit responsively wherever you put it.',
+      'button':'Tell me about the overlay'
+    }
+  ]
+
+  // this is fired when the page and Lodge are both loaded
+  vv.addEventListener('ready', function(e) {    
+    // this will automatically handle changing the content and fading it in
+    // all the content is drawn from the demoScipt JSON above
+    function changeDemoCopy() {
+      // reset the values
+      demoHeader.innerHTML = demoScript[demoPosition].header;
+      demoText.innerHTML = demoScript[demoPosition].text;
+      demoButton.innerHTML = demoScript[demoPosition].button;
+      demoCopy.style.opacity = 1;
+    }
+
+    // when the button is clicked let's show some demo stuff
+    demoButton.addEventListener('click', function(e){
       e.stopPropagation();
       e.preventDefault();
-      vv.events.fire({ obj: window.lodge,type: 'openscreen',target: 'demo' });
+      // first fading out the demo copy
+      setTimeout(() => { demoCopy.style.opacity = 0; }, 400);
+      // we'll use a timer kick off the changes
+      setTimeout(changeDemoCopy, 800);
+      // silly to fire this every time but will do nothing after the first time so let's not
+      // demoPosition is only ever === -1 on initial click
+      if (demoPosition === -1) {
+        vv.events.fire({ obj: window.lodge,type: 'openscreen',target: 'demo' });
+      }
+      // now iterate through the positions
+      demoPosition = demoPosition + 1;
+      if (demoPosition === demoScript.length) {
+        // wrap around at the end
+        demoPosition = 0;
+      }
+      // and this tells it to chang the demo itself in the embed
+      vv.events.fire({ obj: window.lodge,type: 'changedemo',target: 'demo',data: demoPosition });
     }, false);
   });
 </script>

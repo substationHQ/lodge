@@ -55,6 +55,10 @@
       var demos = document.querySelector('div.demo-panels');
       demos.style.opacity = 1;
     });
+
+    vv.addEventListener('changedemo', function(e) {
+      console.log(e.detail);
+    });
   </script>
   
 </body>
