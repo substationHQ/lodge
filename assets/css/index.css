@@ -210,9 +210,13 @@ footer::before{
 .split-content{
     width: 100%;
     display: flex;
-    flex-wrap: wrap-reverse;
+    flex-wrap: wrap;
     max-width: 1000px;
     margin: 1em auto;
+}
+
+.alt-section .split-content {
+    flex-wrap: wrap-reverse;
 }
 
 .split-content section, div.demo-embed {
