@@ -13,8 +13,6 @@
 </head>
 
 <body>
-
-
   <div class="screen">
     <div class="screen-bg"></div>
     <div class="screen-slashes"></div>
@@ -22,16 +20,20 @@
   </div>
 
   <div class="demo-panels">
-    <div class="demo-panel-0">
+    <div class="demo-panel demo-panel-0">
       <h2>So this bit's an iframe.</h2>
-      <a href="#" id="hellobutton">Say hello</a><br>
-      <a href="https://www.youtube.com/watch?v=smVoxgny20U">Watch a video</a>
+      Thanks to shared events, the main window can resize the embed as needed. Check it out.
+    </div>
+    <div class="demo-panel demo-panel-1">
+      <h2>Pass notes in an overlay.</h2>
+      In the main window or the embed, just <a href="#" id="hellobutton">say hello</a> or ask a question.
     </div>
   </div>
   
   
   <script type="text/javascript">
     var vv = window.lodge;
+    var demos = document.querySelector('div.demo-panels');
     
     vv.addEventListener('ready', function(e) {
       
@@ -51,13 +53,12 @@
     vv.addEventListener('openscreen', function(e) {
       var screen = document.querySelector('div.screen');
       screen.style.left = '-176vw';
-
-      var demos = document.querySelector('div.demo-panels');
       demos.style.opacity = 1;
     });
 
     vv.addEventListener('changedemo', function(e) {
-      console.log(e.detail);
+      var margin = 0 - (e.detail * 100);
+      demos.style.marginLeft = `${margin}vw`;
     });
   </script>
   

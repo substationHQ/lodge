@@ -11,7 +11,7 @@
 }
 
 html, body {
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 body{
@@ -20,7 +20,7 @@ body{
     font-weight: 300;
     min-height: 180px;;
     background-color: #fff;
-    padding: 1em 1em 1em 19vw;
+    padding: 0;
 }
 code {
     font-size: 0.85em;
@@ -55,6 +55,7 @@ a:hover {
     z-index: 1000;
     background: #000;
     transition: left 0.6s ease-out;
+    overflow:hidden;
 }
 .screen-bg {
     display: inline-block;
@@ -85,7 +86,15 @@ a:hover {
 .demo-panels {
     position:relative;
     opacity: 0;
-    transition: opacity 0.3s ease-out;
+    margin-left: 0;
+    transition: all 0.3s ease-out;
     transition-delay: 0.6s;
+    width:200vw;
     z-index: 1200;
+}
+.demo-panel {
+    width:100vw;
+    display:block;
+    float: left;
+    padding: 1em 1em 1em 19vw;
 }
