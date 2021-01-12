@@ -23,10 +23,14 @@ h1,h2,h3,h4,h5,h6{
     font-family: Quicksand;
 }
 h1{
-    font-size: 4.5em;
+    font-size: 5em;
     line-height: 1em;
     margin-bottom: 0;
     font-weight: 300;
+}
+h2 {
+    font-size: 1.65em;
+    line-height: 1.125em;
 }
 main {
     color:#222;
@@ -268,7 +272,7 @@ div.demo-embed iframe {
   }
 
   section.features {
-    margin-top: 4em;
+    margin-top: 3em;
   }
 button{
     border:0;
