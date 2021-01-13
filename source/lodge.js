@@ -1121,11 +1121,11 @@ if (!window.lodge) {
           const de = document.documentElement;
           return Math.max(
             db.scrollHeight,
-            de.scrollHeight,
+            // de.scrollHeight, // <--- doesn't resize *down* ever, only in here as IE support
             db.offsetHeight,
             de.offsetHeight,
-            db.clientHeight,
-            de.clientHeight
+            db.clientHeight
+            // de.clientHeight //  <--- doesn't resize *down* ever, only in here as IE support
           );
         },
       }, /// END lodge.measure
