@@ -227,6 +227,7 @@ footer::before{
     margin: 0;
     flex: 1;
     min-width: 300px;
+    align-self: flex-end;
 }
 
 section.demo-copy {
@@ -245,7 +246,6 @@ div.demo-embed {
     margin: 0 1em 0 1em;
     border-radius: 1em;
     overflow: hidden;
-    align-self: flex-start;
 }
 
 div.demo-embed iframe {
