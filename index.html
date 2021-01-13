@@ -32,8 +32,11 @@
 </head>
 
 <body>
-  <div class="slashes-overprint"></div>
-  <div class="logo-lodge-w"></div>
+  <div class="background-wrapper">
+    <div class="slashes-overprint"></div>
+    <div class="logo-lodge-w"></div>
+  </div>
+
     <main>
         <section class="intro">
           <h1 class="logo-lodge">lodge</h1>
@@ -43,11 +46,11 @@
         </section>
         <div class="alt-section">
           <div class="split-content">
-              <section class="demo-copy">
-                <h2>Let's just take a look.</h2>
-                <p>Some things are easier to show than tell, so we set up a quick demo to show how Lodge works with embeds.</p>
-                <button class="demo-open">Show the demo embed</button>
-              </section>
+            <section class="demo-copy">
+              <h2 class="demo-copy-header">Let's just take a look.</h2>
+              <p class="demo-copy-text">Some things are easier to show than tell, so we set up a quick demo to show how Lodge works with embeds.</p>
+              <button class="demo-copy-button">Show the demo embed</button>
+            </section>
             <div class="demo-embed">
               <embed class="lodge" src="embed.html" id="demo" title="lodge demo embed" data-css=".logo{color:#a00;}">
             </div>
@@ -62,7 +65,7 @@
                         <li>A universal and responsive overlay</li>
                         <li>Debug mode to help see what's happening while you build</li>
                         <li>Override CSS of embeds with a simple data attribute</li>
-                        <li>Automatically <a href="https://www.youtube.com/watch?v=h9T0ICrAzqU">show</a> <a href="https://vimeo.com/15744536">videos</a> in a modal overlay (optional)</li>
+                        <li>Automatically <a href="https://www.youtube.com/watch?v=h9T0ICrAzqU">show</a> <a href="https://vimeo.com/15744536">videos</a> in a full-screen overlay (optional)</li>
                         <li>Request simple user input with generated modal forms</li>
                     </ul>
                 </section>
@@ -85,13 +88,12 @@
                 <p>
                   Lodge inserts its CSS at the top of the cascade, so you can add custom styles to embeds and the overlay:<br>
                 </p>
-                <code>.vv-embed, .vv-modal</code>
+                <code>.vv-embed, .vv-overlay</code>
                 <p>
                   It's all event driven, and Lodge will tell you when it's ready:
                 </p>
                 <code>
-                  window.lodge.events.add(<br>
-                    &nbsp;&nbsp;vv,'ready', function(e) {<br>
+                  window.lodge.events.add( vv, 'ready', function(e) {<br>
                     &nbsp;&nbsp;// ...do something <br>
                   });
                 </code>
@@ -107,15 +109,64 @@
 </footer>
 
 <script>
+  /*
+    Most of this is just dealing with the demo content and relaying
+    events down to the demo embed.
+  */
   var vv = window.lodge;
-  var currentDemo = 0;
-  
-  vv.addEventListener('ready', function(e) {
-    var openbutton = document.querySelector('.demo-open');
-    openbutton.addEventListener('click', function(e){
+  var demoPosition = -1; // -1 just indicates that we're at 0 with the screen closed
+  var demoCopy = document.querySelector('.demo-copy');
+  var demoHeader = document.querySelector('.demo-copy-header');
+  var demoText = document.querySelector('.demo-copy-text');
+  var demoButton = document.querySelector('.demo-copy-button');
+  var demoScript = [
+    {
+      // 0: showing the embed itself, resizing, etc
+      'header':'Pretty neat, right?',
+      'text':'Lodge turns a simple &lt;embed&gt; tag into an iframe, sized to fit responsively wherever you put it.',
+      'button':'Tell me about the overlay'
+    },
+    {
+      // 0: showing the embed itself, resizing, etc
+      'header':'A full-screen overlay',
+      'text':'From the main window or an embed, the Lodge overlay easily handles messging, media, and more.',
+      'button':'Reset it all'
+    }
+  ]
+
+  // this is fired when the page and Lodge are both loaded
+  vv.addEventListener('ready', function(e) {    
+    // this will automatically handle changing the content and fading it in
+    // all the content is drawn from the demoScipt JSON above
+    function changeDemoCopy() {
+      // reset the values
+      demoHeader.innerHTML = demoScript[demoPosition].header;
+      demoText.innerHTML = demoScript[demoPosition].text;
+      demoButton.innerHTML = demoScript[demoPosition].button;
+      demoCopy.style.opacity = 1;
+    }
+
+    // when the button is clicked let's show some demo stuff
+    demoButton.addEventListener('click', function(e){
       e.stopPropagation();
       e.preventDefault();
-      vv.events.fire({ obj: window.lodge,type: 'openscreen',target: 'demo' });
+      // first fading out the demo copy
+      setTimeout(() => { demoCopy.style.opacity = 0; }, 400);
+      // we'll use a timer kick off the changes
+      setTimeout(changeDemoCopy, 800);
+      // silly to fire this every time but will do nothing after the first time so let's not
+      // demoPosition is only ever === -1 on initial click
+      if (demoPosition === -1) {
+        vv.events.fire({ obj: window.lodge,type: 'openscreen',target: 'demo' });
+      }
+      // now iterate through the positions
+      demoPosition = demoPosition + 1;
+      if (demoPosition === demoScript.length) {
+        // wrap around at the end
+        demoPosition = 0;
+      }
+      // and this tells it to chang the demo itself in the embed
+      vv.events.fire({ obj: window.lodge,type: 'changedemo',target: 'demo',data: demoPosition });
     }, false);
   });
 </script>

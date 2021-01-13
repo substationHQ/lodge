@@ -8,13 +8,13 @@
   <link rel="stylesheet" href="/assets/css/normalize.css">
   <link rel="stylesheet" href="/assets/css/embed.css">
 
+  <link rel="preload" href="/assets/images/demo-snacks.gif" as="image">
+
   <script src="/dist/lodge.js" data-options="lightboxvideo=true"></script>
 
 </head>
 
 <body>
-
-
   <div class="screen">
     <div class="screen-bg"></div>
     <div class="screen-slashes"></div>
@@ -22,38 +22,58 @@
   </div>
 
   <div class="demo-panels">
-    <div class="demo-panel-0">
+    <div class="demo-panel demo-panel-0">
       <h2>So this bit's an iframe.</h2>
-      <a href="#" id="hellobutton">Say hello</a><br>
-      <a href="https://www.youtube.com/watch?v=smVoxgny20U">Watch a video</a>
+      Thanks to shared events, the main window can resize the embed as needed. <a href="#" class="demo-doresize">Check it out.</a>
+    </div>
+    <div class="demo-panel demo-panel-1">
+      <h2>Pass notes in an overlay.</h2>
+      In the main window or the embed, just <a href="#" class="demo-domessage">say hello</a> or ask a question.
     </div>
   </div>
   
+  <div class="demo-snacks"><img src ="/assets/images/demo-snacks.gif" width="100%" height="auto" alt="I love snacks."></div>
   
   <script type="text/javascript">
     var vv = window.lodge;
+    var demos = document.querySelector('div.demo-panels');
     
     vv.addEventListener('ready', function(e) {
       
       // opens an overlay in the main window based on a click in an embed
-      var hellobutton = document.getElementById('hellobutton');
-      hellobutton.addEventListener('click', function(e){
-        e.stopPropagation();
+      var domessage = document.querySelector('a.demo-domessage');
+      domessage.addEventListener('click', function(e){
         e.preventDefault();
+        e.stopPropagation();
         vv.prompt.message({
           message: 'Hi there.',
           context: 'Just a single line of JavaScript opens full-page messaging and modal overlays.'
         });
+      }, false);
+
+      // change the min-height on the body to resize things
+      var doresize = document.querySelector('a.demo-doresize');
+      var snacks = document.querySelector('div.demo-snacks');
+      doresize.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        snacks.style.display = 'block';
+        setTimeout(() => { 
+          snacks.style.display = 'none';
+        }, 2000);
       }, false);
       
     });
     
     vv.addEventListener('openscreen', function(e) {
       var screen = document.querySelector('div.screen');
-      screen.style.left = '-176vw';
-
-      var demos = document.querySelector('div.demo-panels');
+      screen.style.left = '-220vw';
       demos.style.opacity = 1;
+    });
+
+    vv.addEventListener('changedemo', function(e) {
+      var margin = 0 - (e.detail * 100);
+      demos.style.marginLeft = `${margin}vw`;
     });
   </script>
   

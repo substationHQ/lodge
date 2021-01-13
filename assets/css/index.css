@@ -23,9 +23,14 @@ h1,h2,h3,h4,h5,h6{
     font-family: Quicksand;
 }
 h1{
-    font-size: 4em;
-    line-height: 0.8em;
+    font-size: 5em;
+    line-height: 1em;
+    margin-bottom: 0;
     font-weight: 300;
+}
+h2 {
+    font-size: 1.65em;
+    line-height: 1.125em;
 }
 main {
     color:#222;
@@ -68,6 +73,15 @@ li:before {
 li {
     text-indent: -1.25em;
     margin-bottom: 0.5em;
+}
+
+.background-wrapper{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 90vw;
+    height: 80vw;
+    overflow: hidden;
 }
 
 .slashes-overprint{
@@ -126,7 +140,6 @@ footer::before{
     margin: 0 auto 5em;
     padding-top: max(15vh, 8em);
 }
-
 
 .logo-lodge::before {
     content: '';
@@ -205,16 +218,23 @@ footer::before{
     margin: 1em auto;
 }
 
+.alt-section .split-content {
+    flex-wrap: wrap-reverse;
+}
+
 .split-content section, div.demo-embed {
     padding: 1em;
     margin: 0;
     flex: 1;
     min-width: 300px;
+    align-self: flex-end;
 }
 
 section.demo-copy {
     margin: 0 1em;
     padding: 0;
+    opacity: 1;
+    transition: opacity 0.4s ease-out;
 }
 
 section.demo-copy h2  {
@@ -226,7 +246,6 @@ div.demo-embed {
     margin: 0 1em 0 1em;
     border-radius: 1em;
     overflow: hidden;
-    align-self: flex-start;
 }
 
 div.demo-embed iframe {
@@ -252,7 +271,7 @@ div.demo-embed iframe {
   }
 
   section.features {
-    margin-top: 4em;
+    margin-top: 3em;
   }
 button{
     border:0;
@@ -265,6 +284,7 @@ button{
     font-size:0.65em;
     text-transform:uppercase;
     font-weight:bold;
+    outline: none;
 }
 button:hover{
     background-color:#ff0;
@@ -276,6 +296,19 @@ button:hover{
         width:100%;
     }
     section.demo-copy  {
-        padding-bottom: 3em;
+        padding-top: 3em;
+    }
+    .slashes-overprint{
+        background-position-x: -36vw;
+        background-position-y: -64vw;
+        height: 120vw;
+        width: 120vw;
+    }
+    
+    .logo-lodge-w{
+        height: 64vw;
+        width: 64vw;
+        left: 4vw;
+        top: -6vw;
     }
   }
