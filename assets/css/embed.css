@@ -102,3 +102,11 @@ a:hover {
     float: left;
     padding: 1.75em 1.5em 1.5em 1.5em;
 }
+.demo-snacks {
+    display: none;
+    clear: both;
+    padding-top: 1.25em;
+}
+.demo-snacks img {
+    display: block;
+}

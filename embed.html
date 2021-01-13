@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="/assets/css/normalize.css">
   <link rel="stylesheet" href="/assets/css/embed.css">
 
+  <link rel="preload" href="/assets/images/demo-snacks.gif" as="image">
+
   <script src="/dist/lodge.js" data-options="lightboxvideo=true"></script>
 
 </head>
@@ -30,6 +32,7 @@
     </div>
   </div>
   
+  <div class="demo-snacks"><img src ="/assets/images/demo-snacks.gif" width="100%" height="auto" alt="I love snacks."></div>
   
   <script type="text/javascript">
     var vv = window.lodge;
@@ -50,13 +53,14 @@
 
       // change the min-height on the body to resize things
       var doresize = document.querySelector('a.demo-doresize');
+      var snacks = document.querySelector('div.demo-snacks');
       doresize.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
-        document.body.style.minHeight = '100vw';
+        snacks.style.display = 'block';
         setTimeout(() => { 
-          document.body.style.minHeight = '180px';
-        }, 1200);
+          snacks.style.display = 'none';
+        }, 2000);
       }, false);
       
     });
