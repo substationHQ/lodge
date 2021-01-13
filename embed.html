@@ -22,11 +22,11 @@
   <div class="demo-panels">
     <div class="demo-panel demo-panel-0">
       <h2>So this bit's an iframe.</h2>
-      Thanks to shared events, the main window can resize the embed as needed. Check it out.
+      Thanks to shared events, the main window can resize the embed as needed. <a href="#" class="demo-doresize">Check it out.</a>
     </div>
     <div class="demo-panel demo-panel-1">
       <h2>Pass notes in an overlay.</h2>
-      In the main window or the embed, just <a href="#" id="hellobutton">say hello</a> or ask a question.
+      In the main window or the embed, just <a href="#" class="demo-domessage">say hello</a> or ask a question.
     </div>
   </div>
   
@@ -38,21 +38,32 @@
     vv.addEventListener('ready', function(e) {
       
       // opens an overlay in the main window based on a click in an embed
-      var hellobutton = document.getElementById('hellobutton');
-      hellobutton.addEventListener('click', function(e){
-        e.stopPropagation();
+      var domessage = document.querySelector('a.demo-domessage');
+      domessage.addEventListener('click', function(e){
         e.preventDefault();
+        e.stopPropagation();
         vv.prompt.message({
           message: 'Hi there.',
           context: 'Just a single line of JavaScript opens full-page messaging and modal overlays.'
         });
+      }, false);
+
+      // change the min-height on the body to resize things
+      var doresize = document.querySelector('a.demo-doresize');
+      doresize.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        document.body.style.minHeight = '100vw';
+        setTimeout(() => { 
+          document.body.style.minHeight = '180px';
+        }, 2500);
       }, false);
       
     });
     
     vv.addEventListener('openscreen', function(e) {
       var screen = document.querySelector('div.screen');
-      screen.style.left = '-176vw';
+      screen.style.left = '-220vw';
       demos.style.opacity = 1;
     });
 

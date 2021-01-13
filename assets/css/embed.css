@@ -21,6 +21,10 @@ body{
     min-height: 180px;;
     background-color: #fff;
     padding: 0;
+    background-image: url('/assets/images/wordmark-overprint.svg');
+    background-repeat: no-repeat;
+    background-position: top -205px center;
+    background-size: 1800px auto;
 }
 code {
     font-size: 0.85em;
@@ -96,5 +100,5 @@ a:hover {
     width:100vw;
     display:block;
     float: left;
-    padding: 1em 1em 1em 19vw;
+    padding: 1.75em 1.5em 1.5em 1.5em;
 }

@@ -80,7 +80,7 @@ li {
     top: 0;
     left: 0;
     width: 90vw;
-    height: 90vh;
+    height: 80vw;
     overflow: hidden;
 }
 
@@ -140,7 +140,6 @@ footer::before{
     margin: 0 auto 5em;
     padding-top: max(15vh, 8em);
 }
-
 
 .logo-lodge::before {
     content: '';

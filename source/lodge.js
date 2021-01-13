@@ -283,7 +283,7 @@ if (!window.lodge) {
               vv.storage.embedheight = h;
               vv.events.fire({ obj: vv, type: "resize", data: { height: h } });
             }
-          }, 250);
+          }, 125);
         }
       },
 
@@ -1639,7 +1639,7 @@ if (!window.lodge) {
           let buttons = false;
           if (context) output += `<p>${context}</p>`;
           if (button) buttons = { modal0: button, modal1: false };
-          console.log(buttons);
+          // console.log(buttons);
           vv.overlay.reveal({
             innerContent: output,
             buttons,
