@@ -123,12 +123,10 @@
     vv.overlay.create(function () {
       for (let i = 0; i < as.length; ++i) {
         as[i].addEventListener("click", function (e) {
-          if (vv.measure.viewport().x > 400 && !e.metaKey) {
-            e.preventDefault();
-            // do the overlay thing
-            const url = e.currentTarget.href;
-            vv.lightbox.injectIframe(url);
-          }
+          e.preventDefault();
+          // do the overlay thing
+          const url = e.currentTarget.href;
+          vv.lightbox.injectIframe(url);
         });
       }
     });
