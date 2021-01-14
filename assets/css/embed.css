@@ -1,5 +1,5 @@
 /* Brand starter pack */
-@import url('https://fonts.googleapis.com/css?family=Quicksand|Zilla+Slab:300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400&family=Zilla+Slab:wght@300;700&display=swap');
 
 *, *::before, *::after{
     box-sizing: border-box;
@@ -34,6 +34,7 @@ h1,h2,h3,h4,h5,h6{
     margin: 0.25em 0 0.5em 0;
     color:#000;
     font-family: Quicksand;
+    font-weight: 400;
 }
 
 a { 
@@ -48,6 +49,10 @@ a {
 a:hover { 	
     box-shadow: inset 0 -0.85em 0 #ffff00;
     color: #000;
+}
+
+b {
+    font-weight: 700;
 }
 
 .screen {
@@ -109,4 +114,16 @@ a:hover {
 }
 .demo-snacks img {
     display: block;
+}
+.demo-videolisting {
+    line-height: 1.25em;
+    margin-top: 1.25em;
+}
+.demo-videolisting img {
+    display: inline-block;
+    float: left;
+    margin-right: 1em;
+    height: 50px;
+    width: auto;
+    border-radius: 0.5em;
 }
