@@ -163,9 +163,9 @@
       e.stopPropagation();
       e.preventDefault();
       // first fading out the demo copy
-      setTimeout(() => { demoCopy.style.opacity = 0; }, 400);
+      setTimeout(() => { demoCopy.style.opacity = 0; }, 200);
       // we'll use a timer kick off the changes
-      setTimeout(changeDemoCopy, 800);
+      setTimeout(changeDemoCopy, 400);
       // silly to fire this every time but will do nothing after the first time so let's not
       // demoPosition is only ever === -1 on initial click
       if (demoPosition === -1) {

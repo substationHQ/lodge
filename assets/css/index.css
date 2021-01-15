@@ -234,7 +234,7 @@ section.demo-copy {
     margin: 0 1em;
     padding: 0;
     opacity: 1;
-    transition: opacity 0.4s ease-out;
+    transition: opacity 0.2s ease-out;
 }
 
 section.demo-copy h2  {
