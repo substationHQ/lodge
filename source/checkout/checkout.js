@@ -206,11 +206,11 @@
                               callback: function reveal(e, r) {
                                 if (e) {
                                   vv.overlay.reveal({
-                                    innerContent: `<h2 class="vv-checkout-error">${options.errorMsg}</h2>`,
+                                    innerContent: `<h2 class="vv__checkout-error">${options.errorMsg}</h2>`,
                                   });
                                 } else {
                                   vv.overlay.reveal({
-                                    innerContent: `<h2 class="vv-checkout-success">${options.successMsg}</h2>`,
+                                    innerContent: `<h2 class="vv__checkout-success">${options.successMsg}</h2>`,
                                   });
                                 }
                               },
@@ -311,13 +311,13 @@
           data: options,
           target: source,
         });
-        vv.overlay.reveal({ innerContent: '<div class="vv-loading"></div>' });
+        vv.overlay.reveal({ innerContent: '<div class="vv__loading"></div>' });
       }
       // Stripe and Paypal
       else if (options.braintree && options.paypal) {
         // Create HTML elements to use as selectors
         const container = document.createElement("div");
-        container.className = "vv-checkout-choose";
+        container.className = "vv__checkout-choose";
 
         const ppspan = document.createElement("span");
         const stspan = document.createElement("span");
@@ -361,7 +361,7 @@
     showerror() {
       vv.overlay.reveal({
         innerContent:
-          '<div class="vv-checkout-error">There are no valid payment types. Please add a payment connection. Check to make sure your site supports SSL (https) if you are using Braintree.</div>',
+          '<div class="vv__checkout-error">There are no valid payment types. Please add a payment connection. Check to make sure your site supports SSL (https) if you are using Braintree.</div>',
       });
     },
   };

@@ -26,6 +26,7 @@ body{
     background-position: top -205px center;
     background-size: 1800px auto;
 }
+
 code {
     font-size: 0.85em;
     color: #00AEFF;
@@ -126,4 +127,26 @@ b {
     height: 50px;
     width: auto;
     border-radius: 0.5em;
+}
+.demo-overlay {
+    display: none;
+}
+
+/* Styles for the embed when shown in an overlay */
+.vv__embed-overlay body {
+    min-height: 360px;
+    background-position: bottom -375px left -1092px;
+    background-size: 3200px auto;
+}
+
+.vv__embed-overlay .screen {
+    display: none;
+}
+
+.vv__embed-overlay .demo-panels {
+    display: none;
+}
+
+.vv__embed-overlay .demo-overlay {
+    display: block;
 }

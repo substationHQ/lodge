@@ -119,7 +119,7 @@ if (!window.lodge) {
           }
           vv.styles.addClass({
             el: document.documentElement,
-            className: "vv-embed",
+            className: "vv__embed",
           });
           vv._initEmbed();
         } else {
@@ -131,7 +131,7 @@ if (!window.lodge) {
         if (vv.get.params.overlay) {
           vv.styles.addClass({
             el: document.documentElement,
-            className: "vv-embed-overlay",
+            className: "vv__embed-overlay",
           });
         }
 
@@ -548,7 +548,7 @@ if (!window.lodge) {
               if (overlay) {
                 // create a span to contain the overlay link
                 const embedNode = document.createElement("span");
-                embedNode.className = "vv-overlay-open";
+                embedNode.className = "vv__overlay-open";
 
                 // open in an overlay with a link in the target div
                 vv.overlay.create(function addMarkup() {
@@ -608,7 +608,7 @@ if (!window.lodge) {
             }`
           );
           if (!id) {
-            id = `vv-${new Date().getTime()}`;
+            id = `vv__${new Date().getTime()}`;
           }
           embedURL += `?lodgelocation=${originlocation}`;
 
@@ -629,7 +629,7 @@ if (!window.lodge) {
 
           iframe.src = embedURL;
           iframe.id = id;
-          iframe.className = "vv-embed";
+          iframe.className = "vv__embed";
           iframe.style.width = "100%";
           iframe.style.height = "0"; // if not explicitly set the scrollheight of the document will be wrong
           iframe.style.border = "0";
@@ -1230,7 +1230,7 @@ if (!window.lodge) {
 
           // first we create the overlay div for the whole overlay
           self.content = document.createElement("div");
-          self.content.className = "vv-overlay";
+          self.content.className = "vv__overlay";
           // bind the esc key to hiding the overlay
           document.addEventListener("keyup", function addKeyup(e) {
             if (e.key === "Escape") {
@@ -1249,7 +1249,7 @@ if (!window.lodge) {
 
           // now the close button in the corner
           self.close = document.createElement("div");
-          self.close.className = "vv-close";
+          self.close.className = "vv__close";
           self.close.addEventListener("click", function addClick() {
             if (self.content.parentNode === document.body) {
               self.hide();
@@ -1282,7 +1282,7 @@ if (!window.lodge) {
           });
 
           self.buttons = document.createElement("div");
-          self.buttons.className = "vv-buttons";
+          self.buttons.className = "vv__buttons";
           self.buttons.appendChild(self.buttonTrue);
           self.buttons.appendChild(self.buttonFalse);
 
@@ -1319,7 +1319,7 @@ if (!window.lodge) {
             db.removeChild(self.content);
 
             // reveal any (if) overlay triggers (for inline text+overlay embeds)
-            const t = document.querySelectorAll(".vv-overlaytrigger");
+            const t = document.querySelectorAll(".vv__overlaytrigger");
             if (t.length > 0) {
               for (let i = 0, len = t.length; i < len; i++) {
                 t[i].style.visibility = "visible";
@@ -1329,7 +1329,7 @@ if (!window.lodge) {
             // reenable body scrolling
             vv.styles.removeClass({
               el: document.documentElement,
-              className: "vv-noscroll",
+              className: "vv__noscroll",
             });
           }
         },
@@ -1341,12 +1341,12 @@ if (!window.lodge) {
          *
          * @param {object} overlay
          * @param {string|object} overlay.innerContent - Either a DOM node tree or string representation of content to be shown in the overlay.
-         * @param {string} [overlay.wrapClass="vv-component"] - A class name for the wrapper DIV. Allows for easy styling of content shown in the overlay.
+         * @param {string} [overlay.wrapClass="vv__component"] - A class name for the wrapper DIV. Allows for easy styling of content shown in the overlay.
          *
          ************************************************************************************ */
         reveal({
           innerContent,
-          wrapClass = "vv-component",
+          wrapClass = "vv__component",
           modal = false,
           buttons = false,
           embedRequest = false,
@@ -1376,7 +1376,7 @@ if (!window.lodge) {
             while (self.content.firstChild) {
               self.content.removeChild(self.content.firstChild);
             }
-            positioning.className = "vv-position";
+            positioning.className = "vv__position";
             wrapper.className = wrapClass;
 
             // check for an embed iframe request in the overlay reveal
@@ -1398,12 +1398,12 @@ if (!window.lodge) {
             if (
               !vv.styles.hasClass({
                 el: document.documentElement,
-                className: "vv-noscroll",
+                className: "vv__noscroll",
               })
             ) {
               vv.styles.addClass({
                 el: document.documentElement,
-                className: "vv-noscroll",
+                className: "vv__noscroll",
               });
             }
 

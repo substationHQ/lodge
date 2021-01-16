@@ -36,8 +36,8 @@
       const self = vv.lightbox;
       const parsedUrl = self.parseVideoURL(url);
       vv.overlay.reveal({
-        innerContent: `<div class="vv-aspect"><iframe src="${parsedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`,
-        wrapClass: "vv-media",
+        innerContent: `<div class="vv__aspect"><iframe src="${parsedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`,
+        wrapClass: "vv__media",
       });
     },
 
@@ -64,16 +64,16 @@
     },
 
     showGallery(img, caption, gallery) {
-      let markup = `<div class="vv-gallery-img" style="background-image:url(${img});"></div>`;
+      let markup = `<div class="vv__gallery-img" style="background-image:url(${img});"></div>`;
       if (caption) {
-        markup += `<div class="vv-gallery-caption">${caption}</div>`;
+        markup += `<div class="vv__gallery-caption">${caption}</div>`;
       }
-      vv.overlay.reveal({ innerContent: markup, wrapClass: "vv-gallery" });
+      vv.overlay.reveal({ innerContent: markup, wrapClass: "vv__gallery" });
       if (gallery) {
         const prev = document.createElement("div");
-        prev.className = "vv-gallery-prev";
+        prev.className = "vv__gallery-prev";
         const next = document.createElement("div");
-        next.className = "vv-gallery-next";
+        next.className = "vv__gallery-next";
 
         prev.addEventListener("click", function (e) {
           const prev = vv.lightbox.objLoop(gallery, img, "prev");
@@ -88,7 +88,7 @@
           vv.lightbox.showGallery(newimg, newcap, gallery);
         });
 
-        const g = document.querySelector(".vv-gallery");
+        const g = document.querySelector(".vv__gallery");
         g.appendChild(prev);
         g.appendChild(next);
       }
