@@ -16,9 +16,9 @@
 
 <body>
   <div class="screen">
-    <div class="screen-bg"></div>
-    <div class="screen-slashes"></div>
-    <div class="screen-mask"></div>
+    <div class="screen__bg"></div>
+    <div class="screen__slashes"></div>
+    <div class="screen__mask"></div>
   </div>
 
   <div class="demo-panels">
@@ -30,11 +30,38 @@
       <h2>Pass notes in an overlay.</h2>
       In the main window or the embed, just <a href="#" class="demo-domessage">say hello</a> or ask a question.
     </div>
+    <div class="demo-panel demo-panel-2">
+      <h2>Videos looks great big.</h2>
+      <div class="demo-videolisting">
+        <a href="https://vimeo.com/187604216">
+          <img src="https://i.vimeocdn.com/video/598143533_640x360.webp" class="demo-video" alt="Kool Keith X MF DOOM: Super Heroes">
+          <b>Kool Keith X MF DOOM</b> <br>Super Heroes
+        </a>
+      </div>
+    </div>
+    <div class="demo-panel demo-panel-3">
+      <h2>Get interactive.</h2>
+      Open bigger interactive components <embed class="lodge overlay" src="embed.html" id="demo2" title="in an overlay"> and give them some space.
+    </div>
   </div>
   
-  <div class="demo-snacks"><img src ="/assets/images/demo-snacks.gif" width="100%" height="auto" alt="I love snacks."></div>
+  <div class="demo-snacks">
+    <img src ="/assets/images/demo-snacks.gif" width="100%" height="auto" alt="I love snacks.">
+  </div>
   
-  <script type="text/javascript">
+  <div class="demo-overlay">
+    <h2>Oh hello again.</h2>
+    <p>
+      This is actually the same demo embed, but when opened in an embed lodge adds
+      a <code>.lodge__embed--overlay</code> class we can use to show, hide, and 
+      switch things around. Comes in handy when you want something to work as both
+      a standalone page and as embedded content.
+    </p>
+    <button class="demo-overlay__button">Close</button>
+  </div>
+
+
+  <script>
     var vv = window.lodge;
     var demos = document.querySelector('div.demo-panels');
     
@@ -62,6 +89,13 @@
           snacks.style.display = 'none';
         }, 2000);
       }, false);
+
+      var closebutton = document.querySelector('.demo-overlay__button');
+      closebutton.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        vv.overlay.hide();
+      }, false);
       
     });
     
@@ -76,6 +110,5 @@
       demos.style.marginLeft = `${margin}vw`;
     });
   </script>
-  
 </body>
 </html>

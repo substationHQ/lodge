@@ -54,7 +54,7 @@
                     vv.userinput.getInput(formElements,'getstripetoken', null, ""); //TODO: total price for checkout
                     if (!vv.stripe.eventAttached) {
                         vv.events.add(vv,'userinput', function(e) {
-                            if (e.detail['vv-userinput-type'] == 'getstripetoken') {
+                            if (e.detail['lodge__userinput-type'] == 'getstripetoken') {
                                 Stripe.setPublishableKey(key);
                                 Stripe.card.createToken({
                                     name: e.detail['name'],
@@ -65,10 +65,10 @@
                                 }, function(status, response, evt) {
                                     if (response.error) {
                                         // Show the errors on the form
-                                        document.getElementById('vv-userinput-message').innerHTML = response.error.message;
-                                        vv.styles.addClass(document.getElementsByClassName('vv-userinput-container')[0],'nope');
+                                        document.getElementById('lodge__userinput-message').innerHTML = response.error.message;
+                                        vv.styles.addClass(document.getElementsByClassName('lodge__userinput-container')[0],'nope');
                                         setTimeout(function(){
-                                            vv.styles.removeClass(document.getElementsByClassName('vv-userinput-container')[0],'nope');
+                                            vv.styles.removeClass(document.getElementsByClassName('lodge__userinput-container')[0],'nope');
                                         }, 800);
                                     } else {
                                         // response contains id and card, which contains additional card details
@@ -76,7 +76,7 @@
                                         vv.storage['checkoutdata']['name']   = e.detail['name'];
                                         vv.storage['checkoutdata']['email']  = e.detail['email'];
                                         vv.events.fire(vv,'checkoutdata',vv.storage['checkoutdata'],source);
-                                        vv.overlay.reveal('<div class="vv-loading"></div>');
+                                        vv.overlay.reveal('<div class="lodge__loading"></div>');
                                     }
                                 });
 
@@ -116,17 +116,17 @@
             type = type || 'unknown';
             var form = document.createElement('form');
             var container = document.createElement('div');
-            container.className = 'vv-userinput-container';
+            container.className = 'lodge__userinput-container';
             var message = document.createElement('div');
-            message.id = 'vv-userinput-message';
+            message.id = 'lodge__userinput-message';
             message.innerHTML = '&nbsp;';
 
             if (msg) {
                 message.innerHTML = msg;
             }
-            form.className = 'vv-userinput ' + type + ' ' + style;
+            form.className = 'lodge__userinput ' + type + ' ' + style;
 
-            elements.push({id:'vv-userinput-type', type:'hidden', value:type});
+            elements.push({id:'lodge__userinput-type', type:'hidden', value:type});
 
             for (var i = 0; i < elements.length; i++) {
                 var element = elements[i];
@@ -160,7 +160,7 @@
                     }
                 }
                 input.name = element.id;
-                input.id = "vv-userinput-" + type + "-" + element.id;
+                input.id = "lodge__userinput-" + type + "-" + element.id;
                 if (element.required) {
                     input.setAttribute('data-required','1');
                 }
@@ -169,14 +169,14 @@
                     // show the final amount to be charged
 
                     var total = document.createElement('div');
-                    total.id = 'vv-amount-message';
+                    total.id = 'lodge__amount-message';
 
                     if (!vv.storage.checkoutdata.transaction_message) {
                         vv.storage.checkoutdata.transaction_message = "";
                     }
 
 
-                    total.innerHTML = '<h2 class="vv-pricing">Transaction amount: <span>'+vv.storage.checkoutdata.total+vv.storage.checkoutdata.transaction_message+"</span></h2><!--vv-pricing-->";
+                    total.innerHTML = '<h2 class="lodge__pricing">Transaction amount: <span>'+vv.storage.checkoutdata.total+vv.storage.checkoutdata.transaction_message+"</span></h2><!--lodge__pricing-->";
 
                     form.appendChild(total);
                 }
@@ -204,10 +204,10 @@
                 }
                 if (incomplete) {
                     // Show the errors on the form
-                    document.getElementById('vv-userinput-message').innerHTML = 'Please complete all required fields.';
-                    vv.styles.addClass(document.getElementsByClassName('vv-userinput-container')[0],'nope');
+                    document.getElementById('lodge__userinput-message').innerHTML = 'Please complete all required fields.';
+                    vv.styles.addClass(document.getElementsByClassName('lodge__userinput-container')[0],'nope');
                     setTimeout(function(){
-                        vv.styles.removeClass(document.getElementsByClassName('vv-userinput-container')[0],'nope');
+                        vv.styles.removeClass(document.getElementsByClassName('lodge__userinput-container')[0],'nope');
                     }, 800);
                 } else {
                     vv.events.fire(vv,'userinput',formdata);
@@ -602,7 +602,7 @@
                         }
                         // wait for them
                         vv.events.add(vv,'userinput', function(e) {
-                            if (e.detail['vv-userinput-type'] == 'getshippingaddress') {
+                            if (e.detail['lodge__userinput-type'] == 'getshippingaddress') {
                                 vv.storage['checkoutdata']['shipping'] = e.detail;
                                 vv.checkout.initiatepayment(options,source);
                             }
@@ -627,13 +627,13 @@
             else if (!options.stripe && options.paypal) {
                 vv.storage['checkoutdata']['paypal'] = true;
                 vv.events.fire(vv,'checkoutdata',vv.storage['checkoutdata'],source);
-                vv.overlay.reveal('<div class="vv-loading"></div>');
+                vv.overlay.reveal('<div class="lodge__loading"></div>');
             }
             // Stripe and Paypal
             else if (options.stripe && options.paypal) {
                 // Create HTML elements to use as selectors
                 var container = document.createElement("div");
-                container.className = "vv-checkout-choose";
+                container.className = "lodge__checkout-choose";
 
                 var ppspan = document.createElement("span");
                 var stspan = document.createElement("span");
@@ -649,7 +649,7 @@
                     e.stopPropagation();
                     vv.storage['checkoutdata']['paypal'] = true;
                     vv.events.fire(vv,'checkoutdata',vv.storage['checkoutdata'],source);
-                    vv.overlay.reveal('<div class="vv-loading"></div>');
+                    vv.overlay.reveal('<div class="lodge__loading"></div>');
                 });
 
                 // Create a special event to detect Stripe chosen
@@ -672,7 +672,7 @@
         },
 
         showerror: function (type) {
-            vv.overlay.reveal('<div class="vv-checkout-error">There are no valid payment types. Please add a payment connection. Check to make sure your site supports SSL (https) if you are using Stripe.</div>');
+            vv.overlay.reveal('<div class="lodge__checkout-error">There are no valid payment types. Please add a payment connection. Check to make sure your site supports SSL (https) if you are using Stripe.</div>');
         }
     }
 

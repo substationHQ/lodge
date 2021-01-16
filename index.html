@@ -88,7 +88,7 @@
                 <p>
                   Lodge inserts its CSS at the top of the cascade, so you can add custom styles to embeds and the overlay:<br>
                 </p>
-                <code>.vv-embed, .vv-overlay</code>
+                <code>.lodge__embed, .lodge__overlay</code>
                 <p>
                   It's all event driven, and Lodge will tell you when it's ready:
                 </p>
@@ -127,9 +127,21 @@
       'button':'Tell me about the overlay'
     },
     {
-      // 0: showing the embed itself, resizing, etc
+      // 1: introduce the overlay, show prompts
       'header':'A full-screen overlay',
       'text':'From the main window or an embed, the Lodge overlay easily handles messging, media, and more.',
+      'button':'Just show me more video'
+    },
+    {
+      // 2: movies in the overlay
+      'header':'Movies or whatever',
+      'text':'This time we show a video opening in the main window overlay, called from the embed.',
+      'button':'Get fancier. What else?'
+    },
+    {
+      // 3: talk about interactive lodge embeds in the overlay
+      'header':'The pop up embed one',
+      'text':'Open an interactive embed in the overlay and collect input, events, or whatever you need.',
       'button':'Reset it all'
     }
   ]
@@ -151,9 +163,9 @@
       e.stopPropagation();
       e.preventDefault();
       // first fading out the demo copy
-      setTimeout(() => { demoCopy.style.opacity = 0; }, 400);
+      setTimeout(() => { demoCopy.style.opacity = 0; }, 200);
       // we'll use a timer kick off the changes
-      setTimeout(changeDemoCopy, 800);
+      setTimeout(changeDemoCopy, 400);
       // silly to fire this every time but will do nothing after the first time so let's not
       // demoPosition is only ever === -1 on initial click
       if (demoPosition === -1) {

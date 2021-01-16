@@ -119,19 +119,19 @@ if (!window.lodge) {
           }
           vv.styles.addClass({
             el: document.documentElement,
-            className: "vv-embed",
+            className: "lodge__embed",
           });
           vv._initEmbed();
         } else {
           vv.name = "main window";
         }
 
-        // check for ?modal=1, added when we create a modal iframe
+        // check for ?overlay=1, added when we create an overlay iframe
         // if found add a class to the main doc for styling.
-        if (vv.get.params.modal) {
+        if (vv.get.params.overlay) {
           vv.styles.addClass({
             el: document.documentElement,
-            className: "vv-modal",
+            className: "lodge__embed--overlay",
           });
         }
 
@@ -195,9 +195,9 @@ if (!window.lodge) {
             const alt = el.getAttribute("title");
             const css = el.getAttribute("data-css");
             const id = el.getAttribute("id");
-            const modal = lodge.styles.hasClass({
+            const overlay = lodge.styles.hasClass({
               el,
-              className: "modal",
+              className: "overlay",
             });
             const forwardquery = lodge.styles.hasClass({
               el,
@@ -210,7 +210,7 @@ if (!window.lodge) {
                 target: el,
                 css,
                 id,
-                modal,
+                overlay,
                 forwardquery,
               });
             }
@@ -496,7 +496,7 @@ if (!window.lodge) {
          * @param {object|string} component.target - A target DOM element used for location of the embed or open link (for modal components.) If a string is passed rather than a true DOM element it will be tested with queryselector.
          * @param {string} [component.css] - CSS override passed to the iframe, expecting a lodge-powered component.
          * @param {string} component.id - Taken from the embed id, this id will be used for the new iframe. The embed tag will be removed from the DOM, removing conflict.
-         * @param {boolean} [component.modal=false] - Open the component in a modal, generating an open link in place of the embed element.
+         * @param {boolean} [component.overlay=false] - Open the component in an overlay, generating an open link in place of the embed element.
          * @param {boolean} [component.forwardquery=false] - If true, all current querystring parameters are passed to the underlying embed's iframe.
          *
          ************************************************************************************ */
@@ -506,7 +506,7 @@ if (!window.lodge) {
           target,
           css,
           id,
-          modal = false,
+          overlay = false,
           forwardquery = false,
         }) {
           const vv = window.lodge;
@@ -524,7 +524,7 @@ if (!window.lodge) {
               target,
               css,
               id,
-              modal,
+              overlay,
               forwardquery,
             });
           } else {
@@ -535,22 +535,22 @@ if (!window.lodge) {
               currentNode = target;
             }
 
-            const iframe = vv.embeds.buildIframe({
-              src,
-              css,
-              modal,
-              id,
-              forwardquery,
-            });
-
             // be nice neighbors. if we can't find currentNode, don't do the rest or pitch errors. silently fail.
             if (currentNode) {
-              if (modal) {
+              const iframeParams = {
+                src,
+                css,
+                overlay,
+                id,
+                forwardquery,
+              };
+
+              if (overlay) {
                 // create a span to contain the overlay link
                 const embedNode = document.createElement("span");
-                embedNode.className = "vv-modalopen";
+                embedNode.className = "lodge__overlay-open";
 
-                // open in a lightbox with a link in the target div
+                // open in an overlay with a link in the target div
                 vv.overlay.create(function addMarkup() {
                   const a = document.createElement("a");
                   a.href = "";
@@ -560,12 +560,17 @@ if (!window.lodge) {
                   currentNode.parentNode.insertBefore(embedNode, currentNode);
                   (function addEvents() {
                     a.addEventListener("click", function showIframe(e) {
-                      vv.overlay.reveal({ innerContent: iframe });
+                      vv.overlay.reveal({
+                        innerContent: iframeParams,
+                        embedRequest: true,
+                      });
                       e.preventDefault();
                     });
                   })();
                 });
               } else {
+                // set up the iframe
+                const iframe = vv.embeds.buildIframe(iframeParams);
                 // put the iframe in place
                 currentNode.parentNode.insertBefore(iframe, currentNode);
               }
@@ -586,13 +591,13 @@ if (!window.lodge) {
          * @param {string} component.src - The URL or relative link for the iframe source.
          * @param {string} [component.css] - CSS override passed to the iframe via querystring.
          * @param {string} component.id - Taken from the embed id, this id will be used for the new iframe.
-         * @param {boolean} [component.modal=false] - If true, a modal flag is set to tell the underlying iframe's lodge instance it's correctly running as a modal embed.
+         * @param {boolean} [component.overlay=false] - If true, a modal flag is set to tell the underlying iframe's lodge instance it's correctly running as a modal embed.
          * @param {boolean} [component.forwardquery=false] - If true, all current querystring parameters are passed to the underlying embed's iframe.
          *
          * @returns {object} iframe
          *
          ************************************************************************************ */
-        buildIframe({ src, css, modal, id, forwardquery = false }) {
+        buildIframe({ src, css, overlay, id, forwardquery = false }) {
           const vv = window.lodge;
           const iframe = document.createElement("iframe");
           let embedURL = src;
@@ -603,7 +608,7 @@ if (!window.lodge) {
             }`
           );
           if (!id) {
-            id = `vv-${new Date().getTime()}`;
+            id = `lodge__${new Date().getTime()}`;
           }
           embedURL += `?lodgelocation=${originlocation}`;
 
@@ -613,8 +618,8 @@ if (!window.lodge) {
           if (forwardquery) {
             embedURL += `&${vv.get.qs}`;
           }
-          if (modal) {
-            embedURL += "&modal=1";
+          if (overlay) {
+            embedURL += "&overlay=1";
           }
           if (vv.debug.show) {
             embedURL += `&name=${id}`;
@@ -624,7 +629,7 @@ if (!window.lodge) {
 
           iframe.src = embedURL;
           iframe.id = id;
-          iframe.className = "vv-embed";
+          iframe.className = "lodge__embed";
           iframe.style.width = "100%";
           iframe.style.height = "0"; // if not explicitly set the scrollheight of the document will be wrong
           iframe.style.border = "0";
@@ -1225,7 +1230,7 @@ if (!window.lodge) {
 
           // first we create the overlay div for the whole overlay
           self.content = document.createElement("div");
-          self.content.className = "vv-overlay";
+          self.content.className = "lodge__overlay";
           // bind the esc key to hiding the overlay
           document.addEventListener("keyup", function addKeyup(e) {
             if (e.key === "Escape") {
@@ -1244,7 +1249,7 @@ if (!window.lodge) {
 
           // now the close button in the corner
           self.close = document.createElement("div");
-          self.close.className = "vv-close";
+          self.close.className = "lodge__close";
           self.close.addEventListener("click", function addClick() {
             if (self.content.parentNode === document.body) {
               self.hide();
@@ -1277,7 +1282,7 @@ if (!window.lodge) {
           });
 
           self.buttons = document.createElement("div");
-          self.buttons.className = "vv-buttons";
+          self.buttons.className = "lodge__buttons";
           self.buttons.appendChild(self.buttonTrue);
           self.buttons.appendChild(self.buttonFalse);
 
@@ -1314,7 +1319,7 @@ if (!window.lodge) {
             db.removeChild(self.content);
 
             // reveal any (if) overlay triggers (for inline text+overlay embeds)
-            const t = document.querySelectorAll(".vv-overlaytrigger");
+            const t = document.querySelectorAll(".lodge__overlaytrigger");
             if (t.length > 0) {
               for (let i = 0, len = t.length; i < len; i++) {
                 t[i].style.visibility = "visible";
@@ -1324,7 +1329,7 @@ if (!window.lodge) {
             // reenable body scrolling
             vv.styles.removeClass({
               el: document.documentElement,
-              className: "vv-noscroll",
+              className: "lodge__noscroll",
             });
           }
         },
@@ -1336,14 +1341,15 @@ if (!window.lodge) {
          *
          * @param {object} overlay
          * @param {string|object} overlay.innerContent - Either a DOM node tree or string representation of content to be shown in the overlay.
-         * @param {string} [overlay.wrapClass="vv-component"] - A class name for the wrapper DIV. Allows for easy styling of content shown in the overlay.
+         * @param {string} [overlay.wrapClass="lodge__component"] - A class name for the wrapper DIV. Allows for easy styling of content shown in the overlay.
          *
          ************************************************************************************ */
         reveal({
           innerContent,
-          wrapClass = "vv-component",
+          wrapClass = "lodge__component",
           modal = false,
           buttons = false,
+          embedRequest = false,
         }) {
           // add the correct content to the content div
           const vv = window.lodge;
@@ -1361,6 +1367,7 @@ if (!window.lodge) {
                 wrapClass,
                 modal,
                 buttons,
+                embedRequest,
               },
             });
           } else {
@@ -1369,8 +1376,15 @@ if (!window.lodge) {
             while (self.content.firstChild) {
               self.content.removeChild(self.content.firstChild);
             }
-            positioning.className = "vv-position";
+            positioning.className = "lodge__position";
             wrapper.className = wrapClass;
+
+            // check for an embed iframe request in the overlay reveal
+            if (embedRequest) {
+              // set up the iframe
+              const iframeParams = innerContent;
+              innerContent = vv.embeds.buildIframe(iframeParams);
+            }
 
             if (typeof innerContent === "string") {
               wrapper.innerHTML = innerContent;
@@ -1384,12 +1398,12 @@ if (!window.lodge) {
             if (
               !vv.styles.hasClass({
                 el: document.documentElement,
-                className: "vv-noscroll",
+                className: "lodge__noscroll",
               })
             ) {
               vv.styles.addClass({
                 el: document.documentElement,
-                className: "vv-noscroll",
+                className: "lodge__noscroll",
               });
             }
 
