@@ -27,8 +27,8 @@
       Thanks to shared events, the main window can resize the embed as needed. <a href="#" class="demo-doresize">Check it out.</a>
     </div>
     <div class="demo-panel demo-panel-1">
-      <h2>Pass notes in an overlay.</h2>
-      In the main window or the embed, just <a href="#" class="demo-domessage">say hello</a> or ask a question.
+      <h2>Messages and modals.</h2>
+      Quickly <a href="#" class="demo-domessage">display a message</a> or or <a href="#" class="demo-domodal">make a modal query</a> in the overlay.
     </div>
     <div class="demo-panel demo-panel-2">
       <h2>Videos looks great big.</h2>
@@ -62,7 +62,7 @@
 
 
 
-  
+
   <script>
     var vv = window.lodge;
     var demos = document.querySelector('div.demo-panels');
@@ -73,10 +73,18 @@
       var domessage = document.querySelector('a.demo-domessage');
       domessage.addEventListener('click', function(e){
         e.preventDefault();
-        e.stopPropagation();
         vv.prompt.message({
-          message: 'Hi there.',
-          context: 'Just a single line of JavaScript opens full-page messaging and modal overlays.'
+          message: 'Oh, hi there.',
+          context: 'One line of JavaScript shows a message to the overlay. Handy for instructions, confirmation, or even expanding details when space is a consideration.'
+        });
+      }, false);
+      var domessage = document.querySelector('a.demo-domodal');
+      domessage.addEventListener('click', function(e){
+        e.preventDefault();
+        vv.prompt.modal({
+          message: 'Oh, hi there.',
+          context: 'The modal option removes the overlay\'s close button, forcing a binary choice. OK/Cancel buttons can be customized, and an event is fired in the main lodge window as wel as the embed after a user clicks their choice.',
+          queryName: 'demo-modal'
         });
       }, false);
 
@@ -85,7 +93,6 @@
       var snacks = document.querySelector('div.demo-snacks');
       doresize.addEventListener('click', function(e){
         e.preventDefault();
-        e.stopPropagation();
         snacks.style.display = 'block';
         setTimeout(() => { 
           snacks.style.display = 'none';
@@ -95,7 +102,6 @@
       var closebutton = document.querySelector('.demo-overlay__button');
       closebutton.addEventListener('click', function(e){
         e.preventDefault();
-        e.stopPropagation();
         vv.overlay.hide();
       }, false);
       

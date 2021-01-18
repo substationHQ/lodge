@@ -947,11 +947,20 @@ if (!window.lodge) {
          * @param {string} event.type - The name of the event.
          * @param {object|any} [event.data] - The data attached to the event itself. For internal lodge purposes this should be formatted as an object, but for external scripts any data type, including none, is fine.
          * @param {object|string} [event.target] - A lodge-powered iframe embed, specified either by an internal lodge id or with a direct pointer.
+         * @param {boolean} [event.echoTarget] - Used for an event that happens in the main window / overlay with a targeted embed. Set to true, it will fire the same event simultaneously in the main window and embed.
          * @param {boolean} [event.localonly] - If called in an embed, do not bubble this event up to the main window.
          *
          ************************************************************************************ */
-        fire({ obj, type, data = "", target, localonly = false }) {
+        fire({
+          obj,
+          type,
+          data = "",
+          target,
+          echoTarget = false,
+          localonly = false,
+        }) {
           const vv = window.lodge;
+          let relay = true;
           if (target) {
             // target object found, so push to it via postMessage
             //
@@ -977,14 +986,18 @@ if (!window.lodge) {
               message: `targeted ${target.id} with ${type} event.`,
               obj: data,
             });
-          } else {
+            // set relay to false, since we've already targeted the embed.
+            // this suppresses the usual relay default.
+            relay = false;
+          }
+          if (!target || (target && echoTarget)) {
             let e = null;
             // fire the event locally if not targeted
             // standard
             e = document.createEvent("CustomEvent");
             e.initCustomEvent(type, false, false, data);
             if (vv.embedded && !localonly) {
-              e.relay = true;
+              e.relay = relay;
               e.source = window; // window
               e.origin = window.location.origin; // url
             }
@@ -1254,33 +1267,49 @@ if (!window.lodge) {
           });
 
           // finally OK/Cancel buttons — these basically work
+          // first a container for the buttons
+          self.buttons = document.createElement("div");
+          self.buttons.className = "lodge__buttons";
+          // now the actual buttons
           self.buttonTrue = document.createElement("button");
           self.buttonTrue.style.display = "none";
           self.buttonFalse = document.createElement("button");
           self.buttonFalse.style.display = "none";
+          // add dataset options (data attributes) to button container
+          self.buttons.dataset.queryName = "";
+          self.buttons.dataset.srcEmbed = "";
           // add close events to the buttons, passing true/false
-          self.buttonTrue.addEventListener("click", function addClick() {
-            if (self.content.parentNode === document.body) {
-              const returnTarget = null;
-              const returnData = false;
-              // TODO: get data-target from the button to set target —
-              //       this should be set in the modal/message request
-              window.lodge.overlay.hide({ returnData, returnTarget });
-              // TODO: clear data-target from the button
-            }
+          self.buttonTrue.addEventListener("click", function addClick(e) {
+            e.preventDefault();
+            vv.events.fire({
+              obj: vv,
+              type: "modalchoice",
+              data: {
+                modal: 1,
+                queryName: self.buttons.dataset.queryName,
+              },
+              target: self.buttons.dataset.srcEmbed,
+              echoTarget: true,
+            });
+            // we've announced the modal choice, now we hide the overlay
+            window.lodge.overlay.hide();
           });
-          self.buttonFalse.addEventListener("click", function addClick() {
-            if (self.content.parentNode === document.body) {
-              const returnTarget = null;
-              const returnData = true;
-              // TODO: get data-target from the button to set target
-              window.lodge.overlay.hide({ returnData, returnTarget });
-              // TODO: clear data-target from the button
-            }
+          self.buttonFalse.addEventListener("click", function addClick(e) {
+            e.preventDefault();
+            vv.events.fire({
+              obj: vv,
+              type: "modalchoice",
+              data: {
+                modal: 0,
+                queryName: self.buttons.dataset.queryName,
+              },
+              target: self.buttons.dataset.srcEmbed,
+              echoTarget: true,
+            });
+            // we've announced the modal choice, now we hide the overlay
+            window.lodge.overlay.hide();
           });
 
-          self.buttons = document.createElement("div");
-          self.buttons.className = "lodge__buttons";
           self.buttons.appendChild(self.buttonTrue);
           self.buttons.appendChild(self.buttonFalse);
 
@@ -1313,7 +1342,7 @@ if (!window.lodge) {
             while (self.content.firstChild) {
               self.content.removeChild(self.content.firstChild);
             }
-            db.removeChild(self.close);
+            if (self.close.parentNode === db) db.removeChild(self.close);
             db.removeChild(self.content);
 
             // reveal any (if) overlay triggers (for inline text+overlay embeds)
@@ -1323,6 +1352,10 @@ if (!window.lodge) {
                 t[i].style.visibility = "visible";
               }
             }
+
+            // reset button data parameters
+            self.buttons.dataset.queryName = "";
+            self.buttons.dataset.srcEmbed = "";
 
             // reenable body scrolling
             vv.styles.removeClass({
@@ -1348,7 +1381,6 @@ if (!window.lodge) {
           modal = false,
           buttons = false,
           embedRequest = false,
-          queryName = null,
         }) {
           // add the correct content to the content div
           const vv = window.lodge;
@@ -1367,7 +1399,6 @@ if (!window.lodge) {
                 modal,
                 buttons,
                 embedRequest,
-                queryName,
               },
             });
           } else {
@@ -1413,36 +1444,18 @@ if (!window.lodge) {
             if (buttons) {
               if (buttons.modal0) {
                 self.buttonFalse.textContent = buttons.modal0;
-                self.buttonFalse.addEventListener("click", function click0(e) {
-                  e.preventDefault();
-                  vv.events.fire({
-                    obj: vv,
-                    type: "modalchoice",
-                    data: {
-                      modal: 0,
-                      queryName,
-                    },
-                  });
-                  self.buttonFalse.removeEventListener("click");
-                });
                 self.buttonFalse.style.display = "inline-block";
               }
               if (buttons.modal1) {
                 self.buttonTrue.textContent = buttons.modal1;
-                self.buttonTrue.addEventListener("click", function click0(e) {
-                  e.preventDefault();
-                  vv.events.fire({
-                    obj: vv,
-                    type: "modalchoice",
-                    data: {
-                      modal: 1,
-                      queryName,
-                    },
-                  });
-                  self.buttonTrue.removeEventListener("click");
-                });
                 self.buttonTrue.style.display = "inline-block";
               }
+              // if these are set it's a modal request and needs these params for a proper
+              // modalchoice event to fire in the original embed.
+              if (buttons.queryName)
+                self.buttons.dataset.queryName = buttons.queryName;
+              if (buttons.srcEmbed)
+                self.buttons.dataset.srcEmbed = buttons.srcEmbed;
               wrapper.appendChild(self.buttons);
             }
 
@@ -1693,44 +1706,28 @@ if (!window.lodge) {
          * @param {string} modal.context - Context and/or additional details
          * @param {string} modal.buttons - Text for the "OK" / "Cancel" buttons
          * @param {string} modal.queryName - Give the modal query a name, for event matching
-         * 
+         *
          *
          ************************************************************************************ */
         modal({
           message,
           context,
           buttons = { modal0: "Cancel", modal1: "OK" },
-          queryName,
+          queryName = "",
         }) {
           const vv = window.lodge;
+          buttons.queryName = queryName;
+          buttons.srcEmbed = vv.id;
           let output = `<h2>${message}</h2>`;
           if (context) output += `<p>${context}</p>`;
           vv.overlay.reveal({
             innerContent: output,
             modal: true,
             buttons,
-            queryName,
           });
-          // so this is going to have to be event-driven a la everything else that potentially
-          // needs to live in both windows at once. so minimal structure we need to fire off
-          // something like an overlayexit event with some data attached, indicating a button
-          // was clicked. might be worth reworking the overlayhide/overlayhidden mess into a
-          // single overlayexit event that gets relayed so identical data is sent to each window
-          // but the closing of the overlay itself is just cleaned up by the main window. minor
-          // semantic difference in some ways but might wind up way cleaner and better
-          //
-          // we could also set up an event listener for overlayexit in the case of an optional
+          // we could also set up an event listener for modalchoice in the case of an optional
           // callback parameter. seems smart, but likely a to-do and let's look at it as a
           // pattern we could extend elsewhere.
-          //
-          // 1. ensure that an id for the embed is set. if no user id is present let's make one
-          // as a uuid/timestamp+rand type thing. once set in the main page lodge.embeds we also
-          // need to fire an event to the embed and store it for round trip queries
-          //
-          // 2. once the id is known consistently we can auto-include the embed id in the
-          // overlay.reveal event we fire up to main. we then include the id with the locally
-          // fired event to ensure it gets pushed back to the embed as well — so either/both
-          // sides can react to an overlay event, independent or coordinated.
         },
       }, /// END lodge.prompt
     }; /// END △△ lodge {object}
