@@ -1287,6 +1287,7 @@ if (!window.lodge) {
               data: {
                 modal: 1,
                 queryName: self.buttons.dataset.queryName,
+                buttonText: self.buttonTrue.textContent,
               },
               target: self.buttons.dataset.srcEmbed,
               echoTarget: true,
@@ -1302,6 +1303,7 @@ if (!window.lodge) {
               data: {
                 modal: 0,
                 queryName: self.buttons.dataset.queryName,
+                buttonText: self.buttonFalse.textContent,
               },
               target: self.buttons.dataset.srcEmbed,
               echoTarget: true,
