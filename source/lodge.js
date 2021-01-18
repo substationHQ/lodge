@@ -6,13 +6,13 @@
 
 /** *************************************************************************************
  *
- * △△ Lodge.js: Core
+ * △△ lodge
  * @version 1.0
  *
  * @link http://lodge.glitch.me/
  *
  * @license MIT
- * Copyright (c) 2019, Jesse von Doom
+ * Copyright (c) 2021, Substation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -53,7 +53,7 @@ if (!window.lodge) {
       get: {},
       lightbox: false,
       loaded: false,
-      name: "",
+      id: "",
       options: "",
       parent: "",
       path: "",
@@ -123,7 +123,7 @@ if (!window.lodge) {
           });
           vv._initEmbed();
         } else {
-          vv.name = "main window";
+          vv.id = "lodge main";
         }
 
         // check for ?overlay=1, added when we create an overlay iframe
@@ -253,10 +253,10 @@ if (!window.lodge) {
           vv.embeds.allowed = `${vv.embeds.allowed},${vv.parent}`;
         }
 
-        if (vv.get.params.name) {
-          vv.name = vv.get.params.name;
+        if (vv.get.params.id) {
+          vv.id = vv.get.params.id;
         } else {
-          vv.name = window.location;
+          vv.id = window.location.href;
         }
 
         // rewrite CSS stuff?
@@ -610,8 +610,7 @@ if (!window.lodge) {
           if (!id) {
             id = `lodge__${new Date().getTime()}`;
           }
-          embedURL += `?lodgelocation=${originlocation}`;
-
+          embedURL += `?lodgelocation=${originlocation}&id=${id}`;
           if (css) {
             embedURL += `&cssoverride=${encodeURIComponent(css)}`;
           }
@@ -622,10 +621,8 @@ if (!window.lodge) {
             embedURL += "&overlay=1";
           }
           if (vv.debug.show) {
-            embedURL += `&name=${id}`;
+            embedURL += `&debug=true`;
           }
-          // for debug purposes
-          embedURL += `&${vv.get.qs}`;
 
           iframe.src = embedURL;
           iframe.id = id;
@@ -768,7 +765,7 @@ if (!window.lodge) {
               // no queue: just spit out the message and (optionally) object
               if (obj) {
                 console.log(
-                  `%c${icon}%c ${vv.name}:%c\n   ${message} %O`,
+                  `%c${icon}%c ${vv.id}:%c\n   ${message} %O`,
                   styles[type].logo,
                   styles[type].name,
                   styles[type].message,
@@ -776,7 +773,7 @@ if (!window.lodge) {
                 );
               } else {
                 console.log(
-                  `%c${icon}%c ${vv.name}:%c\n   ${message}`,
+                  `%c${icon}%c ${vv.id}:%c\n   ${message}`,
                   styles[type].logo,
                   styles[type].name,
                   styles[type].message
@@ -785,7 +782,7 @@ if (!window.lodge) {
             } else {
               // queue: run through all of it as part of a collapsed group
               console.groupCollapsed(
-                `%c${icon}%c ${vv.name}:%c\n   ${message}`,
+                `%c${icon}%c ${vv.id}:%c\n   ${message}`,
                 styles[type].logo,
                 styles[type].name,
                 styles[type].message
@@ -950,11 +947,20 @@ if (!window.lodge) {
          * @param {string} event.type - The name of the event.
          * @param {object|any} [event.data] - The data attached to the event itself. For internal lodge purposes this should be formatted as an object, but for external scripts any data type, including none, is fine.
          * @param {object|string} [event.target] - A lodge-powered iframe embed, specified either by an internal lodge id or with a direct pointer.
+         * @param {boolean} [event.echoTarget] - Used for an event that happens in the main window / overlay with a targeted embed. Set to true, it will fire the same event simultaneously in the main window and embed.
          * @param {boolean} [event.localonly] - If called in an embed, do not bubble this event up to the main window.
          *
          ************************************************************************************ */
-        fire({ obj, type, data = "", target, localonly = false }) {
+        fire({
+          obj,
+          type,
+          data = "",
+          target,
+          echoTarget = false,
+          localonly = false,
+        }) {
           const vv = window.lodge;
+          let relay = true;
           if (target) {
             // target object found, so push to it via postMessage
             //
@@ -980,14 +986,18 @@ if (!window.lodge) {
               message: `targeted ${target.id} with ${type} event.`,
               obj: data,
             });
-          } else {
+            // set relay to false, since we've already targeted the embed.
+            // this suppresses the usual relay default.
+            relay = false;
+          }
+          if (!target || (target && echoTarget)) {
             let e = null;
             // fire the event locally if not targeted
             // standard
             e = document.createEvent("CustomEvent");
             e.initCustomEvent(type, false, false, data);
             if (vv.embedded && !localonly) {
-              e.relay = true;
+              e.relay = relay;
               e.source = window; // window
               e.origin = window.location.origin; // url
             }
@@ -1257,32 +1267,51 @@ if (!window.lodge) {
           });
 
           // finally OK/Cancel buttons — these basically work
+          // first a container for the buttons
+          self.buttons = document.createElement("div");
+          self.buttons.className = "lodge__buttons";
+          // now the actual buttons
           self.buttonTrue = document.createElement("button");
           self.buttonTrue.style.display = "none";
           self.buttonFalse = document.createElement("button");
           self.buttonFalse.style.display = "none";
+          // add dataset options (data attributes) to button container
+          self.buttons.dataset.queryName = "";
+          self.buttons.dataset.srcEmbed = "";
           // add close events to the buttons, passing true/false
-          self.buttonTrue.addEventListener("click", function addClick() {
-            if (self.content.parentNode === document.body) {
-              const returnTarget = null;
-              const returnData = false;
-              // TODO: get data-target from the button to set target
-              window.lodge.overlay.hide({ returnData, returnTarget });
-              // TODO: clear data-target from the button
-            }
+          self.buttonTrue.addEventListener("click", function addClick(e) {
+            e.preventDefault();
+            vv.events.fire({
+              obj: vv,
+              type: "modalchoice",
+              data: {
+                modal: 1,
+                queryName: self.buttons.dataset.queryName,
+                buttonText: self.buttonTrue.textContent,
+              },
+              target: self.buttons.dataset.srcEmbed,
+              echoTarget: true,
+            });
+            // we've announced the modal choice, now we hide the overlay
+            window.lodge.overlay.hide();
           });
-          self.buttonFalse.addEventListener("click", function addClick() {
-            if (self.content.parentNode === document.body) {
-              const returnTarget = null;
-              const returnData = true;
-              // TODO: get data-target from the button to set target
-              window.lodge.overlay.hide({ returnData, returnTarget });
-              // TODO: clear data-target from the button
-            }
+          self.buttonFalse.addEventListener("click", function addClick(e) {
+            e.preventDefault();
+            vv.events.fire({
+              obj: vv,
+              type: "modalchoice",
+              data: {
+                modal: 0,
+                queryName: self.buttons.dataset.queryName,
+                buttonText: self.buttonFalse.textContent,
+              },
+              target: self.buttons.dataset.srcEmbed,
+              echoTarget: true,
+            });
+            // we've announced the modal choice, now we hide the overlay
+            window.lodge.overlay.hide();
           });
 
-          self.buttons = document.createElement("div");
-          self.buttons.className = "lodge__buttons";
           self.buttons.appendChild(self.buttonTrue);
           self.buttons.appendChild(self.buttonFalse);
 
@@ -1315,7 +1344,7 @@ if (!window.lodge) {
             while (self.content.firstChild) {
               self.content.removeChild(self.content.firstChild);
             }
-            db.removeChild(self.close);
+            if (self.close.parentNode === db) db.removeChild(self.close);
             db.removeChild(self.content);
 
             // reveal any (if) overlay triggers (for inline text+overlay embeds)
@@ -1325,6 +1354,13 @@ if (!window.lodge) {
                 t[i].style.visibility = "visible";
               }
             }
+
+            // hide both buttons
+            self.buttonTrue.style.display = "none";
+            self.buttonFalse.style.display = "none";
+            // reset button data parameters
+            self.buttons.dataset.queryName = "";
+            self.buttons.dataset.srcEmbed = "";
 
             // reenable body scrolling
             vv.styles.removeClass({
@@ -1416,9 +1452,15 @@ if (!window.lodge) {
                 self.buttonFalse.style.display = "inline-block";
               }
               if (buttons.modal1) {
-                self.buttonFalse.textContent = buttons.modal1;
+                self.buttonTrue.textContent = buttons.modal1;
                 self.buttonTrue.style.display = "inline-block";
               }
+              // if these are set it's a modal request and needs these params for a proper
+              // modalchoice event to fire in the original embed.
+              if (buttons.queryName)
+                self.buttons.dataset.queryName = buttons.queryName;
+              if (buttons.srcEmbed)
+                self.buttons.dataset.srcEmbed = buttons.srcEmbed;
               wrapper.appendChild(self.buttons);
             }
 
@@ -1642,9 +1684,9 @@ if (!window.lodge) {
          * Displays a message in the overlay
          *
          * @param {object} message
-         * @param {object} message.message - The main message
-         * @param {object} message.context - Context and/or additional details
-         * @param {object} message.button - Text for the close button, default: "Close"
+         * @param {string} message.message - The main message
+         * @param {string} message.context - Context and/or additional details
+         * @param {string} message.button - Text for the close button, default: "Close"
          *
          ************************************************************************************ */
         message({ message, context = false, button = "Close" }) {
@@ -1665,17 +1707,22 @@ if (!window.lodge) {
          * Displays a message requiring a user to choose between two buttons (OK / Cancel)
          *
          * @param {object} modal
-         * @param {object} modal.message - The main message / question
-         * @param {object} modal.context - Context and/or additional details
-         * @param {object} modal.buttons - Text for the "OK" / "Cancel" buttons
+         * @param {string} modal.message - The main message / question
+         * @param {string} modal.context - Context and/or additional details
+         * @param {string} modal.buttons - Text for the "OK" / "Cancel" buttons
+         * @param {string} modal.queryName - Give the modal query a name, for event matching
+         *
          *
          ************************************************************************************ */
         modal({
           message,
           context,
           buttons = { modal0: "Cancel", modal1: "OK" },
+          queryName = "",
         }) {
           const vv = window.lodge;
+          buttons.queryName = queryName;
+          buttons.srcEmbed = vv.id;
           let output = `<h2>${message}</h2>`;
           if (context) output += `<p>${context}</p>`;
           vv.overlay.reveal({
@@ -1683,6 +1730,9 @@ if (!window.lodge) {
             modal: true,
             buttons,
           });
+          // we could also set up an event listener for modalchoice in the case of an optional
+          // callback parameter. seems smart, but likely a to-do and let's look at it as a
+          // pattern we could extend elsewhere.
         },
       }, /// END lodge.prompt
     }; /// END △△ lodge {object}
