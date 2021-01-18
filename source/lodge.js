@@ -1355,6 +1355,9 @@ if (!window.lodge) {
               }
             }
 
+            // hide both buttons
+            self.buttonTrue.style.display = "none";
+            self.buttonFalse.style.display = "none";
             // reset button data parameters
             self.buttons.dataset.queryName = "";
             self.buttons.dataset.srcEmbed = "";
