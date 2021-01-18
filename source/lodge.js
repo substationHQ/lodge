@@ -6,13 +6,13 @@
 
 /** *************************************************************************************
  *
- * △△ Lodge.js: Core
+ * △△ lodge
  * @version 1.0
  *
  * @link http://lodge.glitch.me/
  *
  * @license MIT
- * Copyright (c) 2019, Jesse von Doom
+ * Copyright (c) 2021, Substation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -53,7 +53,7 @@ if (!window.lodge) {
       get: {},
       lightbox: false,
       loaded: false,
-      name: "",
+      id: "",
       options: "",
       parent: "",
       path: "",
@@ -123,7 +123,7 @@ if (!window.lodge) {
           });
           vv._initEmbed();
         } else {
-          vv.name = "main window";
+          vv.id = "lodge main";
         }
 
         // check for ?overlay=1, added when we create an overlay iframe
@@ -253,10 +253,10 @@ if (!window.lodge) {
           vv.embeds.allowed = `${vv.embeds.allowed},${vv.parent}`;
         }
 
-        if (vv.get.params.name) {
-          vv.name = vv.get.params.name;
+        if (vv.get.params.id) {
+          vv.id = vv.get.params.id;
         } else {
-          vv.name = window.location;
+          vv.id = window.location.href;
         }
 
         // rewrite CSS stuff?
@@ -610,8 +610,7 @@ if (!window.lodge) {
           if (!id) {
             id = `lodge__${new Date().getTime()}`;
           }
-          embedURL += `?lodgelocation=${originlocation}`;
-
+          embedURL += `?lodgelocation=${originlocation}&id=${id}`;
           if (css) {
             embedURL += `&cssoverride=${encodeURIComponent(css)}`;
           }
@@ -622,10 +621,8 @@ if (!window.lodge) {
             embedURL += "&overlay=1";
           }
           if (vv.debug.show) {
-            embedURL += `&name=${id}`;
+            embedURL += `&debug=true`;
           }
-          // for debug purposes
-          embedURL += `&${vv.get.qs}`;
 
           iframe.src = embedURL;
           iframe.id = id;
@@ -768,7 +765,7 @@ if (!window.lodge) {
               // no queue: just spit out the message and (optionally) object
               if (obj) {
                 console.log(
-                  `%c${icon}%c ${vv.name}:%c\n   ${message} %O`,
+                  `%c${icon}%c ${vv.id}:%c\n   ${message} %O`,
                   styles[type].logo,
                   styles[type].name,
                   styles[type].message,
@@ -776,7 +773,7 @@ if (!window.lodge) {
                 );
               } else {
                 console.log(
-                  `%c${icon}%c ${vv.name}:%c\n   ${message}`,
+                  `%c${icon}%c ${vv.id}:%c\n   ${message}`,
                   styles[type].logo,
                   styles[type].name,
                   styles[type].message
@@ -785,7 +782,7 @@ if (!window.lodge) {
             } else {
               // queue: run through all of it as part of a collapsed group
               console.groupCollapsed(
-                `%c${icon}%c ${vv.name}:%c\n   ${message}`,
+                `%c${icon}%c ${vv.id}:%c\n   ${message}`,
                 styles[type].logo,
                 styles[type].name,
                 styles[type].message
@@ -1266,7 +1263,8 @@ if (!window.lodge) {
             if (self.content.parentNode === document.body) {
               const returnTarget = null;
               const returnData = false;
-              // TODO: get data-target from the button to set target
+              // TODO: get data-target from the button to set target —
+              //       this should be set in the modal/message request
               window.lodge.overlay.hide({ returnData, returnTarget });
               // TODO: clear data-target from the button
             }
@@ -1350,6 +1348,7 @@ if (!window.lodge) {
           modal = false,
           buttons = false,
           embedRequest = false,
+          queryName = null,
         }) {
           // add the correct content to the content div
           const vv = window.lodge;
@@ -1368,6 +1367,7 @@ if (!window.lodge) {
                 modal,
                 buttons,
                 embedRequest,
+                queryName,
               },
             });
           } else {
@@ -1413,10 +1413,34 @@ if (!window.lodge) {
             if (buttons) {
               if (buttons.modal0) {
                 self.buttonFalse.textContent = buttons.modal0;
+                self.buttonFalse.addEventListener("click", function click0(e) {
+                  e.preventDefault();
+                  vv.events.fire({
+                    obj: vv,
+                    type: "modalchoice",
+                    data: {
+                      modal: 0,
+                      queryName,
+                    },
+                  });
+                  self.buttonFalse.removeEventListener("click");
+                });
                 self.buttonFalse.style.display = "inline-block";
               }
               if (buttons.modal1) {
-                self.buttonFalse.textContent = buttons.modal1;
+                self.buttonTrue.textContent = buttons.modal1;
+                self.buttonTrue.addEventListener("click", function click0(e) {
+                  e.preventDefault();
+                  vv.events.fire({
+                    obj: vv,
+                    type: "modalchoice",
+                    data: {
+                      modal: 1,
+                      queryName,
+                    },
+                  });
+                  self.buttonTrue.removeEventListener("click");
+                });
                 self.buttonTrue.style.display = "inline-block";
               }
               wrapper.appendChild(self.buttons);
@@ -1642,9 +1666,9 @@ if (!window.lodge) {
          * Displays a message in the overlay
          *
          * @param {object} message
-         * @param {object} message.message - The main message
-         * @param {object} message.context - Context and/or additional details
-         * @param {object} message.button - Text for the close button, default: "Close"
+         * @param {string} message.message - The main message
+         * @param {string} message.context - Context and/or additional details
+         * @param {string} message.button - Text for the close button, default: "Close"
          *
          ************************************************************************************ */
         message({ message, context = false, button = "Close" }) {
@@ -1665,15 +1689,18 @@ if (!window.lodge) {
          * Displays a message requiring a user to choose between two buttons (OK / Cancel)
          *
          * @param {object} modal
-         * @param {object} modal.message - The main message / question
-         * @param {object} modal.context - Context and/or additional details
-         * @param {object} modal.buttons - Text for the "OK" / "Cancel" buttons
+         * @param {string} modal.message - The main message / question
+         * @param {string} modal.context - Context and/or additional details
+         * @param {string} modal.buttons - Text for the "OK" / "Cancel" buttons
+         * @param {string} modal.queryName - Give the modal query a name, for event matching
+         * 
          *
          ************************************************************************************ */
         modal({
           message,
           context,
           buttons = { modal0: "Cancel", modal1: "OK" },
+          queryName,
         }) {
           const vv = window.lodge;
           let output = `<h2>${message}</h2>`;
@@ -1682,7 +1709,28 @@ if (!window.lodge) {
             innerContent: output,
             modal: true,
             buttons,
+            queryName,
           });
+          // so this is going to have to be event-driven a la everything else that potentially
+          // needs to live in both windows at once. so minimal structure we need to fire off
+          // something like an overlayexit event with some data attached, indicating a button
+          // was clicked. might be worth reworking the overlayhide/overlayhidden mess into a
+          // single overlayexit event that gets relayed so identical data is sent to each window
+          // but the closing of the overlay itself is just cleaned up by the main window. minor
+          // semantic difference in some ways but might wind up way cleaner and better
+          //
+          // we could also set up an event listener for overlayexit in the case of an optional
+          // callback parameter. seems smart, but likely a to-do and let's look at it as a
+          // pattern we could extend elsewhere.
+          //
+          // 1. ensure that an id for the embed is set. if no user id is present let's make one
+          // as a uuid/timestamp+rand type thing. once set in the main page lodge.embeds we also
+          // need to fire an event to the embed and store it for round trip queries
+          //
+          // 2. once the id is known consistently we can auto-include the embed id in the
+          // overlay.reveal event we fire up to main. we then include the id with the locally
+          // fired event to ensure it gets pushed back to the embed as well — so either/both
+          // sides can react to an overlay event, independent or coordinated.
         },
       }, /// END lodge.prompt
     }; /// END △△ lodge {object}
