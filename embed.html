@@ -7,20 +7,26 @@
   
   <link rel="stylesheet" href="/assets/css/normalize.css">
   <link rel="stylesheet" href="/assets/css/embed.css">
-
   <link rel="preload" href="/assets/images/demo-snacks.gif" as="image">
 
+  <!-- △△ lodge include ---------------------- -->
   <script src="/dist/lodge.js" data-options="lightboxvideo=true"></script>
-
 </head>
 
 <body>
+  <!-- BACKGROUND ELEMENTS ------------------- -->
   <div class="screen">
     <div class="screen__bg"></div>
     <div class="screen__slashes"></div>
     <div class="screen__mask"></div>
   </div>
 
+  <!-- MAIN DEMO PANELS ---------------------- --
+
+    These are shown by default but hidden under the
+    .lodge__embed--overlay class (an automatically 
+    added empty utility class.)
+    ------------------------------------------ -->
   <div class="demo-panels">
     <div class="demo-panel demo-panel-0">
       <h2>So this bit's an iframe.</h2>
@@ -45,10 +51,16 @@
     </div>
   </div>
   
+  <!-- RANDOM WEIRD CARTOON BECAUSE SNACKS --- -->
   <div class="demo-snacks">
     <img src ="/assets/images/demo-snacks.gif" width="100%" height="auto" alt="I love snacks.">
   </div>
   
+  <!-- OVERLAY DEMO ELEMENTS ----------------- --
+
+    These only display under a .lodge__embed--overlay
+    class (an automatically added empty utility class.)
+    ------------------------------------------ -->
   <div class="demo-overlay">
     <h2>Oh hello again.</h2>
     <p>
@@ -61,36 +73,20 @@
   </div>
 
 
-
-
+  <!-- DEMO EVENT HANDLERS AND WHATNOT ------- -->
   <script>
-    var vv = window.lodge;
-    var demos = document.querySelector('div.demo-panels');
-    
-    vv.addEventListener('ready', function(e) {
-      
-      // opens an overlay in the main window based on a click in an embed
-      var domessage = document.querySelector('a.demo-domessage');
-      domessage.addEventListener('click', function(e){
-        e.preventDefault();
-        vv.prompt.message({
-          message: 'Oh, hi there.',
-          context: 'One line of JavaScript shows a message to the overlay. Handy for instructions, confirmation, or even expanding details when space is a consideration.'
-        });
-      }, false);
-      var domessage = document.querySelector('a.demo-domodal');
-      domessage.addEventListener('click', function(e){
-        e.preventDefault();
-        vv.prompt.modal({
-          message: 'Oh, hi there.',
-          context: 'The modal option removes the overlay\'s close button, forcing a binary choice. OK/Cancel buttons can be customized, and an event is fired in the main lodge window as wel as the embed after a user clicks their choice.',
-          queryName: 'demo-modal'
-        });
-      }, false);
+    let vv = window.lodge;
+    let demos = document.querySelector('div.demo-panels');
+    let doresize = document.querySelector('a.demo-doresize');
+    let snacks = document.querySelector('div.demo-snacks');
+    let closebutton = document.querySelector('.demo-overlay__button');
+    let promptdemos = document.querySelector('.demo-panel-1');
 
-      // change the min-height on the body to resize things
-      var doresize = document.querySelector('a.demo-doresize');
-      var snacks = document.querySelector('div.demo-snacks');
+    vv.addEventListener('ready', function(e) {
+      /*
+        This makes a GIF visible, expanding the height of the embed to demo
+        the automatic resizing in the main window.
+      */
       doresize.addEventListener('click', function(e){
         e.preventDefault();
         snacks.style.display = 'block';
@@ -98,23 +94,64 @@
           snacks.style.display = 'none';
         }, 2000);
       }, false);
+      
+      /*
+        Prompts. (Message and modals.) There's a click listener on each link type
+        that requests lodge.prompt fires off a message or modal query in the 
+        overlay. Pretty simple.
+      */
+      function promptEvents() {
+        let domessage = document.querySelector('a.demo-domessage');
+        let domodal = document.querySelector('a.demo-domodal');
+        domessage.addEventListener('click', function(e){
+          e.preventDefault();
+          vv.prompt.message({
+            message: 'Oh, hi there.',
+            context: 'One line of JavaScript shows a message to the overlay. Handy for instructions, confirmation, or even expanding details when space is a consideration.'
+          });
+        }, false);
+        domodal.addEventListener('click', function(e){
+          e.preventDefault();
+          vv.prompt.modal({
+            message: 'Oh, hi there.',
+            context: 'The modal option removes the overlay\'s close button, forcing a binary choice. OK/Cancel buttons can be customized, and an event is fired in the main lodge window as wel as the embed after a user clicks their choice.',
+            queryName: 'demo-modal' // this will be included in a modalchoice event to catch specific queries (callbacks TBD)
+          });
+        }, false);
+      }
+      promptEvents();
 
-      var closebutton = document.querySelector('.demo-overlay__button');
+      /*
+        Part of the iframe-in-overlay demo, this is a simple close button 
+        for the overlay.
+      */
       closebutton.addEventListener('click', function(e){
         e.preventDefault();
         vv.overlay.hide();
       }, false);
-      
+      vv.addEventListener('modalchoice', function(e) {
+        promptdemos.innerHTML = `<h2>You clicked ${e.detail.buttonText}</h2>Yeah. Pretty basic. Want to <a href="#" class="demo-domodal">try again</a>? Or maybe <a href="#" class="demo-domessage">just a message</a>.`;
+        promptEvents();
+      });
     });
     
+    /*
+      Listen for an "openscreen" event sent from the main page, then slide
+      the screen away from the demos. Triggered by a click in the other window.
+    */
     vv.addEventListener('openscreen', function(e) {
-      var screen = document.querySelector('div.screen');
+      let screen = document.querySelector('div.screen');
       screen.style.left = '-220vw';
       demos.style.opacity = 1;
     });
 
+    /*
+      Also triggered by a click in the other window, this advances the demo
+      caousel. It's...not the most elegant navigation. Will build something a
+      little nicer in the future.
+    */
     vv.addEventListener('changedemo', function(e) {
-      var margin = 0 - (e.detail * 100);
+      let margin = 0 - (e.detail * 100);
       demos.style.marginLeft = `${margin}vw`;
     });
   </script>
