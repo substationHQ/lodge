@@ -20,7 +20,7 @@
   .lodge__overlay {background-color:rgba(0,0,0,0.95)!important;}
   .lodge__component {width:100%;height:100%;display:block;position:fixed;max-width:100%;top:0;z-index:999;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;-webkit-overflow-scrolling: touch; overflow-y: scroll;}
   .lodge__component iframe {min-height:100%}
-  .lodge__overlay button{margin:0.75em 5vw 0 5vw !important;width:90vw;padding:2em !important;}
+  .lodge__overlay button{margin:0.75em 5vw 0 5vw !important;width:90vw;padding:1.25em !important;}
   .lodge__overlay h1,.lodge__overlay h2,.lodge__overlay h3{margin-top:90px;padding:0 5vw !important;}
   .lodge__overlay p{padding:0 5vw !important;}
   .lodge__overlay .lodge__component iframe{max-width:1024px!important;}
