@@ -1,6 +1,6 @@
 {
   "name": "@substation/lodge",
-  "version": "0.9",
+  "version": "0.8.7",
   "description": "A front-end library managing embeds, modals, and events across iframes",
   "main": "source/lodge.js",
   "dependencies": {},
