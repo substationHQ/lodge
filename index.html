@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="/assets/css/normalize.css">
   <link rel="stylesheet" href="/assets/css/index.css">
 
+  <!-- △△ lodge include ---------------------- -->
   <script src="/dist/lodge.js" data-options="lightboxvideo=true&noembed=true"></script>
 
 </head>
@@ -113,13 +114,13 @@
     Most of this is just dealing with the demo content and relaying
     events down to the demo embed.
   */
-  var vv = window.lodge;
-  var demoPosition = -1; // -1 just indicates that we're at 0 with the screen closed
-  var demoCopy = document.querySelector('.demo-copy');
-  var demoHeader = document.querySelector('.demo-copy-header');
-  var demoText = document.querySelector('.demo-copy-text');
-  var demoButton = document.querySelector('.demo-copy-button');
-  var demoScript = [
+  let vv = window.lodge;
+  let demoPosition = -1; // -1 just indicates that we're at 0 with the screen closed
+  let demoCopy = document.querySelector('.demo-copy');
+  let demoHeader = document.querySelector('.demo-copy-header');
+  let demoText = document.querySelector('.demo-copy-text');
+  let demoButton = document.querySelector('.demo-copy-button');
+  let demoScript = [
     {
       // 0: showing the embed itself, resizing, etc
       'header':'Pretty neat, right?',
