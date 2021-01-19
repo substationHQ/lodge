@@ -2,7 +2,7 @@
   "name": "@substation/lodge",
   "version": "0.8.7",
   "description": "A front-end library managing embeds, modals, and events across iframes",
-  "main": "source/lodge.js",
+  "main": "dist/lodge.js",
   "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -33,5 +33,6 @@
   "bugs": {
     "url": "https://github.com/substation-me/lodge/issues"
   },
-  "homepage": "https://github.com/substation-me/lodge#readme"
+  "homepage": "https://github.com/substation-me/lodge#readme",
+  "files": ["dist"]
 }
