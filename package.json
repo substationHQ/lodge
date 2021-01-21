@@ -1,6 +1,6 @@
 {
   "name": "@substation/lodge",
-  "version": "0.8.7",
+  "version": "0.9.0",
   "description": "A front-end library managing embeds, modals, and events across iframes",
   "main": "source/lodge.js",
   "dependencies": {},
@@ -20,7 +20,7 @@
     "prettier": "^2.0.5"
   },
   "scripts": {
-    "build": "babel source --out-dir dist --copy-files --no-comments --presets=minify",
+    "build": "babel source --out-dir dist --copy-files --no-comments --presets=minify --source-maps=true",
     "dev": "browser-sync start --server --files 'css/*.css'",
     "start": "ws"
   },
