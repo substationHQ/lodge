@@ -16,7 +16,7 @@ body{
     -webkit-font-smoothing: subpixel-antialiased;
     font-family: "Zilla Slab","Roboto Slab",serif;
     font-weight: 300;
-    min-height: 180px;;
+    min-height: 180px;
     background-color: #fff;
     padding: 0;
     background-image: url('/assets/images/wordmark-overprint.svg');
@@ -169,7 +169,7 @@ code {
         padding:1.25em;
     }
     .lodge__embed--overlay body {
-        background-position: bottom -600px left -1092px;
+        background-position: bottom -600px left -1092px;min-height:360px;
     }
     .lodge__embed--overlay .demo-overlay {
         padding:15vh 5vw 0 5vw;
