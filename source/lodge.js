@@ -345,24 +345,25 @@ if (!window.lodge) {
           if (routing[message.type]) {
             const splitHandler = routing[message.type].handler.split(".");
             const handlerFunction = splitHandler.pop();
-            let route = vv;
-            if (splitHandler.length) {
+            let handlerParent = vv;
+            if (splitHandler.length && !routing[message.type].require) {
               // after popping off the function there's still some handler left, meaning
               // we've got an object. grabbing the first value and assuming one level deep.
-              route = vv[splitHandler[0]];
+              handlerParent = vv[splitHandler[0]];
             }
 
             // we have a recognized type with a lodge handler
             if (!routing[message.type].require) {
               // no script dependency, so call the handler and pass the message data
-              route[handlerFunction](message.data);
+              handlerParent[handlerFunction](message.data);
             } else {
               // there's a script dependency — load the script and set a callback
               // (if script is already loaded, getScript will check and immediately do callback)
               vv.getScript({
                 url: `${vv.path}/${routing[message.type].require}`,
-                callback: function beginCheckout() {
-                  route[handlerFunction](message.data);
+                callback: function scriptLoadCallback() {
+                  handlerParent = vv[splitHandler[0]];
+                  handlerParent[handlerFunction](message.data);
                 },
               });
             }
