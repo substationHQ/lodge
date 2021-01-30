@@ -141,7 +141,7 @@ if (!window.lodge) {
         );
         if (vv.options.lightboxvideo || imgTest.length > 0) {
           // load lightbox.js
-          vv.getScript({ url: `${vv.path}/lightbox/lightbox.js` });
+          vv.getScript({ url: `${vv.path}/modules/lightbox.js` });
         }
 
         // using messages passed between the request and this script to resize the iframe
@@ -311,7 +311,7 @@ if (!window.lodge) {
           addclass: { handler: "styles.addClass" },
           begincheckout: {
             handler: "checkout.begin",
-            require: "checkout/checkout.js",
+            require: "checkout",
           },
           injectcss: { handler: "styles.injectCSS" },
           overlayhide: { handler: "overlay.hide" },
@@ -360,7 +360,7 @@ if (!window.lodge) {
               // there's a script dependency — load the script and set a callback
               // (if script is already loaded, getScript will check and immediately do callback)
               vv.getScript({
-                url: `${vv.path}/${routing[message.type].require}`,
+                url: `${vv.path}/modules/${routing[message.type].require}.js`,
                 callback: function scriptLoadCallback() {
                   handlerParent = vv[splitHandler[0]];
                   handlerParent[handlerFunction](message.data);

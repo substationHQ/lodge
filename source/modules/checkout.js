@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-plusplus */
 
-(function () {
+(function checkout() {
   const vv = window.lodge;
 
   /** *************************************************************************************
@@ -15,7 +16,7 @@
   vv.braintree = {
     eventAttached: false,
 
-    generateToken(options, source) {
+    generateToken(options) {
       if (vv.embedded) {
         // vv.events.fire(vv,'stripetokenrequested',params);
       } else {
@@ -41,14 +42,14 @@
             );
             const len = inputs.length;
             for (let i = 0; i < len; i++) {
-              inputs[i].addEventListener("focus", function (e) {
+              inputs[i].addEventListener("focus", function inputsFocus(e) {
                 vv.styles.addClass({
                   el: e.target.parentNode,
                   className: "braintree-hosted-fields-focused",
                 });
               });
 
-              inputs[i].addEventListener("blur", function (e) {
+              inputs[i].addEventListener("blur", function inputsBlur(e) {
                 vv.styles.removeClass({
                   el: e.target.parentNode,
                   className: "braintree-hosted-fields-focused",
@@ -144,10 +145,13 @@
                       }
                     });
 
-                    hostedFieldsInstance.on("empty", function (event) {
-                      document.querySelector("#card-image").className = "";
-                      form.className = "";
-                    });
+                    hostedFieldsInstance.on(
+                      "empty",
+                      function cardImageHandler() {
+                        document.querySelector("#card-image").className = "";
+                        form.className = "";
+                      }
+                    );
 
                     hostedFieldsInstance.on("cardTypeChange", function (event) {
                       // Change card bg depending on card type
@@ -182,7 +186,7 @@
 
                     submit.addEventListener(
                       "click",
-                      function (event) {
+                      function submitHandler(event) {
                         event.preventDefault();
 
                         hostedFieldsInstance.tokenize(function tokenize(
@@ -311,7 +315,9 @@
           data: options,
           target: source,
         });
-        vv.overlay.reveal({ innerContent: '<div class="lodge__loading"></div>' });
+        vv.overlay.reveal({
+          innerContent: '<div class="lodge__loading"></div>',
+        });
       }
       // Stripe and Paypal
       else if (options.braintree && options.paypal) {
