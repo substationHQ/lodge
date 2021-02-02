@@ -27,18 +27,18 @@
           successCallback: function successCallback(t) {
             const container = document.createElement("div");
             container.innerHTML = t;
-            container.className = "ccform-wrapper";
+            container.className = "lodge__checkout-wrapper";
 
             // show the container while braintree API injects hosted fields
             vv.overlay.reveal({ innerContent: container });
 
             // grab the bits we care about
-            const form = document.querySelector("#braintree-token-form");
-            const submit = document.querySelector("#button-pay");
+            const form = document.querySelector(".lodge__form--braintree");
+            const submit = document.querySelector(".lodge__button--braintree");
 
             // do highlights for focused name/email
             const inputs = document.querySelectorAll(
-              "#braintree-token-form input"
+              ".lodge__form--braintree input"
             );
             const len = inputs.length;
             for (let i = 0; i < len; i++) {
@@ -77,42 +77,47 @@
                     client: clientInstance,
                     styles: {
                       input: {
-                        color: "#282c37",
-                        "font-size": "16px",
-                        transition: "color 0.1s",
-                        "line-height": "3",
+                        "font-family":"monospace",
+                        "height":"42px",
+                        "color":"rgb(40, 44, 55)",
+                        "font-size":"16px",
+                        "line-height":"3",
+                        "transition":"color 0.1s ease 0s",
+                        "border": "0",
+                        "padding": "8px",
+                        "background-color":"transparent",
                       },
                       // Style the text of an invalid input
                       "input.invalid": {
-                        color: "#E53A40",
+                        "color":"#E53A40",
                       },
                       // placeholder styles need to be individually adjusted
                       "::-webkit-input-placeholder": {
-                        color: "rgba(0,0,0,0.4)",
+                        "color":"rgba(0,0,0,0.4)",
                       },
                       ":-moz-placeholder": {
-                        color: "rgba(0,0,0,0.4)",
+                        "color":"rgba(0,0,0,0.4)",
                       },
                       "::-moz-placeholder": {
-                        color: "rgba(0,0,0,0.4)",
+                        "color":"rgba(0,0,0,0.4)",
                       },
                       ":-ms-input-placeholder": {
-                        color: "rgba(0,0,0,0.4)",
+                        "color":"rgba(0,0,0,0.4)",
                       },
                     },
                     // Add information for individual fields
                     fields: {
                       number: {
-                        selector: "#card-number",
+                        selector: ".lodge__braintree-card-number",
                         placeholder: "0000 0000 0000 0000",
                       },
                       cvv: {
-                        selector: "#cvv",
+                        selector: ".lodge__braintree-cvv",
                         placeholder: "123",
                       },
                       expirationDate: {
-                        selector: "#expiration-date",
-                        placeholder: `${d.getMonth()} / ${d.getFullYear() + 1}`,
+                        selector: ".lodge__braintree-expiration-date",
+                        placeholder: `${d.getMonth() + 1} / ${d.getFullYear() + 1}`,
                       },
                     },
                   },
@@ -131,32 +136,15 @@
                       );
 
                       if (formValid) {
-                        vv.styles.addClass({
-                          el: submit,
-                          className: "show-button",
-                        });
                         submit.disabled = false;
                       } else {
-                        vv.styles.removeClass({
-                          el: submit,
-                          className: "show-button",
-                        });
                         submit.disabled = true;
                       }
                     });
 
-                    hostedFieldsInstance.on(
-                      "empty",
-                      function cardImageHandler() {
-                        document.querySelector("#card-image").className = "";
-                        form.className = "";
-                      }
-                    );
-
                     hostedFieldsInstance.on("cardTypeChange", function (event) {
                       // Change card bg depending on card type
                       if (event.cards.length === 1) {
-                        form.className = "";
                         vv.styles.addClass({
                           el: form,
                           className: event.cards[0].type,
@@ -197,11 +185,11 @@
                             vv.debug.out(error);
                           } else {
                             const poststring = `email=${
-                              document.querySelector("#email").value
+                              document.querySelector(".lodge__braintree-email").value
                             }&firstName=${
-                              document.querySelector("#first-name").value
+                              document.querySelector(".lodge__braintree-first-name").value
                             }&lastName=${
-                              document.querySelector("#last-name").value
+                              document.querySelector(".lodge__braintree-last-name").value
                             }&amount=${options.amount}&nonce=${payload.nonce}`;
                             vv.overlay.showLoading();
                             vv.ajax.send({

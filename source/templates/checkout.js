@@ -2,47 +2,43 @@
 // The callback value strips newlines and extra spaces
 
 /*
-  <form id="braintree-token-form" class="scale-down">
-    <div id="checkout-customer">
-      <div class="cardinfo-wrapper">
-        <div class="cardinfo-first-name cardinfo-multiple">
-          <label class="cardinfo-label" for="first-name">First Name</label>
-          <div class="input-wrapper"><input type="text" class="form-control" id="first-name" placeholder="" required="true"></div>
-        </div>
-        
-        <div class="cardinfo-multiple">
-          <label class="cardinfo-label" for="last-name">Last Name</label>
-          <div class="input-wrapper"><input type="text" class="form-control" id="last-name" placeholder="" required="true"></div>
-        </div>
+  <form class="lodge__form--braintree">
+    <div class="lodge__form-row--columns">
+      <div>
+        <label for="lodge__braintree-first-name">First name</label>
+        <div class="input-wrapper"><input type="text" class="lodge__braintree-first-name" name="lodge__braintree-first-name" placeholder="" required="true"></div>
       </div>
-      
-      <label class="cardinfo-label" for="email">Email Address</label>
-      <div class="input-wrapper" id="email-wrapper"><input type="email" class="form-control" id="email" placeholder="you@youremail.com"></div>
+      <div>
+        <label for="lodge__braintree-last-name">Last name</label>
+        <div class="input-wrapper"><input type="text" class="lodge__braintree-last-name" name="lodge__braintree-last-name" placeholder="" required="true"></div>
+      </div>
     </div>
-    <div id="checkout-ccandsubmit">
-      <div class="cardinfo-card-number">
-        <label class="cardinfo-label" for="card-number">Card Number</label>
-        <div class="input-wrapper" id="card-number"></div>
-        <div id="card-image"></div>
+    <div class="lodge__form-row">
+      <label for="lodge__braintree-email">Email address</label>
+      <div class="input-wrapper"><input type="text" class="lodge__braintree-email" name="lodge__braintree-email" placeholder="you@youremail.com" required="true"></div>
+    </div>
+    <div class="lodge__form-row">
+      <label for="lodge__braintree-card-number">Card number</label>
+      <div class="input-wrapper lodge__braintree-card-number"></div>
+      <div id="card-image"></div>
+    </div>
+    <div class="lodge__form-row--columns">
+      <div>
+        <label for="lodge__braintree-expiration-date">Exp Date</label>
+        <div class="input-wrapper lodge__braintree-expiration-date"></div>
       </div>
-
-      <div class="cardinfo-wrapper">
-        <div class="cardinfo-exp-date cardinfo-multiple">
-          <label class="cardinfo-label" for="expiration-date">Exp Date</label>
-          <div class="input-wrapper" id="expiration-date"></div>
-        </div>
-
-        <div class="cardinfo-cvv cardinfo-multiple">
-          <label class="cardinfo-label" for="cvv">CVV</label>
-          <div class="input-wrapper" id="cvv"></div>
-        </div>
+      <div>
+        <label for="lodge__braintree-cvv">CVV</label>
+        <div class="input-wrapper lodge__braintree-cvv"></div>
       </div>
-      <input id="button-pay" type="submit" value="Subscribe now" />
+    </div>
+    <div class="lodge__form-row button">
+      <button class="lodge__button--braintree">Subscribe now</button>
     </div>
   </form>
 */
 // eslint-disable-next-line no-undef
 _checkoutCallback({
   template:
-    '<form id="braintree-token-form" class="scale-down"> <div id="checkout-customer"> <div class="cardinfo-wrapper"> <div class="cardinfo-first-name cardinfo-multiple"> <label class="cardinfo-label" for="first-name">First Name</label> <div class="input-wrapper"><input type="text" class="form-control" id="first-name" placeholder="" required="true"></div> </div> <div class="cardinfo-multiple"> <label class="cardinfo-label" for="last-name">Last Name</label> <div class="input-wrapper"><input type="text" class="form-control" id="last-name" placeholder="" required="true"></div> </div> </div> <label class="cardinfo-label" for="email">Email Address</label> <div class="input-wrapper" id="email-wrapper"><input type="email" class="form-control" id="email" placeholder="you@youremail.com"></div> </div> <div id="checkout-ccandsubmit"> <div class="cardinfo-card-number"> <label class="cardinfo-label" for="card-number">Card Number</label> <div class="input-wrapper" id="card-number"></div> <div id="card-image"></div> </div> <div class="cardinfo-wrapper"> <div class="cardinfo-exp-date cardinfo-multiple"> <label class="cardinfo-label" for="expiration-date">Exp Date</label> <div class="input-wrapper" id="expiration-date"></div> </div> <div class="cardinfo-cvv cardinfo-multiple"> <label class="cardinfo-label" for="cvv">CVV</label> <div class="input-wrapper" id="cvv"></div> </div> </div> <input id="button-pay" type="submit" value="Subscribe now" /> </div> </form>',
+    '<form class="lodge__form--braintree"> <div class="lodge__form-row--columns"> <div> <label for="lodge__braintree-first-name">First name</label> <div class="input-wrapper"><input type="text" class="lodge__braintree-first-name" name="lodge__braintree-first-name" placeholder="" required="true"></div> </div> <div> <label for="lodge__braintree-last-name">Last name</label> <div class="input-wrapper"><input type="text" class="lodge__braintree-last-name" name="lodge__braintree-last-name" placeholder="" required="true"></div> </div> </div> <div class="lodge__form-row"> <label for="lodge__braintree-email">Email address</label> <div class="input-wrapper"><input type="text" class="lodge__braintree-email" name="lodge__braintree-email" placeholder="you@youremail.com" required="true"></div> </div> <div class="lodge__form-row"> <label for="lodge__braintree-card-number">Card number</label> <div class="input-wrapper lodge__braintree-card-number"></div> <div id="card-image"></div> </div> <div class="lodge__form-row--columns"> <div> <label for="lodge__braintree-expiration-date">Exp Date</label> <div class="input-wrapper lodge__braintree-expiration-date"></div> </div> <div> <label for="lodge__braintree-cvv">CVV</label> <div class="input-wrapper lodge__braintree-cvv"></div> </div> </div> <div class="lodge__form-row button"> <button class="lodge__button--braintree">Subscribe now</button> </div> </form>',
 });

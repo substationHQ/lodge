@@ -1,58 +1,34 @@
 /*--------------------
 General
 --------------------*/
-.cardinfo-wrapper {
-  display: flex;
-  justify-content: space-around;
-}
-
-.ccform-wrapper {
+.lodge__checkout-wrapper {
   width:100%;
+  padding:2em 10% 1em 10%;
 }
-
-#braintree-token-form,
+.lodge__form--braintree,
 #unsubscribe-form-wrapper {
   background-color: transparent;
-  padding: 8em 3em 2em;
-  width: 100%;
-  max-width:32em;
-  margin-bottom: 2em;
   transition: all 600ms cubic-bezier(0.2, 1.3, 0.7, 1);
   z-index: 1;
 }
-@media (max-width: 476px) {
-  #braintree-token-form,
-  #unsubscribe-form-wrapper {
-    box-sizing: border-box;
-    padding: 7em 2em 2em;
-    width: 100%;
-  }
+.lodge__form-row, .lodge__form-row--columns {
+  margin-bottom: 13px;
+}
+.lodge__form-row--columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  column-gap: 13px;
+}
+.lodge__form--braintree div.button {
+  margin-top: 26px;
 }
 
-.cardinfo-label {
-  display: block;
-  font-size: 11px;
-  font-family:system-ui;
-  margin-bottom: 0.5em;
-  text-transform: uppercase;
-  text-align: left;
-}
-
-.cardinfo-exp-date, .cardinfo-first-name {
-  margin-right: 1em;
-}
-
-.cardinfo-wrapper div.cardinfo-multiple {
-  width: 100%;
-}
-
-.cardinfo-card-number {
-  position: relative;
-}
-
+/*--------------------
+Card image fanciness
+--------------------*/
 #card-image {
   position: absolute;
-  top: 1.75em;
+  top: 7px;
   right: 1em;
   width: 44px;
   height: 28px;
@@ -61,7 +37,6 @@ General
   border-radius: 4px;
   background-position: -100px 0;
   background-repeat: no-repeat;
-  margin-bottom: 1em;
 }
 #card-image.visa {
   background-position: 0 -398px;
@@ -92,11 +67,10 @@ Inputs
   box-sizing: border-box;
   border-radius: 2px;
   background: rgba(255, 255, 255, 0.86);
-  height: 48px;
+  height: 42px;
   border: 1px solid #eee;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
-  padding: 0 0.5em 0 0.5em;
-  margin-bottom: 1em;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 0;
 }
 
 .cardinfo-card-number,
@@ -127,47 +101,47 @@ Inputs
   color:#E53A40 !important;
 }
 
-#braintree-token-form input,
+.lodge__form--braintree .input-wrapper input,
 .unsubscribe-form-wrapper input {
   box-sizing: border-box;
-  position:relative;
-  font-family: system-ui;
+  font-family: monospace;
   width: 100%;
-  height: 48px;
+  height: 42px;
   color: rgb(40, 44, 55);
   font-size: 16px;
   line-height: 3;
   transition: color 0.1s ease 0s;
   border: 0;
-  padding:0;
+  padding: 8px;
   background-color:transparent;
 }
 
-#braintree-token-form input:focus { outline: none; }
-
-#braintree-token-form input#button-pay {
+.lodge__button--braintree {
   cursor: pointer;
-  width:100%;
-  max-width: 36em;
+  width:100%!important;
   font-size: 15px;
   border: 0;
-  margin-top:2em;
+  margin:0 !important;
   color: #fff;
   background: #282c37;
   border-radius: 4px;
   z-index: 0;
-  transition: all 500ms cubic-bezier(0.2, 1.3, 0.7, 1);
+  transition: all 300ms cubic-bezier(0.2, 1.3, 0.7, 1);
   -webkit-appearance: none;
 }
-#braintree-token-form input#button-pay:hover {
+.lodge__button--braintree:focus { outline: none; }
+.lodge__button--braintree:hover {
   background: #5db6e8;
 }
-#braintree-token-form input#button-pay.show-button {
-  background: #5db6e8;
-  -webkit-transform: translateY(0);
-          transform: translateY(0);
-  opacity: 1;
+.lodge__button--braintree:disabled, .lodge__button--braintree:disabled:hover { 
+  cursor:not-allowed;
+  background-color:#666 !important;
+  color:#444 !important;
 }
+@media only screen and (max-device-width: 1024px) {
+  .lodge__overlay button.lodge__button--braintree {margin:0 !important;width:100% !important;}
+}
+
 
 /*--------------------
 Animations

@@ -297,7 +297,7 @@ if (!window.lodge) {
        ********************************************************************************** */
       _handleMessage(msg) {
         const vv = window.lodge;
-        const message = JSON.parse(msg.data);
+        const message = vv.utility.parseJSON(msg.data);
         const routing = {
           /*
           we'll pass message.data to the handler for each route. requre a script to 
@@ -323,19 +323,25 @@ if (!window.lodge) {
         };
         let lodgeMessage = false;
 
-        if (vv.embedded && window.parent === msg.source) {
-          // we're in an embed, so if the message came from the parent it's cool
-          lodgeMessage = true;
-        } else {
-          // not an embed? find the source of the message in our embeds object
-          for (let i = 0; i < vv.embeds.all.length; i++) {
-            if (vv.embeds.all[i].el.contentWindow === msg.source) {
+        // if (message) checks to make sure we could parse the message data
+        if (message) {
+          // okay so this might be overkill but we also check for message.lodge to be true
+          if (message.lodge) {
+            if (vv.embedded && window.parent === msg.source) {
+              // we're in an embed, so if the message came from the parent it's cool
               lodgeMessage = true;
-              if (!vv.embeds.all[i].el.source) {
-                vv.embeds.all[i].source = msg.source;
+            } else {
+              // not an embed? find the source of the message in our embeds object
+              for (let i = 0; i < vv.embeds.all.length; i++) {
+                if (vv.embeds.all[i].el.contentWindow === msg.source) {
+                  lodgeMessage = true;
+                  if (!vv.embeds.all[i].el.source) {
+                    vv.embeds.all[i].source = msg.source;
+                  }
+                  message.data._source = vv.embeds.all[i];
+                  break;
+                }
               }
-              message.data._source = vv.embeds.all[i];
-              break;
             }
           }
         }
@@ -976,6 +982,7 @@ if (!window.lodge) {
             if (target) {
               target.source.postMessage(
                 JSON.stringify({
+                  "lodge":true,
                   type,
                   data,
                 }),
@@ -1032,6 +1039,7 @@ if (!window.lodge) {
           }
           window.parent.postMessage(
             JSON.stringify({
+              "lodge":true,
               relay: true,
               type,
               data,
@@ -1148,29 +1156,46 @@ if (!window.lodge) {
 
       /** *************************************************************************************
        *
-       * /// lodge.validate {object}
+       * /// lodge.utility {object}
        * Email validation, but placeholder object for future needs
        *
        ************************************************************************************** */
-      validate: {
+      utility: {
         /**
-         * /// lodge.validate.email
+         * /// lodge.utility.validateEmail
          * Validates a string against a holy shit level regex to check if it's a valid email
          * address. Who knows what's in that black magic.
          *
-         * @param {string} email - The email address to test.
+         * @param {string} address - The email address to test.
          *
          * @returns {boolean} valid or no
          *
          ************************************************************************************ */
-        email(address) {
+        validateEmail(address) {
           // hell no i didn't write this long, bonkers regex
           // thanks to: https://stackoverflow.com/a/46181
           // eslint-disable-next-line no-useless-escape
           const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           return re.test(String(address).toLowerCase());
         },
-      }, /// END lodge.validate
+
+        /**
+         * /// lodge.utility.parseJSON
+         * A wrapper for JSON.parse that catches the error and returns null if not valid
+         *
+         * @param {string} address - The email address to test.
+         *
+         * @returns {parsed|null} - either the parsed JSON object/value or null
+         *
+         ************************************************************************************ */
+        parseJSON(string) {
+          try {
+              return JSON.parse(string);
+          } catch (err) {
+              return null;
+          }
+        },
+      }, /// END lodge.utility
 
       /** *************************************************************************************
        *
@@ -1242,6 +1267,7 @@ if (!window.lodge) {
           // first we create the overlay div for the whole overlay
           self.content = document.createElement("div");
           self.content.className = "lodge__overlay";
+
           // bind the esc key to hiding the overlay
           document.addEventListener("keyup", function addKeyup(e) {
             if (e.key === "Escape") {
