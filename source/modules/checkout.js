@@ -117,7 +117,7 @@
                       },
                       expirationDate: {
                         selector: ".lodge__braintree-expiration-date",
-                        placeholder: `${d.getMonth() + 1} / ${d.getFullYear() + 1}`,
+                        placeholder: `${(d.getMonth() + 1).toString().padStart(2, '0')} / ${d.getFullYear() + 1}`,
                       },
                     },
                   },
@@ -144,14 +144,22 @@
 
                     hostedFieldsInstance.on("cardTypeChange", function (event) {
                       // Change card bg depending on card type
+                      let cardTypes = ['visa','master-card','discover','maestro','jcb','america-express','diners-club'];
                       if (event.cards.length === 1) {
                         vv.styles.addClass({
                           el: form,
                           className: event.cards[0].type,
                         });
-                        document.querySelector("#card-image").className = "";
+
+                        cardTypes.forEach(function(card) {
+                          vv.styles.removeClass({
+                            el: document.querySelector(".lodge__braintree-card-number"),
+                            className: card,
+                          });
+                        });
+
                         vv.styles.addClass({
-                          el: document.querySelector("#card-image"),
+                          el: document.querySelector(".lodge__braintree-card-number"),
                           className: event.cards[0].type,
                         });
 
